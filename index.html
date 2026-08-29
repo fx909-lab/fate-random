@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>命運事務所</title>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--ink:#14213d;--muted:#6b7280;--blue:#2563eb;
+  --line:#dbe3ef;--g1:#dbeafe;--g2:#dcfce7;--g3:#fef3c7;--g4:#fce7f3;
+  --g5:#ede9fe;--g6:#cffafe;--g7:#ffedd5;--g8:#e2e8f0
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}
+header{position:relative;background:linear-gradient(135deg,#1d4ed8,#4f46e5);color:#fff;padding:18px 90px 26px 16px;text-align:center}
+header h1{margin:0;font-size:clamp(24px,4vw,38px)} header .sub{opacity:.9;margin-top:4px;font-size:13px}
+.wrap{max-width:1320px;margin:auto;padding:16px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.card{background:#fff;border-radius:20px;box-shadow:0 8px 24px #17203312;padding:20px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+button,.tab{border:0;border-radius:12px;padding:13px 18px;font-size:16px;font-weight:800;cursor:pointer}
+.tab{background:#e9eef7;color:#24324a}.tab.active,.primary{background:var(--blue);color:#fff}
+.secondary{background:#e9eef7;color:#24324a}.danger{background:#fee2e2;color:#991b1b}.outline{background:#fff;color:var(--blue);border:2px solid #bfdbfe}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.field{margin:12px 0}.field label{display:block;font-weight:800;margin-bottom:7px}
+input,textarea,select{width:100%;border:2px solid #d9dfeb;border-radius:11px;padding:11px 12px;font-size:17px;background:#fff}.small{max-width:160px}
+.help{font-size:14px;color:var(--muted);line-height:1.6}.hidden{display:none!important}
+.resultBox{margin-top:16px;border:3px dashed #d7deeb;border-radius:18px;min-height:210px;padding:18px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;text-align:center}
+.resultBall{min-width:110px;border-radius:18px;background:#eff6ff;color:var(--blue);padding:15px 18px;font-size:clamp(42px,7vw,72px);font-weight:900;line-height:1}
+.resultBall .nm{font-size:18px;color:#1e3a8a;margin-top:10px}.empty{font-size:20px;color:#94a3b8;font-weight:800}
+.subcard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.subcard h3{margin:0 0 10px;font-size:19px}
+.method.activeMethod{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}
+.numPad{display:grid;grid-template-columns:repeat(10,minmax(42px,1fr));gap:8px;margin-top:12px}
+.numBtn{aspect-ratio:1;border-radius:999px;border:2px solid #dbe3ef;background:#fff;font-size:17px;font-weight:800;padding:0}.numBtn.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.selectedList{display:flex;gap:8px;flex-wrap:wrap;min-height:36px}.chip{padding:6px 10px;background:#eff6ff;border-radius:999px;color:#1d4ed8;font-weight:800}
+.groupGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}.group{border-radius:15px;padding:14px}.group h3{margin:0 0 8px}
+.tag{display:inline-block;background:#ffffffbf;border-radius:8px;padding:6px 8px;margin:3px;font-weight:800}
+.g1{background:var(--g1)}.g2{background:var(--g2)}.g3{background:var(--g3)}.g4{background:var(--g4)}.g5{background:var(--g5)}.g6{background:var(--g6)}.g7{background:var(--g7)}.g8{background:var(--g8)}
+.rosterHead{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;flex-wrap:nowrap;text-align:center}
+.rosterTitle{margin:0;font-size:28px;white-space:nowrap}.rosterCount{font-size:14px;color:#6b7280;white-space:nowrap}
+.headerSettings{position:absolute;right:12px;bottom:8px;border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;line-height:1;min-height:30px;cursor:pointer}
+.headerSettings:hover{background:#ffffff2b}
+.settingsMenu{display:grid;gap:10px;margin-top:14px}
+.settingsItem{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px}
+.settingsItem .icon{font-size:23px;flex:0 0 auto}
+.settingsItem .settingText{min-width:0}
+.settingsItem .settingTitle{display:block;font-size:16px;font-weight:900;color:var(--ink)}
+.settingsItem .settingDesc{display:block;margin-top:3px;font-size:13px;font-weight:500;color:var(--muted);line-height:1.4}
+#editStudents,#importStudents,#titleSettings{white-space:normal}
+.drawMode{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.drawMode button.active{background:var(--blue);color:#fff}.balanceBar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.balanceStatus{font-weight:800;color:#334155}.recordGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px}.recordItem{border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#f8fafc;font-weight:700}
+.raffleBox{margin-top:14px}
+.raffleToggle{display:flex;align-items:center;gap:8px;font-weight:900;cursor:pointer}
+.raffleToggle input{width:auto}
+.raffleControls{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end;margin-top:12px}
+.raffleControls .field{margin:0}
+.raffleActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.leaderboard{margin-top:12px}
+.leaderRow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
+.leaderRow:last-child{border-bottom:0}
+.leaderRank{font-weight:900;color:#475569}
+.leaderCount{font-weight:900;white-space:nowrap}
+@media(max-width:650px){.raffleControls{grid-template-columns:1fr 1fr}.raffleControls .field{grid-column:1/-1}}
+
+.importTabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.importTabs button.active{background:var(--blue);color:#fff}
+.importPanel{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}.importStatus{margin-top:10px;font-size:14px;line-height:1.5}.importStatus.err{color:#991b1b}
+.filePick{display:block;border:2px dashed #cbd5e1;border-radius:12px;padding:14px;background:#f8fafc}
+#students{display:flex;flex-direction:column;gap:8px;padding-right:0;overflow:visible;max-height:none}
+.student{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid #dbe3ef;border-radius:11px;background:#fff;font-weight:800;white-space:nowrap}
+.student .nameLine{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.student .sex{font-size:13px;color:#64748b;flex:0 0 auto}
+.student.hit{background:#dbeafe;border-color:#60a5fa;color:#1d4ed8}
+.student.group1{background:var(--g1)}.student.group2{background:var(--g2)}.student.group3{background:var(--g3)}.student.group4{background:var(--g4)}
+.student.group5{background:var(--g5)}.student.group6{background:var(--g6)}.student.group7{background:var(--g7)}.student.group8{background:var(--g8)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:#64748b}.legend span{display:flex;align-items:center;gap:5px}.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modalBox{width:min(820px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:18px}
+.modalTitle{margin:0;white-space:nowrap}.editGrid{display:grid;grid-template-columns:60px minmax(150px,1fr) 100px 82px;gap:8px;align-items:center}
+.editGrid .hdr{font-weight:800;color:#64748b;white-space:nowrap}.removeStudent{padding:9px 10px;font-size:14px}
+.footerNote{margin-top:12px;padding:10px 12px;border-radius:12px;background:#fff7ed;color:#92400e;font-size:14px}
+@media(min-width:701px) and (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr) 320px}.numPad{grid-template-columns:repeat(10,minmax(30px,1fr))}.rosterTitle{font-size:23px}#editStudents{padding:11px 12px;font-size:14px}}
+@media(max-width:700px){.layout{grid-template-columns:1fr}.numPad{grid-template-columns:repeat(5,1fr)}.rosterHead{flex-wrap:wrap}.editGrid{grid-template-columns:50px minmax(120px,1fr) 85px 68px}}
+@media(max-width:500px){header{padding:16px 72px 25px 12px}.headerSettings{right:8px;bottom:7px;padding:6px 8px;font-size:11px}.card{padding:14px}.wrap{padding:10px}.tabs{display:grid;grid-template-columns:1fr}.rosterTitle{font-size:23px}.modalTitle{font-size:22px}}
+
+/* v6：主標題／副標題以整個藍色標題區真正置中，設定按鈕獨立定位 */
+header{position:relative!important;padding-left:72px!important;padding-right:72px!important;text-align:center!important}
+header h1,#mainTitle{width:100%;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+header .sub{width:100%;text-align:center!important;margin-left:auto!important;margin-right:auto!important}
+.headerSettings{position:absolute!important;right:16px!important;bottom:12px!important}
+@media(max-width:560px){
+  header{padding-left:54px!important;padding-right:54px!important}
+  .headerSettings{right:10px!important;bottom:8px!important}
+}
+
+
+/* v9：均衡抽籤紀錄視覺化 */
+.recordItem{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:58px;border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;font-weight:800;transition:.15s ease;
+}
+.recordItem.drawn{background:#dbeafe;border-color:#93c5fd;color:#1e3a8a}
+.recordItem.waiting{background:#f8fafc;border-color:#dbe3ef;color:#334155}
+.recordStudent{min-width:0;overflow-wrap:anywhere}
+.recordState{
+  flex:0 0 30px;width:30px;height:30px;border-radius:999px;
+  display:grid;place-items:center;font-size:20px;font-weight:900;
+}
+.recordItem.drawn .recordState{background:#2563eb;color:#fff}
+.recordItem.waiting .recordState{background:#e2e8f0;color:#64748b}
+
+</style>
+</head>
+<body>
+<header><h1 id="mainTitle">🎲 命運事務所 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<div class="wrap"><div class="layout">
+<main class="card">
+  <div class="tabs">
+    <button class="tab active" data-tab="random">🎲 隨機抽籤</button>
+    <button class="tab" data-tab="custom">✏️ 自訂座號抽籤</button>
+    <button class="tab" data-tab="groups">👥 隨機分組</button>
+  </div>
+
+  <section id="random">
+    <div class="field">
+      <label>抽籤模式</label>
+      <div class="drawMode"><button class="secondary active" id="pureMode">隨機</button><button class="secondary" id="balancedMode">均衡抽籤</button></div>
+      <div id="balanceInfo" class="hidden">
+        <div class="balanceBar">
+          <span id="balanceStatus" class="balanceStatus"></span>
+          <button class="secondary" id="nextBalanceRound">進入下一輪</button>
+          <button class="outline" id="viewBalanceRecord">查看抽籤紀錄</button>
+          <button class="danger" id="resetBalanceRecord">重設均衡抽籤紀錄</button>
+        </div>
+        <div class="help">同一輪內不重複；全部抽完會自動進入下一輪，也可以手動換輪。只記錄目前這一輪哪些學生已被抽到，換輪後重新開始。紀錄只儲存在目前瀏覽器。</div>
+      </div>
+    </div>
+    <div class="field"><label>抽取人數</label><input id="randomCount" class="small" type="number" min="1" value="1"></div>
+    <div class="row"><button class="primary" id="drawRandom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
+  </section>
+
+  <section id="custom" class="hidden">
+    <div class="help">請從「方式 1」或「方式 2」擇一使用，不混合抽籤。</div>
+    <div id="method1" class="subcard method activeMethod">
+      <h3>⌨️ 方式 1：輸入座號</h3><div class="help">支援「、」「.」「，」「,」分隔，也可輸入範圍，例如 1-10。</div>
+      <textarea id="customInput" rows="4" placeholder="例如：1、3，5,8.12 或 1-10"></textarea>
+    </div>
+    <div id="method2" class="subcard method">
+      <h3>👉 方式 2：號碼盤點選</h3><div class="help">點選座號加入名單，再點一次即可取消。</div>
+      <div id="numPad" class="numPad"></div>
+      <div class="row" style="margin-top:12px"><button class="secondary" id="clearPad">清除已選</button></div>
+      <div class="field"><label>已選座號</label><div id="selectedList" class="selectedList"><span class="help">尚未選擇</span></div></div>
+    </div>
+    <div class="field"><label>抽取人數</label><input id="customCount" class="small" type="number" min="1" value="1"></div>
+
+    <div class="subcard raffleBox">
+      <label class="raffleToggle"><input id="keepRaffleRecord" type="checkbox"> 保留中獎紀錄</label>
+      <div class="help" style="margin-top:6px">預設不保留。開啟後，同一筆紀錄會累計各座號的中獎次數；中獎越多，之後的抽中權重會逐步降低，但仍保有中獎機會。</div>
+      <div id="raffleRecordControls" class="hidden">
+        <div class="raffleControls">
+          <div class="field">
+            <label for="raffleRecordSelect">使用紀錄</label>
+            <select id="raffleRecordSelect"></select>
+          </div>
+          <button class="secondary" id="newRaffleRecord">＋ 新增紀錄</button>
+          <button class="outline" id="renameRaffleRecord">✏️ 編輯名稱</button>
+        </div>
+        <div class="raffleActions">
+          <button class="danger" id="resetRaffleRecord">重設這筆紀錄</button>
+          <button class="danger" id="deleteRaffleRecord">刪除這筆紀錄</button>
+          <button class="outline" id="viewRaffleLeaderboard">⭐ 幸運星排行榜</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row"><button class="primary" id="drawCustom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
+  </section>
+
+  <section id="groups" class="hidden">
+    <div class="field">
+      <label>分組數</label>
+      <select id="groupCount" class="small">
+        <option>2</option><option selected>3</option><option>4</option><option>5</option>
+        <option>6</option><option>7</option><option>8</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>每組性別下限</label>
+      <div class="row">
+        <div>
+          <label>每組男生下限</label>
+          <input id="boysPerGroup" class="small" type="number" min="0" placeholder="留白＝不限">
+        </div>
+        <div>
+          <label>每組女生下限</label>
+          <input id="girlsPerGroup" class="small" type="number" min="0" placeholder="留白＝不限">
+        </div>
+      </div>
+      <div id="genderHint" class="help"></div>
+    </div>
+
+    <div class="field">
+      <label><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組範圍</label>
+      <div id="rangeBox" class="hidden">
+        <div class="subcard" style="margin-top:10px">
+          <div class="help">可使用「輸入座號」或「號碼盤點選」其中一種；未設定時仍視為全班參與。</div>
+
+          <div id="groupMethod1" class="subcard method" style="margin-top:12px">
+            <h3>⌨️ 方式 1：輸入座號</h3>
+            <div class="help">支援「、」「.」「，」「,」分隔，也可輸入範圍，例如 1-10。</div>
+            <textarea id="groupInput" rows="3" placeholder="例如：1、3，5,8.12 或 1-10"></textarea>
+          </div>
+
+          <div id="groupMethod2" class="subcard method" style="margin-top:12px">
+            <h3>👉 方式 2：號碼盤點選</h3>
+            <div class="help">點選座號加入分組名單，再點一次即可取消。</div>
+            <div id="groupNumPad" class="numPad"></div>
+            <div class="row" style="margin-top:12px">
+              <button class="secondary" id="clearGroupPad">清除已選</button>
+            </div>
+            <div class="field">
+              <label>已選座號</label>
+              <div id="groupSelectedList" class="selectedList"><span class="help">尚未選擇</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:16px"><button class="primary" id="makeGroups">👥 開始分組</button><button class="danger clearBtn">清除結果</button></div>
+  </section>
+
+  <div id="resultBox" class="resultBox"><div><div style="font-size:22px;font-weight:900;margin-bottom:8px">抽籤／分組結果</div><div class="empty">文字座號結果會顯示在這裡</div></div></div>
+  <div id="resultDetails">
+    <div id="balanceRecord" class="subcard hidden"></div>
+    <div id="raffleLeaderboard" class="subcard leaderboard hidden"></div>
+  </div>
+</main>
+
+<aside class="card">
+  <div class="rosterHead">
+    <h2 class="rosterTitle">學生名單</h2>
+  </div>
+  <div id="students"></div>
+  <div class="help" style="margin-top:10px">電腦／平板顯示於右側；手機版會自動移到下方。</div>
+  <div class="legend"><span><i class="dot" style="background:#dbeafe"></i>抽中</span><span><i class="dot" style="background:#dcfce7"></i>分組顏色</span></div>
+</aside>
+</div></div>
+
+
+
+
+
+
+
+<div id="safeConfirmModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="safeConfirmTitle">
+  <div class="modalBox" style="width:min(520px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="safeConfirmTitle">確認操作</h2>
+      <button class="secondary" id="closeSafeConfirm">關閉</button>
+    </div>
+    <div id="safeConfirmMessage" class="help" style="margin:14px 0;font-size:15px;line-height:1.7;white-space:pre-line"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="danger" id="confirmSafeAction">確定</button>
+      <button class="secondary" id="cancelSafeConfirm">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="balanceResetModal" class="modal hidden">
+  <div class="modalBox" style="width:min(500px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">重設均衡抽籤紀錄</h2>
+      <button class="secondary" id="closeBalanceReset">關閉</button>
+    </div>
+    <div class="help" style="margin:14px 0;font-size:15px;line-height:1.6">
+      確定要重設均衡抽籤紀錄嗎？重設後會回到第 1 輪，並清除本輪所有「已抽」狀態。
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="danger" id="confirmBalanceReset">確定重設</button>
+      <button class="secondary" id="cancelBalanceReset">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="roundActionModal" class="modal hidden">
+  <div class="modalBox" style="width:min(500px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">進入下一輪</h2>
+      <button class="secondary" id="closeRoundAction">關閉</button>
+    </div>
+    <div id="roundActionMessage" class="help" style="margin:14px 0;font-size:15px;line-height:1.6"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="confirmNextRound">確定進入下一輪</button>
+      <button class="secondary" id="cancelNextRound">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="raffleActionModal" class="modal hidden">
+  <div class="modalBox" style="width:min(500px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="raffleActionTitle">編輯紀錄</h2>
+      <button class="secondary" id="closeRaffleAction">關閉</button>
+    </div>
+    <div id="raffleRenameArea">
+      <div class="field" style="margin-top:12px">
+        <label for="raffleRenameInput">紀錄名稱</label>
+        <input id="raffleRenameInput" type="text" maxlength="30">
+      </div>
+    </div>
+    <div id="raffleDeleteArea" class="hidden">
+      <div class="help" id="raffleDeleteMessage" style="margin:12px 0"></div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="confirmRaffleAction">儲存</button>
+      <button class="secondary" id="cancelRaffleAction">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="modalBox" style="width:min(560px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">設定</h2><button class="secondary" id="closeSettings">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 4px">網站設定與學生名單功能集中在這裡。</div>
+    <div class="settingsMenu">
+      <button class="settingsItem" id="titleSettings">
+        <span class="icon">📝</span>
+        <span class="settingText"><span class="settingTitle">標題設定</span><span class="settingDesc">設定是否在「命運事務所」前顯示自訂文字。</span></span>
+      </button>
+      <button class="settingsItem" id="importStudents">
+        <span class="icon">⇧</span>
+        <span class="settingText"><span class="settingTitle">匯入學生名單</span><span class="settingDesc">從 Excel／CSV／TXT 匯入，或直接貼上名單。</span></span>
+      </button>
+      <button class="settingsItem" id="editStudents">
+        <span class="icon">✏️</span>
+        <span class="settingText"><span class="settingTitle">新增／修改學生資料</span><span class="settingDesc">調整姓名、性別、新增或刪除學生。</span></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="titleModal" class="modal hidden">
+  <div class="modalBox" style="width:min(560px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">標題設定</h2><button class="secondary" id="closeTitleSettings">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 14px">預設可直接修改「命運事務所」前方的自訂內容；若不需要，可勾選「不使用自訂標題」。自訂內容只儲存在目前瀏覽器。</div>
+    <div class="field">
+      <label><input id="disableCustomTitle" type="checkbox" style="width:auto;margin-right:8px">不使用自訂標題</label>
+    </div>
+    <div id="customTitleBox" class="field">
+      <label for="customTitleText">自訂內容</label>
+      <input id="customTitleText" type="text" maxlength="30" placeholder="例如：604、五年三班、自然科">
+      <div class="help" style="margin-top:6px">最多 30 個字元；只會以純文字顯示，不會當成 HTML 執行。</div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="saveTitleSettings">儲存設定</button>
+      <button class="secondary" id="cancelTitleSettings">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="importModal" class="modal hidden">
+  <div class="modalBox">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">匯入學生名單</h2><button class="secondary" id="closeImport">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 14px">匯入只在目前瀏覽器本機處理，不會上傳檔案。匯入後會先帶到「新增／修改學生」頁面供你確認，按下「儲存學生資料」後才會取代目前名單。</div>
+    <div class="importTabs">
+      <button class="secondary active" id="importFileTab">📄 Excel／CSV 檔案</button>
+      <button class="secondary" id="importTextTab">📋 直接貼上</button>
+    </div>
+    <div id="importFilePanel" class="importPanel">
+      <label class="filePick"><strong>選擇名單檔案</strong><br><span class="help">支援 .xlsx、.csv、.txt；Excel 只讀取第一個工作表，公式不會執行。</span><input id="rosterFile" type="file" accept=".xlsx,.csv,.txt,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="margin-top:10px"></label>
+    </div>
+    <div id="importTextPanel" class="importPanel hidden">
+      <label><strong>貼上名單</strong></label>
+      <textarea id="rosterText" rows="10" placeholder="例如：&#10;姓名,性別&#10;王小明,男&#10;李小華,女&#10;&#10;也可以只貼姓名，一行一位。"></textarea>
+      <div class="help" style="margin-top:8px">可使用逗號、全形逗號或 Tab 分隔；性別可填「男／女」或「男生／女生」。</div>
+    </div>
+    <div id="importStatus" class="importStatus"></div>
+    <div class="row" style="margin-top:16px"><button class="primary" id="applyImport">套用並檢查</button><button class="secondary" id="cancelImport">取消</button></div>
+    <div class="footerNote">資安提醒：檔案內容只在此頁面記憶體中解析，不會傳送到 GitHub、雲端或第三方服務；匯入後仍需在確認頁按「儲存學生資料」才會寫入這個瀏覽器。</div>
+  </div>
+</div>
+
+<div id="studentModal" class="modal hidden">
+  <div class="modalBox">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">新增／修改學生</h2><button class="secondary" id="closeModal">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 14px">學生姓名與性別只儲存在目前瀏覽器，不會寫進公開網頁原始碼。可修改、新增或刪除學生；儲存後座號會依目前名單順序重新編號。</div>
+    <div id="editGrid" class="editGrid"></div>
+    <div class="row" style="margin-top:14px"><button class="outline" id="addStudent">＋ 新增學生</button></div>
+    <div class="row" style="margin-top:16px"><button class="primary" id="saveStudents">儲存學生資料</button><button class="secondary" id="resetStudents">重設空白名單</button></div>
+    <div class="footerNote">學生資料只儲存在此瀏覽器；清除瀏覽器網站資料後，姓名與性別會消失並回到空白座號。</div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_STUDENT_COUNT=27;
+const MAX_STUDENTS=60;
+const MAX_NAME_LENGTH=30;
+const MAX_IMPORT_FILE_BYTES=5*1024*1024;
+const STORAGE_KEY='lingzhou604_students';
+const BALANCE_STORAGE_KEY='604_random_balance_v1';
+const TITLE_STORAGE_KEY='604_random_title_v1';
+const RAFFLE_STORAGE_KEY='604_custom_raffle_records_v1';
+const MAX_RAFFLE_RECORDS=30;
+const MAX_RAFFLE_NAME_LENGTH=30;
+const MAX_TITLE_LENGTH=30;
+const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
+const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename';
+const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function normalizeStoredData(d){
+  if(!d||!Array.isArray(d.names)||!Array.isArray(d.sexes)||d.names.length<1||d.names.length>MAX_STUDENTS||d.sexes.length!==d.names.length)return null;
+  const safeNames=[],safeSexes=[];
+  for(let i=0;i<d.names.length;i++){
+    if(typeof d.names[i]!=='string'||typeof d.sexes[i]!=='string')return null;
+    const name=d.names[i].trim().slice(0,MAX_NAME_LENGTH);
+    const sx=['男','女',''].includes(d.sexes[i])?d.sexes[i]:'';
+    safeNames.push(name);safeSexes.push(sx);
+  }
+  return {names:safeNames,sexes:safeSexes};
+}
+
+function normalizeTitleSettings(d){
+  if(!d||typeof d!=='object')return {enabled:false,text:''};
+  const enabled=d.enabled===true;
+  const text=typeof d.text==='string'?d.text.trim().slice(0,MAX_TITLE_LENGTH):'';
+  return {enabled,text};
+}
+function loadTitleSettings(){
+  try{titleSettings=normalizeTitleSettings(JSON.parse(localStorage.getItem(TITLE_STORAGE_KEY)||'null'))}
+  catch(e){titleSettings={enabled:true,text:''}}
+
+  if(titleSettings.enabled===false&&!titleSettings.text){
+    titleSettings.enabled=true;
+    saveTitleSettings();
+  }
+}
+function saveTitleSettingsData(){
+  try{localStorage.setItem(TITLE_STORAGE_KEY,JSON.stringify(titleSettings))}
+  catch(e){alert('標題設定無法儲存在此瀏覽器。')}
+}
+function renderTitle(){
+  const prefix=titleSettings.enabled&&titleSettings.text?titleSettings.text+' ':'';
+  $('mainTitle').textContent=`🎲 ${prefix}命運事務所 🎲`;
+  document.title=`${prefix}命運事務所`;
+}
+function openTitleSettings(){
+  $('disableCustomTitle').checked=!titleSettings.enabled;
+  $('customTitleText').value=titleSettings.text;
+  $('customTitleBox').classList.remove('hidden');
+$('customTitleText').disabled=$('disableCustomTitle').checked;
+  $('titleModal').classList.remove('hidden');
+}
+
+function loadData(){try{const d=normalizeStoredData(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'));if(d){names=d.names;sexes=d.sexes}}catch(e){}}
+function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({names,sexes}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
+function loadBalanceData(){
+  balanceRound=1;balanceRoundDrawn=new Set();
+  try{
+    const d=JSON.parse(localStorage.getItem(BALANCE_STORAGE_KEY)||'null');
+    if(!d||typeof d!=='object')return;
+    if(Number.isInteger(d.round)&&d.round>=1&&d.round<=1000000&&Array.isArray(d.drawn)&&d.drawn.every(n=>Number.isInteger(n)&&n>=1&&n<=names.length)){
+      balanceRound=d.round;
+      balanceRoundDrawn=new Set(d.drawn);
+      return;
+    }
+    // 舊版相容：若只有 counts，僅用來推回「目前輪次／本輪已抽」，之後不再保存累積次數。
+    if(Array.isArray(d.counts)&&d.counts.length===names.length&&d.counts.every(n=>Number.isInteger(n)&&n>=0)){
+      const min=Math.min(...d.counts);
+      balanceRound=min+1;
+      balanceRoundDrawn=new Set(d.counts.map((n,i)=>n>min?i+1:null).filter(Boolean));
+      saveBalanceData();
+    }
+  }catch(e){}
+}
+function saveBalanceData(){
+  try{localStorage.setItem(BALANCE_STORAGE_KEY,JSON.stringify({round:balanceRound,drawn:[...balanceRoundDrawn]}))}
+  catch(e){alert('均衡抽籤紀錄無法儲存在此瀏覽器。')}
+}
+function resetBalanceData(save=true){
+  balanceRound=1;balanceRoundDrawn=new Set();
+  if(save)saveBalanceData();
+  renderBalanceInfo();
+}
+function renderBalanceInfo(){
+  balanceRoundDrawn=new Set([...balanceRoundDrawn].filter(id=>id>=1&&id<=names.length));
+  $('balanceStatus').textContent=`目前第 ${balanceRound} 輪｜本輪已抽 ${balanceRoundDrawn.size} / ${names.length} 人`;
+  if(!$('balanceRecord').classList.contains('hidden'))renderBalanceRecord();
+}
+function renderBalanceRecord(){
+  const rows=names.map((name,i)=>{
+    const id=i+1,done=balanceRoundDrawn.has(id);
+    return `<div class="recordItem ${done?'drawn':'waiting'}"><span class="recordStudent">${String(id).padStart(2,'0')}${name?`｜${escapeHtml(name)}`:''}</span><span class="recordState" aria-label="${done?'本輪已抽':'本輪尚未抽'}">${done?'✓':'○'}</span></div>`
+  }).join('');
+  $('balanceRecord').innerHTML=`<div style="font-weight:900">第 ${balanceRound} 輪｜抽籤紀錄</div><div class="help" style="margin-top:4px">✓ 代表本輪已抽到；○ 代表本輪尚未抽到。進入下一輪後會重新開始。</div><div class="recordGrid">${rows}</div>`;
+}
+function setRandomMode(mode){
+  randomMode=mode==='balanced'?'balanced':'pure';
+  $('pureMode').classList.toggle('active',randomMode==='pure');
+  $('balancedMode').classList.toggle('active',randomMode==='balanced');
+  $('balanceInfo').classList.toggle('hidden',randomMode!=='balanced');
+  if(randomMode!=='balanced')$('balanceRecord').classList.add('hidden');
+  renderBalanceInfo();
+}
+function advanceBalanceRound(manual=false){
+  balanceRound++;
+  balanceRoundDrawn=new Set();
+  saveBalanceData();
+  renderBalanceInfo();
+  return true;
+}
+function requestNextBalanceRound(){
+  const remain=names.length-balanceRoundDrawn.size;
+  $('roundActionMessage').textContent=remain>0
+    ?`本輪還有 ${remain} 人尚未抽到。確定要直接進入第 ${balanceRound+1} 輪嗎？`
+    :`本輪已完成。確定要進入第 ${balanceRound+1} 輪嗎？`;
+  $('roundActionModal').classList.remove('hidden');
+}
+function drawBalanced(count){
+  const picked=[],batchPicked=new Set();
+  while(picked.length<count){
+    let candidates=names.map((_,i)=>i+1).filter(id=>!balanceRoundDrawn.has(id)&&!batchPicked.has(id));
+    if(!candidates.length){
+      advanceBalanceRound(false);
+      candidates=names.map((_,i)=>i+1).filter(id=>!batchPicked.has(id));
+    }
+    const id=candidates[secureRandomInt(candidates.length)];
+    picked.push(id);
+    batchPicked.add(id);
+    balanceRoundDrawn.add(id);
+    if(balanceRoundDrawn.size===names.length&&picked.length<count)advanceBalanceRound(false);
+  }
+  if(balanceRoundDrawn.size===names.length)advanceBalanceRound(false);
+  else{saveBalanceData();renderBalanceInfo()}
+  return picked;
+}
+
+function normalizeRaffleRecords(d){
+  if(!Array.isArray(d))return [];
+  const out=[];
+  for(const r of d.slice(0,MAX_RAFFLE_RECORDS)){
+    if(!r||typeof r!=='object'||typeof r.id!=='string'||typeof r.name!=='string'||!Array.isArray(r.counts))continue;
+    if(r.counts.length!==names.length||!r.counts.every(n=>Number.isInteger(n)&&n>=0&&n<=1000000))continue;
+    const name=r.name.trim().slice(0,MAX_RAFFLE_NAME_LENGTH);
+    if(!name)continue;
+    out.push({id:r.id.slice(0,80),name,counts:[...r.counts]});
+  }
+  return out;
+}
+function loadRaffleRecords(){
+  try{raffleRecords=normalizeRaffleRecords(JSON.parse(localStorage.getItem(RAFFLE_STORAGE_KEY)||'[]'))}
+  catch(e){raffleRecords=[]}
+  activeRaffleId=raffleRecords[0]?.id||'';
+}
+function saveRaffleRecords(){
+  try{localStorage.setItem(RAFFLE_STORAGE_KEY,JSON.stringify(raffleRecords))}
+  catch(e){alert('中獎紀錄無法儲存在此瀏覽器。')}
+}
+function makeRaffleId(){
+  const a=new Uint32Array(2);
+  if(window.crypto&&crypto.getRandomValues){crypto.getRandomValues(a);return `r${Date.now().toString(36)}${a[0].toString(36)}${a[1].toString(36)}`}
+  return `r${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
+}
+function defaultRaffleName(){
+  let n=1,used=new Set(raffleRecords.map(r=>r.name));
+  while(used.has(`第 ${n} 輪`))n++;
+  return `第 ${n} 輪`;
+}
+function createRaffleRecord(){
+  if(raffleRecords.length>=MAX_RAFFLE_RECORDS){alert(`最多可保留 ${MAX_RAFFLE_RECORDS} 筆中獎紀錄。`);return null}
+  const r={id:makeRaffleId(),name:defaultRaffleName(),counts:Array(names.length).fill(0)};
+  raffleRecords.push(r);activeRaffleId=r.id;saveRaffleRecords();renderRaffleControls();return r;
+}
+function getActiveRaffle(){
+  return raffleRecords.find(r=>r.id===activeRaffleId)||null;
+}
+function ensureActiveRaffle(){
+  let r=getActiveRaffle();
+  if(!r)r=createRaffleRecord();
+  return r;
+}
+function renderRaffleControls(){
+  const on=$('keepRaffleRecord').checked;
+  $('raffleRecordControls').classList.toggle('hidden',!on);
+  if(!on)return;
+  if(!raffleRecords.length)createRaffleRecord();
+  const sel=$('raffleRecordSelect');
+  sel.innerHTML=raffleRecords.map(r=>`<option value="${escapeHtml(r.id)}" ${r.id===activeRaffleId?'selected':''}>${escapeHtml(r.name)}</option>`).join('');
+  if(!getActiveRaffle()&&raffleRecords.length){activeRaffleId=raffleRecords[0].id;sel.value=activeRaffleId}
+  if(!$('raffleLeaderboard').classList.contains('hidden'))renderRaffleLeaderboard();
+}
+function renderRaffleLeaderboard(){
+  const r=getActiveRaffle();
+  if(!r){$('raffleLeaderboard').innerHTML='<div class="help">尚無紀錄</div>';return}
+  const ranked=r.counts.map((count,i)=>({id:i+1,count,name:names[i]}))
+    .filter(x=>x.count>0)
+    .sort((a,b)=>b.count-a.count||a.id-b.id);
+  if(!ranked.length){
+    $('raffleLeaderboard').innerHTML=`<div style="font-weight:900">⭐ ${escapeHtml(r.name)}｜幸運星排行榜</div><div class="help" style="margin-top:8px">目前還沒有人中獎。</div>`;
+    return;
+  }
+  $('raffleLeaderboard').innerHTML=`<div style="font-weight:900">⭐ ${escapeHtml(r.name)}｜幸運星排行榜</div><div class="help" style="margin:4px 0 8px">幸運星排行榜依累積中獎次數排序；每次實際中獎機率仍會依當次參加名單重新計算。</div>${ranked.map((x,i)=>`<div class="leaderRow"><span class="leaderRank">#${i+1}</span><span>${String(x.id).padStart(2,'0')}${x.name?`｜${escapeHtml(x.name)}`:''}</span><span class="leaderCount">${x.count} 次</span></div>`).join('')}`;
+}
+function secureRandomFloat(){
+  if(window.crypto&&crypto.getRandomValues){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/0x100000000}
+  return Math.random();
+}
+function weightedPick(ids,counts){
+  const weights=ids.map(id=>1/Math.sqrt((counts[id-1]||0)+1));
+  const total=weights.reduce((a,b)=>a+b,0);
+  let x=secureRandomFloat()*total;
+  for(let i=0;i<ids.length;i++){x-=weights[i];if(x<0)return ids[i]}
+  return ids.at(-1);
+}
+function drawCustomWithRecord(pool,count){
+  const r=ensureActiveRaffle();
+  if(!r)throw Error('無法建立中獎紀錄');
+  const available=[...pool],picked=[];
+  while(picked.length<count){
+    const id=weightedPick(available,r.counts);
+    picked.push(id);
+    available.splice(available.indexOf(id),1);
+    r.counts[id-1]++;
+  }
+  saveRaffleRecords();
+  if(!$('raffleLeaderboard').classList.contains('hidden'))renderRaffleLeaderboard();
+  return picked;
+}
+function resetAllRaffleRecords(save=true){
+  raffleRecords=[];activeRaffleId='';
+  if(save)saveRaffleRecords();
+  if($('keepRaffleRecord'))renderRaffleControls();
+}
+function hasRaffleHistory(){
+  return raffleRecords.some(r=>r.counts.some(n=>n>0));
+}
+
+function refreshLimits(){
+  $('randomCount').max=names.length;$('customCount').max=names.length;
+  padSelected=new Set([...padSelected].filter(n=>n<=names.length));
+  groupPadSelected=new Set([...groupPadSelected].filter(n=>n<=names.length));
+  renderPad();renderSelected();renderGroupPad();renderGroupSelected();updateGenderHint();
+}
+function renderStudents(){
+  students.innerHTML='';
+  names.forEach((n,i)=>{const d=document.createElement('div');d.className='student';d.id='s'+(i+1);d.innerHTML=`<span class="nameLine">${String(i+1).padStart(2,'0')}${n?'. '+escapeHtml(n):''}</span><span class="sex">${escapeHtml(sexes[i]||'')}</span>`;students.appendChild(d)});
+}
+function clearMarks(){document.querySelectorAll('.student').forEach(x=>x.className='student')}
+function clearResults(){clearMarks();resultBox.innerHTML='<div><div style="font-size:22px;font-weight:900;margin-bottom:8px">抽籤／分組結果</div><div class="empty">文字座號結果會顯示在這裡</div></div>'}
+function secureRandomInt(max){if(window.crypto&&crypto.getRandomValues){const a=new Uint32Array(1),limit=Math.floor(0x100000000/max)*max;do{crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%max}return Math.floor(Math.random()*max)}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=secureRandomInt(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function err(msg){resultBox.innerHTML=`<div class="empty">⚠️ ${escapeHtml(msg)}</div>`}
+function showDraw(ids){clearMarks();ids.forEach(id=>$('s'+id)?.classList.add('hit'));resultBox.innerHTML=`<div style="width:100%"><div style="font-size:22px;font-weight:900;margin-bottom:12px">🎯 抽籤結果</div><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px">${ids.map(id=>`<div class="resultBall">${String(id).padStart(2,'0')}<div class="nm">${escapeHtml(names[id-1])}</div></div>`).join('')}</div></div>`}
+function parseCustom(txt){
+  const normalized=txt.replace(/[、，,。]/g,'.').replace(/\s+/g,''),out=new Set();
+  for(const token of normalized.split('.')){if(!token)continue;if(/^(\d+)-(\d+)$/.test(token)){let [,a,b]=token.match(/^(\d+)-(\d+)$/).map(Number);if(a>b)[a,b]=[b,a];for(let n=a;n<=b;n++){if(n<1||n>names.length)throw Error(`座號只能是 1～${names.length}`);out.add(n)}}else if(/^\d+$/.test(token)){const n=Number(token);if(n<1||n>names.length)throw Error(`座號只能是 1～${names.length}`);out.add(n)}else throw Error('格式無法辨識')}
+  if(!out.size)throw Error('請先輸入座號');return [...out]
+}
+function renderPad(){$('numPad').innerHTML='';for(let i=1;i<=names.length;i++){const b=document.createElement('button');b.className='numBtn'+(padSelected.has(i)?' sel':'');b.textContent=i;b.onclick=()=>{activeMethod=2;setMethod(2);padSelected.has(i)?padSelected.delete(i):padSelected.add(i);renderPad();renderSelected()};$('numPad').appendChild(b)}}
+function renderSelected(){const arr=[...padSelected].sort((a,b)=>a-b);$('selectedList').innerHTML=arr.length?arr.map(n=>`<span class="chip">${n}</span>`).join(''):'<span class="help">尚未選擇</span>'}
+
+function renderGroupPad(){
+  $('groupNumPad').innerHTML='';
+  for(let i=1;i<=names.length;i++){
+    const b=document.createElement('button');
+    b.className='numBtn'+(groupPadSelected.has(i)?' sel':'');
+    b.textContent=i;
+    b.onclick=()=>{
+      groupActiveMethod=2;
+      setGroupMethod(2);
+      groupPadSelected.has(i)?groupPadSelected.delete(i):groupPadSelected.add(i);
+      renderGroupPad();renderGroupSelected();
+    };
+    $('groupNumPad').appendChild(b);
+  }
+}
+function renderGroupSelected(){
+  const arr=[...groupPadSelected].sort((a,b)=>a-b);
+  $('groupSelectedList').innerHTML=arr.length
+    ?arr.map(n=>`<span class="chip">${n}</span>`).join('')
+    :'<span class="help">尚未選擇</span>';
+}
+function setGroupMethod(n){
+  groupActiveMethod=n;
+  $('groupMethod1').classList.toggle('activeMethod',n===1);
+  $('groupMethod2').classList.toggle('activeMethod',n===2);
+}
+function setMethod(n){activeMethod=n;$('method1').classList.toggle('activeMethod',n===1);$('method2').classList.toggle('activeMethod',n===2)}
+$('customInput').addEventListener('focus',()=>setMethod(1));$('method1').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')setMethod(1)});$('method2').addEventListener('click',e=>{if(!e.target.classList.contains('numBtn'))setMethod(2)});
+$('groupInput').addEventListener('focus',()=>setGroupMethod(1));
+$('groupMethod1').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')setGroupMethod(1)});
+$('groupMethod2').addEventListener('click',e=>{if(!e.target.classList.contains('numBtn'))setGroupMethod(2)});
+$('clearGroupPad').onclick=()=>{groupPadSelected.clear();groupActiveMethod=0;renderGroupPad();renderGroupSelected();$('groupMethod2').classList.remove('activeMethod')};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  ['random','custom','groups'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
+  $('balanceRecord').classList.add('hidden');
+  $('raffleLeaderboard').classList.add('hidden');
+  clearResults();
+});
+$('pureMode').onclick=()=>setRandomMode('pure');$('balancedMode').onclick=()=>setRandomMode('balanced');
+$('viewBalanceRecord').onclick=()=>{$('balanceRecord').classList.toggle('hidden');if(!$('balanceRecord').classList.contains('hidden'))renderBalanceRecord()};
+$('nextBalanceRound').onclick=requestNextBalanceRound;
+$('resetBalanceRecord').onclick=()=>$('balanceResetModal').classList.remove('hidden');
+function closeBalanceResetModal(){$('balanceResetModal').classList.add('hidden')}
+$('closeBalanceReset').onclick=closeBalanceResetModal;
+$('cancelBalanceReset').onclick=closeBalanceResetModal;
+$('confirmBalanceReset').onclick=()=>{resetBalanceData(true);$('balanceRecord').classList.add('hidden');closeBalanceResetModal()};
+$('drawRandom').onclick=()=>{const c=Number($('randomCount').value);if(!Number.isInteger(c)||c<1||c>names.length)return err(`抽取人數請設定為 1～${names.length}`);const ids=randomMode==='balanced'?drawBalanced(c):shuffle(names.map((_,i)=>i+1)).slice(0,c);showDraw(ids)};
+$('drawCustom').onclick=()=>{try{const pool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!pool.length)throw Error('請先選擇座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
+$('clearPad').onclick=()=>{padSelected.clear();renderPad();renderSelected()};
+$('keepRaffleRecord').onchange=()=>{$('raffleLeaderboard').classList.add('hidden');renderRaffleControls()};
+$('raffleRecordSelect').onchange=e=>{activeRaffleId=e.target.value;$('raffleLeaderboard').classList.add('hidden');renderRaffleControls()};
+$('newRaffleRecord').onclick=()=>createRaffleRecord();
+$('renameRaffleRecord').onclick=()=>{
+  const r=ensureActiveRaffle();if(!r)return;
+  raffleActionMode='rename';
+  $('raffleActionTitle').textContent='編輯紀錄名稱';
+  $('raffleRenameArea').classList.remove('hidden');
+  $('raffleDeleteArea').classList.add('hidden');
+  $('raffleRenameInput').value=r.name;
+  $('confirmRaffleAction').textContent='儲存名稱';
+  $('confirmRaffleAction').className='primary';
+  $('raffleActionModal').classList.remove('hidden');
+  setTimeout(()=>$('raffleRenameInput').focus(),0);
+};
+$('viewRaffleLeaderboard').onclick=()=>{
+  if($('custom').classList.contains('hidden')){
+    $('raffleLeaderboard').classList.add('hidden');
+    return;
+  }
+  $('raffleLeaderboard').classList.toggle('hidden');
+  if(!$('raffleLeaderboard').classList.contains('hidden'))renderRaffleLeaderboard();
+};
+$('resetRaffleRecord').onclick=()=>{
+  const r=getActiveRaffle();if(!r)return;
+  openSafeConfirm(
+    `確定要把「${r.name}」的所有中獎次數歸零嗎？`,
+    ()=>{
+      r.counts=Array(names.length).fill(0);
+      saveRaffleRecords();
+      renderRaffleLeaderboard();
+    },
+    {title:'重設幸運星紀錄',confirmText:'確定重設'}
+  );
+};
+$('deleteRaffleRecord').onclick=()=>{
+  const r=getActiveRaffle();if(!r)return;
+  raffleActionMode='delete';
+  $('raffleActionTitle').textContent='刪除中獎紀錄';
+  $('raffleRenameArea').classList.add('hidden');
+  $('raffleDeleteArea').classList.remove('hidden');
+  $('raffleDeleteMessage').textContent=`確定要刪除「${r.name}」嗎？這筆紀錄的中獎次數會一併刪除，而且無法復原。`;
+  $('confirmRaffleAction').textContent='確定刪除';
+  $('confirmRaffleAction').className='danger';
+  $('raffleActionModal').classList.remove('hidden');
+};
+
+
+let pendingSafeConfirmAction=null;
+function openSafeConfirm(message,onConfirm,options={}){
+  pendingSafeConfirmAction=typeof onConfirm==='function'?onConfirm:null;
+  $('safeConfirmTitle').textContent=String(options.title||'確認操作');
+  $('safeConfirmMessage').textContent=String(message||'');
+  $('confirmSafeAction').textContent=String(options.confirmText||'確定');
+  $('confirmSafeAction').className=options.danger===false?'primary':'danger';
+  $('safeConfirmModal').classList.remove('hidden');
+}
+function closeSafeConfirm(){
+  $('safeConfirmModal').classList.add('hidden');
+  pendingSafeConfirmAction=null;
+}
+$('closeSafeConfirm').onclick=closeSafeConfirm;
+$('cancelSafeConfirm').onclick=closeSafeConfirm;
+$('confirmSafeAction').onclick=()=>{
+  const action=pendingSafeConfirmAction;
+  $('safeConfirmModal').classList.add('hidden');
+  pendingSafeConfirmAction=null;
+  if(action)action();
+};
+
+function closeRoundActionModal(){$('roundActionModal').classList.add('hidden')}
+$('closeRoundAction').onclick=closeRoundActionModal;
+$('cancelNextRound').onclick=closeRoundActionModal;
+$('confirmNextRound').onclick=()=>{advanceBalanceRound(true);closeRoundActionModal()};
+
+function closeRaffleActionModal(){$('raffleActionModal').classList.add('hidden')}
+$('closeRaffleAction').onclick=closeRaffleActionModal;
+$('cancelRaffleAction').onclick=closeRaffleActionModal;
+$('confirmRaffleAction').onclick=()=>{
+  const r=getActiveRaffle();if(!r){closeRaffleActionModal();return}
+  if(raffleActionMode==='rename'){
+    const name=$('raffleRenameInput').value.trim();
+    if(!name)return alert('紀錄名稱不可空白。');
+    if(name.length>MAX_RAFFLE_NAME_LENGTH)return alert(`紀錄名稱最多 ${MAX_RAFFLE_NAME_LENGTH} 個字元。`);
+    r.name=name;
+  }else if(raffleActionMode==='delete'){
+    raffleRecords=raffleRecords.filter(x=>x.id!==r.id);
+    activeRaffleId=raffleRecords[0]?.id||'';
+  }
+  saveRaffleRecords();renderRaffleControls();closeRaffleActionModal();
+};
+
+document.querySelectorAll('.clearBtn').forEach(b=>b.onclick=clearResults);
+
+function renderGroups(gs){
+  gs=gs.map((ids,i)=>({ids:[...ids].sort((a,b)=>a-b),order:i}))
+       .sort((a,b)=>b.ids.length-a.ids.length || a.order-b.order)
+       .map(x=>x.ids);
+  clearMarks();gs.forEach((ids,i)=>ids.forEach(id=>$('s'+id)?.classList.add('group'+(i+1))));
+  resultBox.innerHTML=`<div style="width:100%"><div style="font-size:22px;font-weight:900;margin-bottom:12px">👥 分組結果</div><div class="groupGrid">${gs.map((ids,i)=>`<div class="group g${i+1}"><h3>第 ${i+1} 組｜${ids.length} 人</h3>${ids.map(id=>`<span class="tag">${String(id).padStart(2,'0')} ${escapeHtml(names[id-1])}</span>`).join('')}</div>`).join('')}</div></div>`
+}
+function updateGenderHint(){
+  const g=Number($('groupCount').value);
+  const pool=getGroupPool(false) || names.map((_,i)=>i+1);
+  const boys=pool.filter(id=>sexes[id-1]==='男').length;
+  const girls=pool.filter(id=>sexes[id-1]==='女').length;
+  const maxBoy=Math.floor(boys/g),maxGirl=Math.floor(girls/g);
+  $('boysPerGroup').max=maxBoy;$('girlsPerGroup').max=maxGirl;
+  const unset=pool.filter(id=>sexes[id-1]!=='男'&&sexes[id-1]!=='女').length;
+  $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。男生下限最多 ${maxBoy}、女生下限最多 ${maxGirl}；任一欄留白即代表該性別不限。`;
+}
+function getGroupPool(showError=true){
+  if(!$('rangeLimit').checked)return names.map((_,i)=>i+1);
+  const txt=$('groupInput').value.trim();
+  if(groupActiveMethod===1){
+    if(!txt)return names.map((_,i)=>i+1);
+    try{return parseCustom(txt)}catch(e){if(showError)err(e.message);return null}
+  }
+  if(groupActiveMethod===2){
+    return groupPadSelected.size?[...groupPadSelected]:names.map((_,i)=>i+1);
+  }
+  if(txt){
+    try{return parseCustom(txt)}catch(e){if(showError)err(e.message);return null}
+  }
+  if(groupPadSelected.size)return [...groupPadSelected];
+  return names.map((_,i)=>i+1);
+}
+$('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
+$('makeGroups').onclick=()=>{
+  const g=Number($('groupCount').value);
+  const all=getGroupPool(true);
+  if(!all)return;
+  if(g>all.length)return err('分組數不可大於參與分組的學生人數');
+
+  const bRaw=$('boysPerGroup').value.trim(),fRaw=$('girlsPerGroup').value.trim();
+  if(bRaw==='' && fRaw===''){
+    const a=shuffle(all),base=Math.floor(all.length/g),extra=all.length%g,gs=[];let p=0;
+    for(let i=0;i<g;i++){
+      const size=base+(i<extra?1:0);
+      gs.push(a.slice(p,p+size));p+=size;
+    }
+    return renderGroups(gs);
+  }
+
+  const boys=shuffle(all.filter(id=>sexes[id-1]==='男')),
+        girls=shuffle(all.filter(id=>sexes[id-1]==='女'));
+
+  const bMin=bRaw===''?0:Number(bRaw),
+        fMin=fRaw===''?0:Number(fRaw);
+
+  if(!Number.isInteger(bMin)||bMin<0||!Number.isInteger(fMin)||fMin<0)
+    return err('男女生下限請輸入 0 或以上整數，或直接留白表示不限');
+
+  if(bMin*g>boys.length)
+    return err(`目前參與分組的男生共有 ${boys.length} 人，分成 ${g} 組時，每組男生下限最多只能設定 ${Math.floor(boys.length/g)} 人。`);
+
+  if(fMin*g>girls.length)
+    return err(`目前參與分組的女生共有 ${girls.length} 人，分成 ${g} 組時，每組女生下限最多只能設定 ${Math.floor(girls.length/g)} 人。`);
+
+  const gs=Array.from({length:g},()=>[]);
+
+  // 先滿足使用者有設定的性別下限；留白者視為不限，不強制配置。
+  for(let i=0;i<g;i++){
+    for(let n=0;n<bMin;n++)gs[i].push(boys.pop());
+    for(let n=0;n<fMin;n++)gs[i].push(girls.pop());
+  }
+
+  // 其餘參與者再隨機補入目前人數最少的組，盡量平衡總人數。
+  const remain=shuffle([...boys,...girls]);
+  for(const id of remain){
+    const minSize=Math.min(...gs.map(x=>x.length));
+    const candidates=gs.map((x,i)=>x.length===minSize?i:-1).filter(i=>i>=0);
+    gs[candidates[secureRandomInt(candidates.length)]].push(id);
+  }
+
+  gs.forEach(group=>group.splice(0,group.length,...shuffle(group)));
+  renderGroups(gs);
+};
+
+function setImportMode(mode){
+  const fileMode=mode==='file';
+  $('importFilePanel').classList.toggle('hidden',!fileMode);
+  $('importTextPanel').classList.toggle('hidden',fileMode);
+  $('importFileTab').classList.toggle('active',fileMode);
+  $('importTextTab').classList.toggle('active',!fileMode);
+  $('importStatus').textContent='';$('importStatus').className='importStatus';
+}
+function showImportError(msg){$('importStatus').textContent='⚠️ '+msg;$('importStatus').className='importStatus err'}
+function normalizeSexValue(v,rowNo){
+  const x=String(v??'').trim();
+  if(x==='')return '';
+  if(x==='男'||x==='男生')return '男';
+  if(x==='女'||x==='女生')return '女';
+  throw Error(`第 ${rowNo} 列的性別「${x.slice(0,20)}」無法辨識，請填男、女或留白`);
+}
+function parseRosterRows(rows){
+  rows=rows.map(r=>r.map(v=>String(v??'').trim())).filter(r=>r.some(v=>v!==''));
+  if(!rows.length)throw Error('名單是空的');
+  const normHeader=x=>String(x).replace(/\s+/g,'').toLowerCase();
+  let start=0,nameCol=-1,sexCol=-1;
+  const first=rows[0].map(normHeader),nameAliases=['姓名','學生姓名','名字','name'],sexAliases=['性別','sex','gender'];
+  nameCol=first.findIndex(x=>nameAliases.includes(x));sexCol=first.findIndex(x=>sexAliases.includes(x));
+  if(nameCol>=0)start=1;else{nameCol=-1;sexCol=-1}
+  const out=[];
+  for(let i=start;i<rows.length;i++){
+    const r=rows[i];let name='',sx='';
+    if(nameCol>=0){name=r[nameCol]??'';sx=sexCol>=0?(r[sexCol]??''):''}
+    else if(r.length>=3&&/^\d+$/.test(r[0])){name=r[1]??'';sx=r[2]??''}
+    else if(r.length>=2&&['男','女','男生','女生',''].includes(r[1]??'')){name=r[0]??'';sx=r[1]??''}
+    else if(r.length>=2&&/^\d+$/.test(r[0])){name=r[1]??'';sx=''}
+    else{name=r[0]??'';sx=''}
+    name=String(name).trim();
+    if(!name)throw Error(`第 ${i+1} 列沒有姓名`);
+    if(name.length>MAX_NAME_LENGTH)throw Error(`第 ${i+1} 列姓名超過 ${MAX_NAME_LENGTH} 個字元`);
+    out.push({name,sex:normalizeSexValue(sx,i+1)});
+    if(out.length>MAX_STUDENTS)throw Error(`學生人數最多 ${MAX_STUDENTS} 人`);
+  }
+  if(!out.length)throw Error('沒有可匯入的學生資料');
+  return out;
+}
+function parseDelimitedText(text){
+  text=String(text??'').replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
+  const lines=text.split('\n').filter(x=>x.trim()!=='');
+  const parseLine=line=>{
+    const delimiter=line.includes('\t')?'\t':(line.includes(',')?',':(line.includes('，')?'，':null));
+    if(!delimiter)return [line.trim()];
+    const out=[];let cur='',quoted=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++}else quoted=!quoted}
+      else if(ch===delimiter&&!quoted){out.push(cur.trim());cur=''}else cur+=ch;
+    }
+    out.push(cur.trim());return out;
+  };
+  return lines.map(parseLine);
+}
+function findEocd(view){
+  const min=Math.max(0,view.byteLength-65557);
+  for(let i=view.byteLength-22;i>=min;i--)if(view.getUint32(i,true)===0x06054b50)return i;
+  return -1;
+}
+async function unzipNeededEntries(buffer){
+  const view=new DataView(buffer),eocd=findEocd(view);
+  if(eocd<0)throw Error('這個檔案不是有效的 .xlsx 檔');
+  const count=view.getUint16(eocd+10,true),cdOffset=view.getUint32(eocd+16,true);
+  if(count>5000||cdOffset>=view.byteLength)throw Error('Excel 檔案結構異常');
+  const decoder=new TextDecoder('utf-8');let p=cdOffset;const entries=new Map();
+  for(let n=0;n<count;n++){
+    if(p+46>view.byteLength||view.getUint32(p,true)!==0x02014b50)throw Error('Excel ZIP 目錄損壞');
+    const flags=view.getUint16(p+8,true),method=view.getUint16(p+10,true),compSize=view.getUint32(p+20,true),rawSize=view.getUint32(p+24,true),nameLen=view.getUint16(p+28,true),extraLen=view.getUint16(p+30,true),commentLen=view.getUint16(p+32,true),localOffset=view.getUint32(p+42,true);
+    if(flags&1)throw Error('不支援加密的 Excel 檔案');
+    if(p+46+nameLen+extraLen+commentLen>view.byteLength)throw Error('Excel ZIP 目錄不完整');
+    const name=decoder.decode(new Uint8Array(buffer,p+46,nameLen));
+    if(name==='xl/sharedStrings.xml'||name==='xl/worksheets/sheet1.xml')entries.set(name,{method,compSize,rawSize,localOffset});
+    p+=46+nameLen+extraLen+commentLen;
+  }
+  if(!entries.has('xl/worksheets/sheet1.xml'))throw Error('找不到 Excel 第一個工作表');
+  const extract=async e=>{
+    if(e.rawSize>10*1024*1024)throw Error('Excel 工作表內容過大');
+    const o=e.localOffset;if(o+30>view.byteLength||view.getUint32(o,true)!==0x04034b50)throw Error('Excel ZIP 內容損壞');
+    const nameLen=view.getUint16(o+26,true),extraLen=view.getUint16(o+28,true),start=o+30+nameLen+extraLen,end=start+e.compSize;
+    if(end>view.byteLength)throw Error('Excel ZIP 資料不完整');
+    const compressed=new Uint8Array(buffer,start,e.compSize);
+    if(e.method===0)return compressed;
+    if(e.method!==8)throw Error('Excel 使用了目前不支援的壓縮方式');
+    if(typeof DecompressionStream==='undefined')throw Error('目前瀏覽器無法直接讀取 .xlsx，請改用 CSV 或直接貼上');
+    try{return new Uint8Array(await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}
+    catch(_){throw Error('Excel 解壓縮失敗，請確認檔案沒有損壞')}
+  };
+  const result={};for(const [name,e] of entries)result[name]=decoder.decode(await extract(e));return result;
+}
+function safeParseXml(text,label){
+  if(/<!DOCTYPE|<!ENTITY/i.test(text))throw Error(`${label} 含有不允許的 XML 宣告`);
+  const doc=new DOMParser().parseFromString(text,'application/xml');
+  if(doc.getElementsByTagName('parsererror').length)throw Error(`${label} XML 格式錯誤`);
+  return doc;
+}
+async function parseXlsx(buffer){
+  const files=await unzipNeededEntries(buffer),shared=[];
+  if(files['xl/sharedStrings.xml']){
+    const d=safeParseXml(files['xl/sharedStrings.xml'],'Excel 共用文字');
+    for(const si of d.getElementsByTagName('si'))shared.push([...si.getElementsByTagName('t')].map(t=>t.textContent||'').join(''));
+  }
+  const doc=safeParseXml(files['xl/worksheets/sheet1.xml'],'Excel 工作表'),rows=[];
+  const colIndex=ref=>{const m=String(ref||'').match(/^([A-Z]+)/i);if(!m)return null;let n=0;for(const ch of m[1].toUpperCase())n=n*26+ch.charCodeAt(0)-64;return n-1};
+  for(const row of doc.getElementsByTagName('row')){
+    const vals=[];
+    for(const c of row.getElementsByTagName('c')){
+      const idx=colIndex(c.getAttribute('r'));if(idx===null||idx>50)continue;
+      const type=c.getAttribute('t')||'',v=c.getElementsByTagName('v')[0],is=c.getElementsByTagName('is')[0];let val='';
+      if(type==='s'&&v){const si=Number(v.textContent);val=Number.isInteger(si)&&si>=0&&si<shared.length?shared[si]:''}
+      else if(type==='inlineStr'&&is)val=[...is.getElementsByTagName('t')].map(t=>t.textContent||'').join('');
+      else if(v)val=v.textContent||'';
+      vals[idx]=val;
+    }
+    rows.push(vals.map(v=>v??''));
+    if(rows.length>MAX_STUDENTS+20)break;
+  }
+  return rows;
+}
+async function readImportFile(file){
+  if(!file)throw Error('請先選擇檔案');
+  if(file.size>MAX_IMPORT_FILE_BYTES)throw Error('檔案太大，請使用 5 MB 以下的名單檔案');
+  const name=file.name.toLowerCase();
+  if(name.endsWith('.xlsx'))return parseXlsx(await file.arrayBuffer());
+  if(name.endsWith('.csv')||name.endsWith('.txt'))return parseDelimitedText(await file.text());
+  throw Error('只支援 .xlsx、.csv 或 .txt 檔案');
+}
+async function applyRosterImport(){
+  try{
+    $('applyImport').disabled=true;$('importStatus').textContent='正在本機檢查名單…';$('importStatus').className='importStatus';
+    const fileMode=!$('importFilePanel').classList.contains('hidden');
+    const rows=fileMode?await readImportFile($('rosterFile').files[0]):parseDelimitedText($('rosterText').value);
+    const imported=parseRosterRows(rows);
+    tempStudents=imported;renderEditGrid();
+    $('importModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
+    setTimeout(()=>alert(`已匯入 ${imported.length} 位學生。請先確認內容，再按「儲存學生資料」。`),0);
+  }catch(e){showImportError(e?.message||'匯入失敗')}
+  finally{$('applyImport').disabled=false}
+}
+
+function renderEditGrid(){
+  const g=$('editGrid');g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div><div class="hdr">操作</div>';
+  tempStudents.forEach((s,i)=>{g.insertAdjacentHTML('beforeend',`<div>${String(i+1).padStart(2,'0')}</div><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select><button class="danger removeStudent" data-i="${i}">刪除</button>`)});
+  document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()})
+}
+function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
+$('appSettings').onclick=()=>$('settingsModal').classList.remove('hidden');
+$('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');
+
+$('importStudents').onclick=()=>{$('settingsModal').classList.add('hidden');$('rosterFile').value='';$('rosterText').value='';setImportMode('file');$('importModal').classList.remove('hidden')};
+$('closeImport').onclick=$('cancelImport').onclick=()=>$('importModal').classList.add('hidden');
+$('importFileTab').onclick=()=>setImportMode('file');$('importTextTab').onclick=()=>setImportMode('text');
+$('applyImport').onclick=applyRosterImport;
+
+$('titleSettings').onclick=()=>{$('settingsModal').classList.add('hidden');openTitleSettings()};
+$('closeTitleSettings').onclick=()=>$('titleModal').classList.add('hidden');
+$('cancelTitleSettings').onclick=()=>$('titleModal').classList.add('hidden');
+$('disableCustomTitle').onchange=e=>{
+  $('customTitleBox').classList.remove('hidden');
+  $('customTitleText').disabled=e.target.checked;
+};
+$('saveTitleSettings').onclick=()=>{
+  const enabled=!$('disableCustomTitle').checked;
+  const text=$('customTitleText').value.trim();
+  if(enabled&&!text)return alert('請輸入自訂內容，或取消勾選「顯示自訂內容」。');
+  if(text.length>MAX_TITLE_LENGTH)return alert(`自訂內容最多 ${MAX_TITLE_LENGTH} 個字元`);
+  titleSettings={enabled,text:text.slice(0,MAX_TITLE_LENGTH)};
+  saveTitleSettingsData();renderTitle();$('titleModal').classList.add('hidden');
+};
+
+$('editStudents').onclick=()=>{$('settingsModal').classList.add('hidden');tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));renderEditGrid();$('studentModal').classList.remove('hidden')};
+$('closeModal').onclick=()=>$('studentModal').classList.add('hidden');
+$('addStudent').onclick=()=>{syncTemp();if(tempStudents.length>=MAX_STUDENTS)return alert(`學生人數最多 ${MAX_STUDENTS} 人`);tempStudents.push({name:'',sex:''});renderEditGrid();setTimeout(()=>{const es=[...document.querySelectorAll('.editName')];es.at(-1)?.focus()},0)};
+$('saveStudents').onclick=()=>{
+  syncTemp();
+  if(!tempStudents.length)return alert('至少要保留 1 位學生');
+  if(tempStudents.length>MAX_STUDENTS)return alert(`學生人數最多 ${MAX_STUDENTS} 人`);
+  const ns=tempStudents.map(s=>String(s.name).trim());
+  if(ns.some(x=>!x))return alert('姓名不可空白');
+  if(ns.some(x=>x.length>MAX_NAME_LENGTH))return alert(`姓名最多 ${MAX_NAME_LENGTH} 個字元`);
+  const sx=tempStudents.map(s=>['男','女',''].includes(s.sex)?s.sex:'');
+  const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
+  const hasHistory=balanceRound>1||balanceRoundDrawn.size>0||hasRaffleHistory();
+
+  const commitRoster=()=>{
+    names=ns;sexes=sx;saveData();
+    if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true)}
+    renderStudents();refreshLimits();$('studentModal').classList.add('hidden');clearResults();
+  };
+
+  if(rosterChanged&&hasHistory){
+    openSafeConfirm(
+      '學生名單有變動。均衡抽籤與幸運星排行榜都是依座號保存，為避免紀錄對到錯的學生，儲存新名單時會一併重設這些紀錄。確定繼續嗎？',
+      commitRoster,
+      {title:'確認變更學生名單',confirmText:'儲存並重設紀錄'}
+    );
+    return;
+  }
+  commitRoster();
+};
+
+$('resetStudents').onclick=()=>{
+  openSafeConfirm(
+    '確定要清除目前這個瀏覽器中的學生姓名與性別，重設為 27 個空白座號嗎？均衡抽籤紀錄與幸運星排行榜也會一併重設。',
+    ()=>{
+      names=[...defaultNames];sexes=[...defaultSex];saveData();
+      resetBalanceData(true);resetAllRaffleRecords(true);
+      tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
+      renderStudents();refreshLimits();renderEditGrid();clearResults();
+    },
+    {title:'清除學生資料',confirmText:'確定清除'}
+  );
+};
+
+loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();setRandomMode('pure');renderRaffleControls();
+</script>
+</body></html>
