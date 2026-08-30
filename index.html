@@ -110,6 +110,624 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
 .recordItem.drawn .recordState{background:#2563eb;color:#fff}
 .recordItem.waiting .recordState{background:#e2e8f0;color:#64748b}
 
+
+/* ===== 命運事務所｜神秘檔案室 × 命運行政風格：僅視覺覆寫 ===== */
+:root{--fate-ink:#172033;--fate-navy:#202b46;--fate-paper:#fbf8f0;--fate-gold:#a78345;--fate-gold-soft:#d8c59b;--fate-line:#d9cfbc}
+body{background:radial-gradient(circle at 14px 14px,#a7834510 1px,transparent 1.5px) 0 0/28px 28px,linear-gradient(180deg,#f5f1e8,#f8f6f1);color:var(--fate-ink)}
+header{background:radial-gradient(circle at 18% 30%,#ffffff16 0 1px,transparent 2px),radial-gradient(circle at 78% 65%,#d8c59b20 0 1px,transparent 2px),linear-gradient(135deg,#17213a,#303957 58%,#202943)!important;border-bottom:3px solid var(--fate-gold);box-shadow:0 5px 18px #17203324}
+header h1,#mainTitle{letter-spacing:.06em;text-shadow:0 2px 0 #0003}header .sub{color:#f2ead8;letter-spacing:.08em}
+.headerSettings{border-color:#d8c59b88!important;background:transparent!important;color:#f6eedc!important}.headerSettings:hover{background:#ffffff12!important}
+.card{background:linear-gradient(180deg,#fffdf8,#fbf8f0);border:1px solid var(--fate-line);box-shadow:0 10px 26px #27324a14}
+.subcard{background:#fffdf8;border-color:var(--fate-line)}.subcard h3{color:#28334e}
+.tabs{padding-bottom:12px;border-bottom:1px solid var(--fate-line)}
+.tab{background:#eee9df;color:#374158;border:1px solid #ddd3c1}.tab.active{background:var(--fate-navy)!important;color:#fff!important;border-color:var(--fate-navy);box-shadow:inset 0 -3px 0 var(--fate-gold)}
+.primary,.drawMode button.active{background:var(--fate-navy)!important;color:#fff!important;box-shadow:inset 0 -3px 0 var(--fate-gold)}
+.secondary{background:#ece8df;color:#33405a}.outline{background:#fffdf8;color:#66512c;border-color:var(--fate-gold-soft)}.danger{background:#f8e6e3;color:#8d342d}
+input,textarea,select{background:#fffefb;border-color:#d8cfbf;color:var(--fate-ink)}
+input:focus,textarea:focus,select:focus{outline:3px solid #d8c59b55;border-color:var(--fate-gold)}
+.numBtn{background:#fffdf8;border-color:#d8cfbf;color:#34405a;box-shadow:0 2px 0 #d8cfbf}
+.numBtn.sel{background:var(--fate-navy)!important;color:#fff!important;border-color:var(--fate-navy)!important;box-shadow:inset 0 0 0 3px var(--fate-gold),0 2px 0 #182139}
+.chip{background:#eee7d8;color:#5e4b2c;border:1px solid #d8c59b}
+.resultBox{position:relative;overflow:hidden;background:linear-gradient(135deg,#fffdf8,#f7f0e3);border-color:#cdbb96}
+.resultBox::before{content:"DESTINY OFFICE · APPROVED";position:absolute;right:-28px;bottom:22px;transform:rotate(-8deg);border:2px solid #a7834538;border-radius:8px;padding:7px 12px;color:#8b6a3030;font-size:13px;font-weight:900;letter-spacing:.12em;pointer-events:none}
+.resultBall{position:relative;background:#fffaf0;color:#25304a;border:2px solid #bda46f;box-shadow:0 5px 14px #29334a16,inset 0 0 0 4px #f1e5cb}.resultBall .nm{color:#5b4a2d}
+.rosterTitle{color:#25304a;letter-spacing:.04em}.student{background:#fffdf8;border-color:#ddd3c1;box-shadow:inset 4px 0 0 #d7c6a5}
+.student.hit{background:#e8edf7;border-color:#8d9ab7;color:#25304a;box-shadow:inset 4px 0 0 var(--fate-gold)}
+.modalBox{background:#fffdf8;border:1px solid var(--fate-line)}.settingsItem{background:#f8f3e9;border-color:#ded2bd}.settingsItem .settingTitle{color:#26314b}
+.filePick{background:#f8f3e9;border-color:#cdbb96}.importPanel{border-color:#d9cfbc;background:#fffdf8}.footerNote{background:#f5ecda;color:#735a2e}
+.recordItem.drawn{background:#e7ecf5;border-color:#9aa7c2;color:#26314b}.recordItem.waiting{background:#faf7f0;border-color:#ddd3c1;color:#4a5262}
+.recordItem.drawn .recordState{background:var(--fate-navy);color:#fff}.recordItem.waiting .recordState{background:#e7dfd1;color:#6d665c}
+@media(max-width:500px){header h1,#mainTitle{letter-spacing:.025em}.resultBox::before{font-size:10px;right:-42px;bottom:16px}}
+
+
+/* ===== 命運事務所｜神秘事務所風格 v2：視覺精修 ===== */
+
+/* 更沉穩的主色 */
+:root{
+  --fate-ink:#172033;
+  --fate-navy:#1f2a3e;
+  --fate-navy-2:#28364f;
+  --fate-paper:#fbf8f0;
+  --fate-paper-2:#f3eee4;
+  --fate-gold:#9a7a46;
+  --fate-gold-soft:#d4c29c;
+  --fate-line:#d7ccba;
+
+  /* 降彩度分組色 */
+  --g1:#d9e2ea;
+  --g2:#dce6d8;
+  --g3:#eee3c2;
+  --g4:#ead8dc;
+  --g5:#e2ddea;
+  --g6:#d8e5e2;
+  --g7:#ead9ca;
+  --g8:#dde0e3;
+}
+
+/* Header：減少純色塊感，改成檔案封面／事務所招牌 */
+header{
+  background:
+    linear-gradient(90deg,transparent 0 12%,#c7ae7c18 12% 12.15%,transparent 12.15% 87.85%,#c7ae7c18 87.85% 88%,transparent 88%),
+    radial-gradient(circle at 20% 26%,#d7c49616 0 1px,transparent 1.7px),
+    radial-gradient(circle at 76% 63%,#ffffff10 0 1px,transparent 1.7px),
+    linear-gradient(135deg,#192437 0%,#25314a 52%,#1c273b 100%)!important;
+  border-bottom:2px solid #9a7a46;
+  box-shadow:0 6px 18px #18223822;
+}
+header::before,
+header::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:min(18vw,180px);
+  height:1px;
+  background:linear-gradient(90deg,transparent,#c8b48788);
+  pointer-events:none;
+}
+header::before{left:8%}
+header::after{right:8%;transform:scaleX(-1)}
+header h1,#mainTitle{
+  color:#fffaf0;
+  text-shadow:0 2px 0 #0002;
+  letter-spacing:.075em;
+}
+header .sub{color:#e5dcc9;opacity:.92}
+
+/* 頁籤：改成檔案分類標籤，不再整塊灌深色 */
+.tab{
+  background:#f1ece3;
+  color:#3a465c;
+  border:1px solid #d8cdb9;
+  box-shadow:none;
+}
+.tab.active{
+  background:#fffaf0!important;
+  color:#25314a!important;
+  border-color:#c9b786!important;
+  box-shadow:inset 0 -3px 0 #9a7a46!important;
+}
+.tab:hover{background:#f8f3e9}
+
+/* 主操作按鈕稍微柔和 */
+.primary,.drawMode button.active{
+  background:#24314a!important;
+  box-shadow:inset 0 -3px 0 #9a7a46!important;
+}
+.secondary{background:#eee9e0;color:#354158}
+.outline{border-color:#cdbb93;color:#69522e}
+.danger{background:#f4e1dd;color:#8a3b35}
+
+/* 分組卡片：低彩度＋更像分類卡，不像糖果色 */
+.group{
+  border:1px solid #d7ccba;
+  box-shadow:0 3px 10px #29334a0d;
+}
+.group h3{
+  color:#24314a;
+  border-bottom:1px solid #ffffffa8;
+  padding-bottom:8px;
+  margin-bottom:10px;
+}
+.tag{
+  background:#fffdf9d9;
+  color:#263149;
+  border:1px solid #ffffff90;
+  box-shadow:none;
+}
+.g1{background:var(--g1)}.g2{background:var(--g2)}.g3{background:var(--g3)}.g4{background:var(--g4)}
+.g5{background:var(--g5)}.g6{background:var(--g6)}.g7{background:var(--g7)}.g8{background:var(--g8)}
+
+/* 學生名單：做成精緻檔案索引卡 */
+aside.card{
+  background:
+    linear-gradient(180deg,#fffdf8,#faf6ee);
+  border-color:#d6c8b0;
+}
+.rosterHead{
+  position:relative;
+  padding-bottom:12px;
+  margin-bottom:14px;
+}
+.rosterHead::after{
+  content:"";
+  position:absolute;
+  left:18%;
+  right:18%;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#b9a16d,transparent);
+}
+.rosterTitle{
+  font-size:27px;
+  color:#24314a;
+  letter-spacing:.1em;
+  font-weight:900;
+}
+.student{
+  position:relative;
+  min-height:54px;
+  padding:12px 14px 12px 16px;
+  border:1px solid #d9cfbd;
+  border-left:4px solid #c5ae7b;
+  border-radius:12px;
+  background:
+    linear-gradient(90deg,#f8f3e8 0 8px,#fffdf8 8px 100%);
+  box-shadow:0 2px 8px #25314a0b;
+  transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease;
+}
+.student::after{
+  content:"";
+  position:absolute;
+  right:42px;
+  top:10px;
+  bottom:10px;
+  width:1px;
+  background:#e4dac8;
+}
+.student .nameLine{
+  color:#22304a;
+  font-weight:850;
+  letter-spacing:.01em;
+}
+.student .sex{
+  min-width:24px;
+  text-align:center;
+  color:#6c604f;
+  font-size:12px;
+  font-weight:800;
+}
+@media(hover:hover) and (pointer:fine){
+  .student:hover{
+    transform:translateY(-1px);
+    border-color:#c5b187;
+    box-shadow:0 4px 12px #25314a12;
+  }
+}
+.student.hit{
+  background:linear-gradient(90deg,#d8e1ed 0 8px,#e8eef5 8px 100%);
+  border-color:#8797b0;
+  border-left-color:#9a7a46;
+  color:#24314a;
+  box-shadow:0 3px 10px #25314a15;
+}
+
+/* 分組後學生名單同樣降彩度 */
+.student.group1{background:linear-gradient(90deg,#c8d4df 0 8px,var(--g1) 8px 100%)}
+.student.group2{background:linear-gradient(90deg,#cad9c6 0 8px,var(--g2) 8px 100%)}
+.student.group3{background:linear-gradient(90deg,#ddcf9e 0 8px,var(--g3) 8px 100%)}
+.student.group4{background:linear-gradient(90deg,#d8c2c7 0 8px,var(--g4) 8px 100%)}
+.student.group5{background:linear-gradient(90deg,#cec7da 0 8px,var(--g5) 8px 100%)}
+.student.group6{background:linear-gradient(90deg,#c6d7d3 0 8px,var(--g6) 8px 100%)}
+.student.group7{background:linear-gradient(90deg,#d6c2b2 0 8px,var(--g7) 8px 100%)}
+.student.group8{background:linear-gradient(90deg,#c9cdd1 0 8px,var(--g8) 8px 100%)}
+
+/* 號碼盤：降低高對比感，仍清楚辨識選取 */
+.numBtn{
+  background:#fffaf1;
+  border-color:#d8cdbb;
+  color:#2f3d55;
+  box-shadow:0 2px 0 #d8cfbf;
+}
+.numBtn.sel{
+  background:#24314a!important;
+  color:#fff!important;
+  border-color:#24314a!important;
+  box-shadow:inset 0 0 0 2px #a8874f,0 2px 0 #172033;
+}
+
+/* 結果區保留核定感，但讓章更細緻 */
+.resultBox{
+  background:
+    linear-gradient(135deg,#fffdf8,#f8f2e6);
+  border-color:#cbb78e;
+}
+.resultBox::before{
+  color:#8b6a3026;
+  border-color:#a7834530;
+}
+.resultBall{
+  background:#fffaf0;
+  border-color:#b79a62;
+  box-shadow:0 4px 12px #29334a12,inset 0 0 0 3px #eee0c2;
+}
+
+/* 手機：縮小細節但保留質感 */
+@media(max-width:500px){
+  header::before,header::after{display:none}
+  .rosterTitle{font-size:24px}
+  .student{min-height:50px;padding:10px 12px 10px 14px}
+}
+
+
+/* ===== 命運事務所｜神秘事務所風格 v3 ===== */
+:root{
+  /* 同一套復古檔案色調，但十組彼此拉開色相／明度 */
+  --g1:#d4e0e8;  /* 霧藍 */
+  --g2:#d9e4d1;  /* 鼠尾草 */
+  --g3:#eee0b9;  /* 舊金紙 */
+  --g4:#ead2d8;  /* 灰玫瑰 */
+  --g5:#ddd6e8;  /* 煙紫 */
+  --g6:#cfe1df;  /* 灰青 */
+  --g7:#ead4c2;  /* 陶土米 */
+  --g8:#d7dce1;  /* 石板灰 */
+  --g9:#e3d9bd;  /* 卡其 */
+  --g10:#d2dfd7; /* 灰薄荷 */
+}
+.g1{background:var(--g1)}.g2{background:var(--g2)}.g3{background:var(--g3)}.g4{background:var(--g4)}
+.g5{background:var(--g5)}.g6{background:var(--g6)}.g7{background:var(--g7)}.g8{background:var(--g8)}
+.g9{background:var(--g9)}.g10{background:var(--g10)}
+
+/* Header：增加「事務所招牌」細節，不走星空 */
+header{
+  isolation:isolate;
+}
+header::before{
+  content:"◆  DESTINY ADMINISTRATION  ◆"!important;
+  position:absolute!important;
+  left:50%!important;
+  top:9px!important;
+  width:auto!important;
+  height:auto!important;
+  transform:translateX(-50%)!important;
+  background:none!important;
+  color:#c8b48788!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.24em!important;
+  white-space:nowrap!important;
+  z-index:-0;
+}
+header::after{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:8px!important;
+  top:auto!important;
+  width:min(420px,48vw)!important;
+  height:1px!important;
+  transform:translateX(-50%)!important;
+  background:linear-gradient(90deg,transparent,#bda36d99 18%,#bda36d99 82%,transparent)!important;
+}
+#mainTitle{position:relative}
+#mainTitle::before,#mainTitle::after{
+  content:"◇";
+  display:inline-block;
+  margin:0 .55em;
+  color:#bda36d;
+  font-size:.42em;
+  vertical-align:middle;
+  opacity:.9;
+}
+
+/* 學生名單：更像正式名冊／索引簿 */
+.rosterHead{
+  padding:3px 12px 15px;
+}
+.rosterTitle{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  font-family:Georgia,"Noto Serif TC","PMingLiU",serif;
+  letter-spacing:.16em;
+}
+.rosterTitle::before{
+  content:"▤";
+  display:grid;
+  place-items:center;
+  width:30px;height:30px;
+  border:1px solid #bca777;
+  border-radius:7px;
+  color:#80683c;
+  background:#f4ecdc;
+  font-family:system-ui,sans-serif;
+  font-size:17px;
+  letter-spacing:0;
+}
+.rosterTitle::after{
+  content:"ROSTER";
+  position:absolute;
+  left:50%;
+  bottom:-14px;
+  transform:translateX(-50%);
+  font-family:Georgia,serif;
+  font-size:8px;
+  letter-spacing:.28em;
+  color:#9a8358;
+  font-weight:700;
+}
+.rosterHead::after{
+  left:8%;right:8%;
+  background:linear-gradient(90deg,transparent,#ad9565 18%,#ad9565 82%,transparent);
+}
+
+/* 名單卡增加座號索引感 */
+.student{
+  border-radius:10px;
+  box-shadow:0 1px 4px #25314a0b;
+}
+.student .nameLine{font-family:Georgia,"Noto Serif TC","PMingLiU",serif}
+.student .sex{
+  padding-left:9px;
+  color:#725f3f;
+}
+
+/* 幸運星排行榜：從白板改成「命運紀錄簿」 */
+#raffleLeaderboard{
+  position:relative;
+  overflow:hidden;
+  padding:20px 20px 14px;
+  background:
+    linear-gradient(90deg,#b79a6217 1px,transparent 1px) 0 0/28px 100%,
+    linear-gradient(180deg,#fffaf0,#f8f1e4);
+  border:1px solid #cdbb96;
+  box-shadow:inset 5px 0 0 #a98b55;
+}
+#raffleLeaderboard::before{
+  content:"LUCKY STAR RECORD";
+  display:block;
+  margin:0 0 6px 0;
+  color:#9a8358;
+  font-family:Georgia,serif;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.25em;
+}
+#raffleLeaderboard::after{
+  content:"★";
+  position:absolute;
+  right:20px;
+  top:13px;
+  color:#b99a5a24;
+  font-size:62px;
+  pointer-events:none;
+}
+#raffleLeaderboard > div:first-child{
+  padding-bottom:10px;
+  border-bottom:2px double #cbb78e;
+  color:#26314b;
+  font-family:Georgia,"Noto Serif TC","PMingLiU",serif;
+  letter-spacing:.04em;
+}
+.leaderRow{
+  grid-template-columns:58px minmax(0,1fr) 72px;
+  border-bottom:1px dashed #d8cbb4;
+  padding:11px 10px;
+}
+.leaderRank{
+  color:#7b6339;
+  font-family:Georgia,serif;
+  font-size:17px;
+}
+.leaderCount{
+  color:#27334a;
+  text-align:right;
+}
+.leaderRow:nth-child(odd){background:#bda36d0a}
+
+/* 十組學生名單配色 */
+.student.group1{background:linear-gradient(90deg,#b9cad6 0 8px,var(--g1) 8px 100%)}
+.student.group2{background:linear-gradient(90deg,#bfd0b7 0 8px,var(--g2) 8px 100%)}
+.student.group3{background:linear-gradient(90deg,#d8c488 0 8px,var(--g3) 8px 100%)}
+.student.group4{background:linear-gradient(90deg,#d4b4bc 0 8px,var(--g4) 8px 100%)}
+.student.group5{background:linear-gradient(90deg,#c2b8d4 0 8px,var(--g5) 8px 100%)}
+.student.group6{background:linear-gradient(90deg,#afd0cc 0 8px,var(--g6) 8px 100%)}
+.student.group7{background:linear-gradient(90deg,#d6b79e 0 8px,var(--g7) 8px 100%)}
+.student.group8{background:linear-gradient(90deg,#b9c0c7 0 8px,var(--g8) 8px 100%)}
+.student.group9{background:linear-gradient(90deg,#cbbd91 0 8px,var(--g9) 8px 100%)}
+.student.group10{background:linear-gradient(90deg,#b3cbbd 0 8px,var(--g10) 8px 100%)}
+
+@media(max-width:500px){
+  header::before{font-size:7px!important;top:7px!important}
+  header::after{width:62vw!important}
+  #mainTitle::before,#mainTitle::after{display:none}
+  .rosterTitle{letter-spacing:.1em}
+  #raffleLeaderboard{padding:16px 12px 12px}
+  .leaderRow{grid-template-columns:48px minmax(0,1fr) 58px}
+}
+
+
+/* ===== v4：版面比例與名單標題微調 ===== */
+
+/* 標題區上下留白重新平衡 */
+header{
+  padding-top:24px!important;
+  padding-bottom:24px!important;
+  min-height:140px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#mainTitle{margin-top:2px!important}
+header .sub{margin-top:7px!important}
+header::before{
+  top:10px!important;
+}
+header::after{
+  bottom:10px!important;
+}
+
+/* 學生名單標題：ROSTER 與下方裝飾線拉開 */
+.rosterHead{
+  padding-bottom:22px!important;
+  margin-bottom:16px!important;
+}
+.rosterTitle::after{
+  bottom:-17px!important;
+}
+.rosterHead::after{
+  bottom:0!important;
+}
+
+/* 手機縮小頂部高度，避免太占畫面 */
+@media(max-width:500px){
+  header{
+    min-height:116px;
+    padding-top:18px!important;
+    padding-bottom:20px!important;
+  }
+  .rosterHead{
+    padding-bottom:20px!important;
+  }
+}
+
+
+/* ===== v5：Header 上下比例 + 分組號碼盤預設展開 ===== */
+header{
+  min-height:0!important;
+  display:block!important;
+  padding-top:20px!important;
+  padding-bottom:20px!important;
+}
+#mainTitle{
+  margin-top:0!important;
+  margin-bottom:0!important;
+}
+header .sub{
+  margin-top:6px!important;
+}
+header::before{
+  top:8px!important;
+}
+header::after{
+  bottom:8px!important;
+}
+@media(max-width:500px){
+  header{
+    min-height:0!important;
+    padding-top:17px!important;
+    padding-bottom:17px!important;
+  }
+}
+
+
+/* ===== 命運事務所｜Final Visual ===== */
+
+/* 背景：低調淡金檔案紋理，不搶內容 */
+body{
+  background:
+    linear-gradient(30deg,transparent 0 48%,#a8874f0b 48.5% 49.5%,transparent 50% 100%) 0 0/46px 46px,
+    linear-gradient(150deg,transparent 0 48%,#a8874f08 48.5% 49.5%,transparent 50% 100%) 0 0/46px 46px,
+    radial-gradient(circle at 10px 10px,#9a7a460c 1px,transparent 1.5px) 0 0/30px 30px,
+    linear-gradient(180deg,#f5f1e8,#f8f6f1);
+}
+
+/* 主內容卡片加入極淡文件格紋 */
+main.card,aside.card{
+  position:relative;
+  overflow:hidden;
+}
+main.card::before,aside.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent 0 97%,#a8874f08 97% 98%,transparent 98%),
+    linear-gradient(0deg,transparent 0 97%,#a8874f06 97% 98%,transparent 98%);
+  background-size:34px 34px;
+  opacity:.42;
+}
+main.card>*,
+aside.card>*{position:relative;z-index:1}
+
+/* Header：命運行政印刷紋樣 */
+header{
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,#d5bd8514 0 2px,transparent 2.5px) 0 0/54px 54px,
+    repeating-linear-gradient(45deg,transparent 0 28px,#c4aa7210 28px 29px,transparent 29px 58px),
+    repeating-linear-gradient(-45deg,transparent 0 34px,#ffffff08 34px 35px,transparent 35px 68px),
+    linear-gradient(135deg,#182337 0%,#25324a 52%,#1b2639 100%)!important;
+}
+header:before{
+  text-shadow:0 1px 0 #0004;
+}
+header .sub{letter-spacing:.1em}
+
+/* 兩側像舊式公文封面的細框 */
+header .headerSettings{z-index:3}
+header{
+  box-shadow:inset 12vw 0 0 #00000008,inset -12vw 0 0 #00000008,0 5px 18px #17203324;
+}
+
+/* 匯出按鈕 */
+#exportGroups:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+#exportGroups:not(:disabled){
+  border:1px solid #c7b07f;
+  background:#f0e8d8;
+  color:#5e4a29;
+}
+
+/* 匯出視窗 */
+.exportModalBox{
+  background:
+    linear-gradient(90deg,#a8874f0b 1px,transparent 1px) 0 0/30px 100%,
+    linear-gradient(180deg,#fffdf8,#f8f1e4);
+  border:1px solid #cdbb96;
+  box-shadow:inset 5px 0 0 #a98b55;
+}
+.exportChoiceGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:8px 0 16px;
+}
+.exportChoice{
+  min-height:96px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  border:1px solid #d6c5a4;
+  background:#fffaf0;
+  color:#26314b;
+  box-shadow:0 3px 10px #26314b0d;
+}
+.exportChoice:hover{border-color:#aa8b53;background:#f8f0df}
+.exportChoiceIcon{
+  flex:0 0 42px;
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  border:1px solid #b99d68;
+  border-radius:10px;
+  background:#f1e6cf;
+  color:#765d31;
+  font-size:24px;
+}
+.exportChoice strong{display:block;font-size:17px}
+.exportChoice small{display:block;margin-top:5px;color:#776c5d;font-size:12px;line-height:1.45}
+
+@media(max-width:560px){
+  .exportChoiceGrid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -182,7 +800,7 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
       <label>分組數</label>
       <select id="groupCount" class="small">
         <option>2</option><option selected>3</option><option>4</option><option>5</option>
-        <option>6</option><option>7</option><option>8</option>
+        <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
       </select>
     </div>
 
@@ -202,8 +820,8 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
     </div>
 
     <div class="field">
-      <label><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組範圍</label>
-      <div id="rangeBox" class="hidden">
+      <label><input id="rangeLimit" type="checkbox" checked style="width:auto;margin-right:8px">調整參與分組範圍</label>
+      <div id="rangeBox">
         <div class="subcard" style="margin-top:10px">
           <div class="help">可使用「輸入座號」或「號碼盤點選」其中一種；未設定時仍視為全班參與。</div>
 
@@ -218,6 +836,7 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
             <div class="help">點選座號加入分組名單，再點一次即可取消。</div>
             <div id="groupNumPad" class="numPad"></div>
             <div class="row" style="margin-top:12px">
+              <button class="secondary" id="selectAllGroupPad">全選</button>
               <button class="secondary" id="clearGroupPad">清除已選</button>
             </div>
             <div class="field">
@@ -229,7 +848,11 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
       </div>
     </div>
 
-    <div class="row" style="margin-top:16px"><button class="primary" id="makeGroups">👥 開始分組</button><button class="danger clearBtn">清除結果</button></div>
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="makeGroups">👥 開始分組</button>
+      <button class="secondary" id="exportGroups" disabled>⬇ 匯出分組</button>
+      <button class="danger clearBtn">清除結果</button>
+    </div>
   </section>
 
   <div id="resultBox" class="resultBox"><div><div style="font-size:22px;font-weight:900;margin-bottom:8px">抽籤／分組結果</div><div class="empty">文字座號結果會顯示在這裡</div></div></div>
@@ -318,6 +941,28 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
       <button class="primary" id="confirmRaffleAction">儲存</button>
       <button class="secondary" id="cancelRaffleAction">取消</button>
     </div>
+  </div>
+</div>
+
+
+<div id="exportGroupsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="exportGroupsTitle">
+  <div class="modalBox exportModalBox" style="width:min(560px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="exportGroupsTitle">匯出分組結果</h2>
+      <button class="secondary" id="closeExportGroups">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 16px">只匯出目前畫面最後一次的分組結果；檔案直接在此瀏覽器產生，不會上傳學生資料。</div>
+    <div class="exportChoiceGrid">
+      <button class="exportChoice" id="exportGroupsPng">
+        <span class="exportChoiceIcon">▧</span>
+        <span><strong>PNG 圖檔</strong><small>適合 LINE、投影與直接分享</small></span>
+      </button>
+      <button class="exportChoice" id="exportGroupsCsv">
+        <span class="exportChoiceIcon">▦</span>
+        <span><strong>Excel 相容 CSV</strong><small>可直接用 Excel 開啟並繼續編輯</small></span>
+      </button>
+    </div>
+    <div class="footerNote">匯出內容包含座號與目前學生姓名。若檔案要傳給他人，請依實際需要確認個資使用範圍。</div>
   </div>
 </div>
 
@@ -416,7 +1061,7 @@ const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename';
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[];
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -651,14 +1296,21 @@ function refreshLimits(){
   $('randomCount').max=names.length;$('customCount').max=names.length;
   padSelected=new Set([...padSelected].filter(n=>n<=names.length));
   groupPadSelected=new Set([...groupPadSelected].filter(n=>n<=names.length));
-  renderPad();renderSelected();renderGroupPad();renderGroupSelected();updateGenderHint();
+  renderPad();renderSelected();renderGroupPad();renderGroupSelected();
+  groupActiveMethod=2;
+  $('groupMethod2').classList.add('activeMethod');updateGenderHint();
 }
 function renderStudents(){
   students.innerHTML='';
   names.forEach((n,i)=>{const d=document.createElement('div');d.className='student';d.id='s'+(i+1);d.innerHTML=`<span class="nameLine">${String(i+1).padStart(2,'0')}${n?'. '+escapeHtml(n):''}</span><span class="sex">${escapeHtml(sexes[i]||'')}</span>`;students.appendChild(d)});
 }
 function clearMarks(){document.querySelectorAll('.student').forEach(x=>x.className='student')}
-function clearResults(){clearMarks();resultBox.innerHTML='<div><div style="font-size:22px;font-weight:900;margin-bottom:8px">抽籤／分組結果</div><div class="empty">文字座號結果會顯示在這裡</div></div>'}
+function clearResults(){
+  clearMarks();
+  resultBox.innerHTML='<div><div style="font-size:22px;font-weight:900;margin-bottom:8px">抽籤／分組結果</div><div class="empty">文字座號結果會顯示在這裡</div></div>';
+  lastGroups=[];
+  if($('exportGroups'))$('exportGroups').disabled=true;
+}
 function secureRandomInt(max){if(window.crypto&&crypto.getRandomValues){const a=new Uint32Array(1),limit=Math.floor(0x100000000/max)*max;do{crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%max}return Math.floor(Math.random()*max)}
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=secureRandomInt(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
 function err(msg){resultBox.innerHTML=`<div class="empty">⚠️ ${escapeHtml(msg)}</div>`}
@@ -702,6 +1354,13 @@ $('customInput').addEventListener('focus',()=>setMethod(1));$('method1').addEven
 $('groupInput').addEventListener('focus',()=>setGroupMethod(1));
 $('groupMethod1').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')setGroupMethod(1)});
 $('groupMethod2').addEventListener('click',e=>{if(!e.target.classList.contains('numBtn'))setGroupMethod(2)});
+$('selectAllGroupPad').onclick=()=>{
+  groupActiveMethod=2;
+  setGroupMethod(2);
+  groupPadSelected=new Set(names.map((_,i)=>i+1));
+  renderGroupPad();
+  renderGroupSelected();
+};
 $('clearGroupPad').onclick=()=>{groupPadSelected.clear();groupActiveMethod=0;renderGroupPad();renderGroupSelected();$('groupMethod2').classList.remove('activeMethod')};
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -828,6 +1487,8 @@ function renderGroups(gs){
        .sort((a,b)=>b.ids.length-a.ids.length || a.order-b.order)
        .map(x=>x.ids);
   clearMarks();gs.forEach((ids,i)=>ids.forEach(id=>$('s'+id)?.classList.add('group'+(i+1))));
+  lastGroups=gs.map(ids=>[...ids]);
+  if($('exportGroups'))$('exportGroups').disabled=false;
   resultBox.innerHTML=`<div style="width:100%"><div style="font-size:22px;font-weight:900;margin-bottom:12px">👥 分組結果</div><div class="groupGrid">${gs.map((ids,i)=>`<div class="group g${i+1}"><h3>第 ${i+1} 組｜${ids.length} 人</h3>${ids.map(id=>`<span class="tag">${String(id).padStart(2,'0')} ${escapeHtml(names[id-1])}</span>`).join('')}</div>`).join('')}</div></div>`
 }
 function updateGenderHint(){
@@ -907,6 +1568,117 @@ $('makeGroups').onclick=()=>{
   gs.forEach(group=>group.splice(0,group.length,...shuffle(group)));
   renderGroups(gs);
 };
+
+
+function safeFileDate(){
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function csvCell(v){
+  const s=String(v??'');
+  return /[",\r\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;
+}
+function exportGroupsCsv(){
+  if(!lastGroups.length)return alert('請先完成一次分組。');
+  const rows=[['組別','座號','姓名','性別']];
+  lastGroups.forEach((ids,gi)=>ids.forEach(id=>rows.push([
+    `第 ${gi+1} 組`,
+    String(id).padStart(2,'0'),
+    names[id-1]||'',
+    sexes[id-1]||''
+  ])));
+  const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),`命運事務所_分組結果_${safeFileDate()}.csv`);
+  closeExportGroupsModal();
+}
+function roundRectPath(ctx,x,y,w,h,r){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();ctx.moveTo(x+rr,y);
+  ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);
+  ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+}
+function exportGroupsPng(){
+  if(!lastGroups.length)return alert('請先完成一次分組。');
+  const W=1600,pad=80,gap=28,cols=2,cardW=(W-pad*2-gap)/cols;
+  const colors=['#d4e0e8','#d9e4d1','#eee0b9','#ead2d8','#ddd6e8','#cfe1df','#ead4c2','#d7dce1','#e3d9bd','#d2dfd7'];
+  const rows=[];
+  for(let i=0;i<lastGroups.length;i+=cols){
+    const pair=lastGroups.slice(i,i+cols);
+    const maxCount=Math.max(...pair.map(g=>g.length));
+    rows.push({start:i,h:120+Math.ceil(maxCount/2)*54});
+  }
+  const headerH=190,footerH=75;
+  const H=headerH+pad+rows.reduce((s,r)=>s+r.h+gap,0)+footerH;
+  const scale=Math.min(2,window.devicePixelRatio||1.5);
+  const canvas=document.createElement('canvas');canvas.width=W*scale;canvas.height=H*scale;
+  const ctx=canvas.getContext('2d');ctx.scale(scale,scale);
+
+  ctx.fillStyle='#f7f2e8';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#a8874f18';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=46){ctx.beginPath();ctx.moveTo(x,headerH);ctx.lineTo(W,headerH+x);ctx.stroke()}
+
+  ctx.fillStyle='#202c43';ctx.fillRect(0,0,W,headerH);
+  ctx.fillStyle='#bda36d';ctx.fillRect(0,headerH-4,W,4);
+  ctx.textAlign='center';
+  ctx.fillStyle='#c9b27f';ctx.font='700 17px Georgia, serif';ctx.fillText('◆  DESTINY ADMINISTRATION  ◆',W/2,42);
+  ctx.fillStyle='#fffaf0';ctx.font='900 52px "Microsoft JhengHei","Noto Sans TC",sans-serif';
+  ctx.fillText('🎲  命運事務所  🎲',W/2,105);
+  ctx.fillStyle='#e6ddca';ctx.font='22px "Microsoft JhengHei","Noto Sans TC",sans-serif';
+  ctx.fillText('分組結果｜今天，一切交給命運',W/2,147);
+
+  let y=headerH+pad;
+  rows.forEach(row=>{
+    for(let c=0;c<cols;c++){
+      const gi=row.start+c;if(gi>=lastGroups.length)continue;
+      const ids=lastGroups[gi],x=pad+c*(cardW+gap),h=row.h;
+      roundRectPath(ctx,x,y,cardW,h,22);
+      ctx.fillStyle=colors[gi%colors.length];ctx.fill();
+      ctx.strokeStyle='#c9b995';ctx.lineWidth=2;ctx.stroke();
+
+      ctx.textAlign='left';ctx.fillStyle='#24314a';
+      ctx.font='900 28px "Microsoft JhengHei","Noto Sans TC",sans-serif';
+      ctx.fillText(`第 ${gi+1} 組｜${ids.length} 人`,x+28,y+48);
+      ctx.strokeStyle='#ffffffb8';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x+28,y+68);ctx.lineTo(x+cardW-28,y+68);ctx.stroke();
+
+      ids.forEach((id,idx)=>{
+        const cc=idx%2,rr=Math.floor(idx/2);
+        const bx=x+28+cc*((cardW-70)/2+14),by=y+88+rr*54,bw=(cardW-84)/2,bh=40;
+        roundRectPath(ctx,bx,by,bw,bh,10);
+        ctx.fillStyle='#fffdf8e8';ctx.fill();
+        ctx.fillStyle='#25314a';ctx.font='700 21px "Microsoft JhengHei","Noto Sans TC",sans-serif';
+        const nm=names[id-1]?` ${names[id-1]}`:'';
+        ctx.fillText(`${String(id).padStart(2,'0')}${nm}`,bx+14,by+27);
+      });
+    }
+    y+=row.h+gap;
+  });
+
+  ctx.textAlign='center';ctx.fillStyle='#806a43';ctx.font='16px Georgia, serif';
+  ctx.fillText(`命運事務所 · GROUP RECORD · ${safeFileDate()}`,W/2,H-35);
+
+  canvas.toBlob(blob=>{
+    if(!blob)return alert('圖片產生失敗，請再試一次。');
+    downloadBlob(blob,`命運事務所_分組結果_${safeFileDate()}.png`);
+    closeExportGroupsModal();
+  },'image/png');
+}
+function openExportGroupsModal(){
+  if(!lastGroups.length)return alert('請先完成一次分組。');
+  $('exportGroupsModal').classList.remove('hidden');
+}
+function closeExportGroupsModal(){$('exportGroupsModal').classList.add('hidden')}
+$('exportGroups').onclick=openExportGroupsModal;
+$('closeExportGroups').onclick=closeExportGroupsModal;
+$('exportGroupsPng').onclick=exportGroupsPng;
+$('exportGroupsCsv').onclick=exportGroupsCsv;
 
 function setImportMode(mode){
   const fileMode=mode==='file';
@@ -1124,6 +1896,8 @@ $('resetStudents').onclick=()=>{
   );
 };
 
-loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();setRandomMode('pure');renderRaffleControls();
+loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();
+groupActiveMethod=2;setGroupMethod(2);$('rangeLimit').checked=true;$('rangeBox').classList.remove('hidden');$('exportGroups').disabled=true;
+setRandomMode('pure');renderRaffleControls();
 </script>
 </body></html>
