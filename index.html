@@ -7,7 +7,7 @@
 <meta name="googlebot" content="noindex,nofollow,noarchive,nosnippet">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>命運事務所</title>
+<title>命運事務局</title>
 <style>
 :root{
   --bg:#f4f7fb;--card:#fff;--ink:#14213d;--muted:#6b7280;--blue:#2563eb;
@@ -111,7 +111,7 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
 .recordItem.waiting .recordState{background:#e2e8f0;color:#64748b}
 
 
-/* ===== 命運事務所｜神秘檔案室 × 命運行政風格：僅視覺覆寫 ===== */
+/* ===== 命運事務局｜神秘檔案室 × 命運行政風格：僅視覺覆寫 ===== */
 :root{--fate-ink:#172033;--fate-navy:#202b46;--fate-paper:#fbf8f0;--fate-gold:#a78345;--fate-gold-soft:#d8c59b;--fate-line:#d9cfbc}
 body{background:radial-gradient(circle at 14px 14px,#a7834510 1px,transparent 1.5px) 0 0/28px 28px,linear-gradient(180deg,#f5f1e8,#f8f6f1);color:var(--fate-ink)}
 header{background:radial-gradient(circle at 18% 30%,#ffffff16 0 1px,transparent 2px),radial-gradient(circle at 78% 65%,#d8c59b20 0 1px,transparent 2px),linear-gradient(135deg,#17213a,#303957 58%,#202943)!important;border-bottom:3px solid var(--fate-gold);box-shadow:0 5px 18px #17203324}
@@ -140,7 +140,7 @@ input:focus,textarea:focus,select:focus{outline:3px solid #d8c59b55;border-color
 @media(max-width:500px){header h1,#mainTitle{letter-spacing:.025em}.resultBox::before{font-size:10px;right:-42px;bottom:16px}}
 
 
-/* ===== 命運事務所｜神秘事務所風格 v2：視覺精修 ===== */
+/* ===== 命運事務局｜神秘事務所風格 v2：視覺精修 ===== */
 
 /* 更沉穩的主色 */
 :root{
@@ -359,7 +359,7 @@ aside.card{
 }
 
 
-/* ===== 命運事務所｜神秘事務所風格 v3 ===== */
+/* ===== 命運事務局｜神秘事務所風格 v3 ===== */
 :root{
   /* 同一套復古檔案色調，但十組彼此拉開色相／明度 */
   --g1:#d4e0e8;  /* 霧藍 */
@@ -623,7 +623,7 @@ header::after{
 }
 
 
-/* ===== 命運事務所｜Final Visual ===== */
+/* ===== 命運事務局｜Final Visual ===== */
 
 /* 背景：低調淡金檔案紋理，不搶內容 */
 body{
@@ -731,7 +731,7 @@ header{
 </style>
 </head>
 <body>
-<header><h1 id="mainTitle">🎲 命運事務所 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><h1 id="mainTitle">🎲 命運事務局 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div class="wrap"><div class="layout">
 <main class="card">
   <div class="tabs">
@@ -975,7 +975,7 @@ header{
     <div class="settingsMenu">
       <button class="settingsItem" id="titleSettings">
         <span class="icon">📝</span>
-        <span class="settingText"><span class="settingTitle">標題設定</span><span class="settingDesc">設定是否在「命運事務所」前顯示自訂文字。</span></span>
+        <span class="settingText"><span class="settingTitle">標題設定</span><span class="settingDesc">設定是否在「命運事務局」前顯示自訂文字。</span></span>
       </button>
       <button class="settingsItem" id="importStudents">
         <span class="icon">⇧</span>
@@ -994,7 +994,7 @@ header{
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
       <h2 class="modalTitle">標題設定</h2><button class="secondary" id="closeTitleSettings">關閉</button>
     </div>
-    <div class="help" style="margin:8px 0 14px">預設可直接修改「命運事務所」前方的自訂內容；若不需要，可勾選「不使用自訂標題」。自訂內容只儲存在目前瀏覽器。</div>
+    <div class="help" style="margin:8px 0 14px">預設可直接修改「命運事務局」前方的自訂內容；若不需要，可勾選「不使用自訂標題」。自訂內容只儲存在目前瀏覽器。</div>
     <div class="field">
       <label><input id="disableCustomTitle" type="checkbox" style="width:auto;margin-right:8px">不使用自訂標題</label>
     </div>
@@ -1098,8 +1098,8 @@ function saveTitleSettingsData(){
 }
 function renderTitle(){
   const prefix=titleSettings.enabled&&titleSettings.text?titleSettings.text+' ':'';
-  $('mainTitle').textContent=`🎲 ${prefix}命運事務所 🎲`;
-  document.title=`${prefix}命運事務所`;
+  $('mainTitle').textContent=`🎲 ${prefix}命運事務局 🎲`;
+  document.title=`${prefix}命運事務局`;
 }
 function openTitleSettings(){
   $('disableCustomTitle').checked=!titleSettings.enabled;
@@ -1595,7 +1595,7 @@ function exportGroupsCsv(){
     sexes[id-1]||''
   ])));
   const csv='\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
-  downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),`命運事務所_分組結果_${safeFileDate()}.csv`);
+  downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),`命運事務局_分組結果_${safeFileDate()}.csv`);
   closeExportGroupsModal();
 }
 function roundRectPath(ctx,x,y,w,h,r){
@@ -1629,7 +1629,7 @@ function exportGroupsPng(){
   ctx.textAlign='center';
   ctx.fillStyle='#c9b27f';ctx.font='700 17px Georgia, serif';ctx.fillText('◆  DESTINY ADMINISTRATION  ◆',W/2,42);
   ctx.fillStyle='#fffaf0';ctx.font='900 52px "Microsoft JhengHei","Noto Sans TC",sans-serif';
-  ctx.fillText('🎲  命運事務所  🎲',W/2,105);
+  ctx.fillText('🎲  命運事務局  🎲',W/2,105);
   ctx.fillStyle='#e6ddca';ctx.font='22px "Microsoft JhengHei","Noto Sans TC",sans-serif';
   ctx.fillText('分組結果｜今天，一切交給命運',W/2,147);
 
@@ -1662,11 +1662,11 @@ function exportGroupsPng(){
   });
 
   ctx.textAlign='center';ctx.fillStyle='#806a43';ctx.font='16px Georgia, serif';
-  ctx.fillText(`命運事務所 · GROUP RECORD · ${safeFileDate()}`,W/2,H-35);
+  ctx.fillText(`命運事務局 · GROUP RECORD · ${safeFileDate()}`,W/2,H-35);
 
   canvas.toBlob(blob=>{
     if(!blob)return alert('圖片產生失敗，請再試一次。');
-    downloadBlob(blob,`命運事務所_分組結果_${safeFileDate()}.png`);
+    downloadBlob(blob,`命運事務局_分組結果_${safeFileDate()}.png`);
     closeExportGroupsModal();
   },'image/png');
 }
