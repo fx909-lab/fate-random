@@ -149,7 +149,7 @@ header .sub{width:100%;text-align:center!important;margin-left:auto!important;ma
     <div id="method2" class="subcard method">
       <h3>👉 方式 2：號碼盤點選</h3><div class="help">點選座號加入名單，再點一次即可取消。</div>
       <div id="numPad" class="numPad"></div>
-      <div class="row" style="margin-top:12px"><button class="secondary" id="clearPad">清除已選</button></div>
+      <div class="row" style="margin-top:12px"><button class="secondary" id="selectAllPad">全選</button><button class="secondary" id="clearPad">清除已選</button></div>
       <div class="field"><label>已選座號</label><div id="selectedList" class="selectedList"><span class="help">尚未選擇</span></div></div>
     </div>
     <div class="field"><label>抽取人數</label><input id="customCount" class="small" type="number" min="1" value="1"></div>
@@ -721,6 +721,13 @@ $('cancelBalanceReset').onclick=closeBalanceResetModal;
 $('confirmBalanceReset').onclick=()=>{resetBalanceData(true);$('balanceRecord').classList.add('hidden');closeBalanceResetModal()};
 $('drawRandom').onclick=()=>{const c=Number($('randomCount').value);if(!Number.isInteger(c)||c<1||c>names.length)return err(`抽取人數請設定為 1～${names.length}`);const ids=randomMode==='balanced'?drawBalanced(c):shuffle(names.map((_,i)=>i+1)).slice(0,c);showDraw(ids)};
 $('drawCustom').onclick=()=>{try{const pool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!pool.length)throw Error('請先選擇座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
+$('selectAllPad').onclick=()=>{
+  activeMethod=2;
+  setMethod(2);
+  padSelected=new Set(names.map((_,i)=>i+1));
+  renderPad();
+  renderSelected();
+};
 $('clearPad').onclick=()=>{padSelected.clear();renderPad();renderSelected()};
 $('keepRaffleRecord').onchange=()=>{$('raffleLeaderboard').classList.add('hidden');renderRaffleControls()};
 $('raffleRecordSelect').onchange=e=>{activeRaffleId=e.target.value;$('raffleLeaderboard').classList.add('hidden');renderRaffleControls()};
