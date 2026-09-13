@@ -790,16 +790,11 @@ header{
   flex:0 0 auto;
 }
 
-.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:60px minmax(150px,1fr) 100px repeat(var(--attr-count),minmax(125px,160px)) 82px;min-width:max-content}.attrHdr{display:flex;align-items:center;gap:4px;white-space:nowrap}.attrHdr button{padding:2px 5px;font-size:11px}@media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid{grid-template-columns:50px minmax(120px,1fr) 85px repeat(var(--attr-count),minmax(120px,145px)) 68px}}
-.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}
-.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
+.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
-/* Zero attributes: keep the original 4-column edit layout.
-   One or more attributes: switch to the dynamic attribute grid. */
-.editGrid.attrGrid.noAttrs{grid-template-columns:60px minmax(150px,1fr) 100px 82px;min-width:0}
-@media(max-width:700px){
-  .editGrid.attrGrid.noAttrs{grid-template-columns:50px minmax(120px,1fr) 85px 68px;min-width:0}
-}
+/* Zero attributes: keep the original 4-column edit layout. */
+.editGrid.attrGrid.noAttrs{grid-template-columns:54px minmax(120px,1fr) 76px 68px;min-width:0}
+@media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid,.editGrid.attrGrid.manyAttrs{grid-template-columns:48px minmax(110px,135px) 72px repeat(var(--attr-count),minmax(100px,125px)) 64px;min-width:max-content}.editGrid.attrGrid.noAttrs{grid-template-columns:48px minmax(120px,1fr) 72px 64px;min-width:0}}
 
 </style>
 </head>
@@ -1136,14 +1131,29 @@ header{
     </div>
     <div id="importTextPanel" class="importPanel hidden">
       <label><strong>貼上名單</strong></label>
-      <textarea id="rosterText" rows="10" placeholder="例如：&#10;姓名,性別&#10;王小明,男&#10;李小華,女&#10;&#10;也可以只貼姓名，一行一位。"></textarea>
-      <div class="help" style="margin-top:8px">可使用逗號、全形逗號或 Tab 分隔；性別可填「男／女」或「男生／女生」。</div>
+      <textarea id="rosterText" rows="10" placeholder="例如：&#10;座號,姓名,性別,國語程度,合作風格&#10;1,王小明,男,高,主動&#10;2,李小華,女,中,穩定&#10;3,陳小安,男,低,安靜&#10;&#10;也可以只貼姓名，一行一位。"></textarea>
+      <div class="help" style="margin-top:8px">可使用逗號、全形逗號或 Tab 分隔；性別可填「男／女」或「男生／女生」。若第一列有欄位名稱，姓名、性別以外的欄位可選擇匯入為學生屬性。</div>
     </div>
     <div id="importStatus" class="importStatus"></div>
     <div class="row" style="margin-top:16px"><button class="primary" id="applyImport">套用並檢查</button><button class="secondary" id="cancelImport">取消</button></div>
     <div class="footerNote">資安提醒：檔案內容只在此頁面記憶體中解析，不會傳送到 GitHub、雲端或第三方服務；匯入檢查通過後會寫入目前瀏覽器；不會傳送到 GitHub、雲端或第三方服務。</div>
   </div>
 </div>
+
+<div id="importAttributeModal" class="modal hidden"><div class="modalBox" style="width:min(650px,96vw)">
+  <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="modalTitle">匯入學生屬性</h2><button class="secondary" id="closeImportAttributes">返回</button></div>
+  <div class="help" style="margin:8px 0 10px">偵測到名單中含有額外欄位。請選擇要匯入的屬性；新屬性若有程度高低，請勾選並確認分類順序為「高 → 低」。</div>
+  <div id="importAttributeList" class="importAttrList"></div>
+  <div id="importAttributeError" class="importStatus"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="primary" id="confirmImportAttributes">繼續匯入</button></div>
+</div></div>
+
+<div id="importConflictModal" class="modal hidden"><div class="modalBox" style="width:min(620px,96vw)">
+  <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="modalTitle">學生屬性資料衝突</h2><button class="secondary" id="closeImportConflict">返回</button></div>
+  <div class="help" style="margin:8px 0">現有資料與這次匯入資料在同名屬性中有不同內容。請選擇衝突時要保留哪一份；此選擇會套用到下列所有衝突。</div>
+  <div id="importConflictList" class="importConflictList"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="secondary" id="keepExistingImportConflict">保留現有資料</button><button class="primary" id="useImportedImportConflict">使用匯入資料</button></div>
+</div></div>
 
 <div id="studentModal" class="modal hidden">
   <div class="modalBox">
@@ -1162,7 +1172,7 @@ header{
 <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="modalTitle">新增學生屬性</h2><button class="secondary" id="closeAttributeCreator">關閉</button></div>
 <div class="field"><label>屬性名稱</label><input id="newAttributeName" maxlength="20" autocomplete="off" placeholder="例如：數學程度"></div>
 <label class="attributeOrderedRow"><input id="newAttributeOrdered" type="checkbox"><span>分類具有程度／順序意義</span></label>
-<div class="help" style="margin:6px 0 12px">勾選後，分類 1 → 4 代表你設定的順序；一般類別請不要勾選。</div>
+<div class="help" style="margin:6px 0 12px">勾選後，分類將依「程度高 → 低」排列（分類 1 最高）；系統可依此進行異質分組。若各分類沒有高低之分，請勿勾選。</div>
 <div class="attributeCategoryInputs"><input class="newAttributeCategory" maxlength="20" placeholder="分類 1"><input class="newAttributeCategory" maxlength="20" placeholder="分類 2"><input class="newAttributeCategory" maxlength="20" placeholder="分類 3"><input class="newAttributeCategory" maxlength="20" placeholder="分類 4"></div>
 <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="primary" id="confirmCreateAttribute">建立屬性</button></div>
 </div></div>
@@ -1184,7 +1194,7 @@ const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],pendingImportPackage=null,pendingImportResolved=null,randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 // v16：網站版只使用 localStorage。
@@ -1700,6 +1710,7 @@ function openSafeConfirm(message,onConfirm,options={}){
   $('safeConfirmTitle').textContent=String(options.title||'確認操作');
   $('safeConfirmMessage').textContent=String(message||'');
   $('confirmSafeAction').textContent=String(options.confirmText||'確定');
+  $('cancelSafeConfirm').textContent=String(options.cancelText||'取消');
   $('confirmSafeAction').className=options.danger===false?'primary':'danger';
   $('safeConfirmModal').classList.remove('hidden');
 }
@@ -2135,10 +2146,21 @@ function parseRosterRows(rows){
   rows=rows.map(r=>r.map(v=>String(v??'').trim())).filter(r=>r.some(v=>v!==''));
   if(!rows.length)throw Error('名單是空的');
   const normHeader=x=>String(x).replace(/\s+/g,'').toLowerCase();
-  let start=0,nameCol=-1,sexCol=-1;
-  const first=rows[0].map(normHeader),nameAliases=['姓名','學生姓名','名字','name'],sexAliases=['性別','sex','gender'];
-  nameCol=first.findIndex(x=>nameAliases.includes(x));sexCol=first.findIndex(x=>sexAliases.includes(x));
-  if(nameCol>=0)start=1;else{nameCol=-1;sexCol=-1}
+  const first=rows[0].map(normHeader),nameAliases=['姓名','學生姓名','名字','name'],sexAliases=['性別','sex','gender'],seatAliases=['座號','號碼','seat','no','number'];
+  let start=0,nameCol=first.findIndex(x=>nameAliases.includes(x)),sexCol=first.findIndex(x=>sexAliases.includes(x)),seatCol=first.findIndex(x=>seatAliases.includes(x));
+  const hasHeader=nameCol>=0;
+  if(hasHeader)start=1;else{nameCol=-1;sexCol=-1;seatCol=-1}
+  const attrCols=[];
+  if(hasHeader){
+    for(let c=0;c<rows[0].length;c++){
+      if(c===nameCol||c===sexCol||c===seatCol)continue;
+      const raw=String(rows[0][c]??'').trim().slice(0,20);
+      if(!raw)continue;
+      if(attrCols.some(x=>x.name===raw))throw Error(`欄位名稱「${raw}」重複，請先修改後再匯入`);
+      attrCols.push({col:c,name:raw,values:{},categories:[]});
+      if(attrCols.length>12)throw Error('學生屬性欄位最多 12 個');
+    }
+  }
   const out=[];
   for(let i=start;i<rows.length;i++){
     const r=rows[i];let name='',sx='';
@@ -2150,11 +2172,19 @@ function parseRosterRows(rows){
     name=String(name).trim();
     if(!name)throw Error(`第 ${i+1} 列沒有姓名`);
     if(name.length>MAX_NAME_LENGTH)throw Error(`第 ${i+1} 列姓名超過 ${MAX_NAME_LENGTH} 個字元`);
+    const seat=out.length+1;
     out.push({name,sex:normalizeSexValue(sx,i+1)});
+    for(const a of attrCols){
+      const v=String(r[a.col]??'').trim().slice(0,20);
+      if(!v)continue;
+      a.values[seat]=v;
+      if(!a.categories.includes(v))a.categories.push(v);
+      if(a.categories.length>8)throw Error(`屬性「${a.name}」出現超過 8 種分類，請先整理分類後再匯入`);
+    }
     if(out.length>MAX_STUDENTS)throw Error(`學生人數最多 ${MAX_STUDENTS} 人`);
   }
   if(!out.length)throw Error('沒有可匯入的學生資料');
-  return out;
+  return {students:out,attributes:attrCols};
 }
 function parseDelimitedText(text){
   text=String(text??'').replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
@@ -2244,27 +2274,112 @@ async function readImportFile(file){
   if(name.endsWith('.csv')||name.endsWith('.txt'))return parseDelimitedText(await file.text());
   throw Error('只支援 .xlsx、.csv 或 .txt 檔案');
 }
+function renderImportAttributeReview(pkg){
+  pendingImportPackage=pkg;
+  loadStudentAttributes();
+  const box=$('importAttributeList');
+  box.innerHTML=pkg.attributes.map((a,i)=>{
+    const existing=studentAttributes.find(x=>x.name===a.name);
+    const cats=a.categories.join('、');
+    return `<div class="importAttrRow" data-import-attr="${i}">
+      <div class="importAttrTop"><input class="importAttrUse" type="checkbox" data-i="${i}" checked><span class="importAttrName">${escapeHtml(a.name)}</span><span class="importAttrBadge">${existing?'既有屬性':'新屬性'}</span></div>
+      ${existing?`<div class="help" style="margin-top:6px">既有分類：${escapeHtml(existing.categories.join('、'))}。匯入時會合併同名屬性，若同一位學生資料不同會再詢問要保留哪一份。</div>`:`<div class="importAttrConfig"><label class="attributeOrderedRow" style="margin:0"><input class="importAttrOrdered" type="checkbox" data-i="${i}"><span>分類具有程度／順序意義（高 → 低）</span></label><label class="help">分類順序（若有程度，請由高排到低）</label><input class="importAttrCategories" data-i="${i}" type="text" maxlength="180" value="${escapeHtml(cats)}"></div>`}
+    </div>`;
+  }).join('');
+  $('importAttributeError').textContent='';$('importAttributeError').className='importStatus';
+  $('importModal').classList.add('hidden');$('importAttributeModal').classList.remove('hidden');
+}
+function resolveImportAttributeSelection(){
+  if(!pendingImportPackage)return null;
+  loadStudentAttributes();
+  const selected=[];
+  for(let i=0;i<pendingImportPackage.attributes.length;i++){
+    const use=document.querySelector(`.importAttrUse[data-i="${i}"]`);
+    if(!use?.checked)continue;
+    const raw=pendingImportPackage.attributes[i],existing=studentAttributes.find(x=>x.name===raw.name);
+    if(existing){
+      const bad=[...new Set(Object.values(raw.values).filter(v=>v&&!existing.categories.includes(v)))];
+      if(bad.length)throw Error(`「${raw.name}」含有既有分類以外的值：${bad.join('、')}。請先回到學生資料修改這個屬性的分類，或取消匯入此欄。`);
+      selected.push({kind:'existing',raw,existing});
+    }else{
+      const inp=document.querySelector(`.importAttrCategories[data-i="${i}"]`),ord=document.querySelector(`.importAttrOrdered[data-i="${i}"]`);
+      const categories=[...new Set(String(inp?.value||'').split(/[、，,\n]+/).map(x=>x.trim().slice(0,20)).filter(Boolean))].slice(0,8);
+      if(categories.length<2)throw Error(`新屬性「${raw.name}」至少需要 2 個不同分類`);
+      const bad=[...new Set(Object.values(raw.values).filter(v=>v&&!categories.includes(v)))];
+      if(bad.length)throw Error(`「${raw.name}」的分類順序欄缺少：${bad.join('、')}`);
+      selected.push({kind:'new',raw,categories,ordered:!!ord?.checked});
+    }
+  }
+  return selected;
+}
+function buildImportConflicts(pkg,selected){
+  const conflicts=[];
+  selected.filter(x=>x.kind==='existing').forEach(item=>{
+    const a=item.existing;
+    for(let seat=1;seat<=pkg.students.length;seat++){
+      const incoming=item.raw.values[seat]||'',old=a.values[seat]||'';
+      const sameStudent=names[seat-1]===pkg.students[seat-1]?.name;
+      if(sameStudent&&incoming&&old&&incoming!==old)conflicts.push({seat,name:pkg.students[seat-1].name,attr:a.name,old,incoming});
+    }
+  });
+  return conflicts;
+}
+function showImportConflicts(conflicts){
+  $('importConflictList').innerHTML=conflicts.slice(0,50).map(c=>`<div class="importConflictLine"><strong>${String(c.seat).padStart(2,'0')} ${escapeHtml(c.name)}</strong>｜${escapeHtml(c.attr)}：現有「${escapeHtml(c.old)}」／匯入「${escapeHtml(c.incoming)}」</div>`).join('')+(conflicts.length>50?`<div class="help" style="margin-top:8px">另有 ${conflicts.length-50} 筆衝突未列出。</div>`:'');
+  $('importAttributeModal').classList.add('hidden');$('importConflictModal').classList.remove('hidden');
+}
+function commitRosterImport(conflictChoice='imported'){
+  const pkg=pendingImportPackage,resolved=pendingImportResolved;if(!pkg||!resolved)return;
+  const imported=pkg.students,ns=imported.map(x=>x.name),sx=imported.map(x=>x.sex);
+  const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
+  const oldNames=[...names];loadStudentAttributes();
+  const nextAttrs=studentAttributes.map(a=>({...a,values:{...a.values}}));
+  resolved.forEach(item=>{
+    if(item.kind==='new')nextAttrs.push({id:'attr_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:item.raw.name,categories:item.categories,ordered:item.ordered,values:{}});
+  });
+  for(const a of nextAttrs){
+    const chosen=resolved.find(x=>x.raw.name===a.name);const vals={};
+    for(let seat=1;seat<=imported.length;seat++){
+      const sameStudent=oldNames[seat-1]===imported[seat-1]?.name;
+      const old=sameStudent?(a.values[seat]||''):'';
+      const incoming=chosen?(chosen.raw.values[seat]||''):'';
+      let v='';
+      if(chosen?.kind==='existing'){
+        if(old&&incoming&&old!==incoming)v=conflictChoice==='existing'?old:incoming;
+        else v=incoming||old;
+      }else if(chosen?.kind==='new')v=incoming;
+      else v=old;
+      if(v&&a.categories.includes(v))vals[seat]=v;
+    }
+    a.values=vals;
+  }
+  names=ns;sexes=sx;if(!saveData())return;
+  studentAttributes=nextAttrs;if(!saveStudentAttributes())return;
+  if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
+  tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
+  renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
+  $('importModal').classList.add('hidden');$('importAttributeModal').classList.add('hidden');$('importConflictModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
+  pendingImportPackage=null;pendingImportResolved=null;
+  setTimeout(()=>alert(`已匯入並儲存 ${imported.length} 位學生。你仍可在這裡檢查或修改名單與屬性。`),0);
+}
+function proceedResolvedRosterImport(choice='imported'){
+  if(!pendingImportPackage||!pendingImportResolved)return;
+  const imported=pendingImportPackage.students;
+  const rosterChanged=imported.length!==names.length||imported.some((x,i)=>x.name!==names[i]||x.sex!==sexes[i]);
+  const hasHistory=balanceRound>1||balanceRoundDrawn.size>0||hasRaffleHistory();
+  const finish=()=>commitRosterImport(choice);
+  if(rosterChanged&&hasHistory){
+    openSafeConfirm('匯入的新名單會取代目前名單。均衡抽籤與幸運星排行榜依座號保存，為避免紀錄對到錯的學生，套用新名單時會一併重設這些紀錄。確定繼續嗎？',finish,{title:'確認匯入學生名單',confirmText:'匯入並儲存'});
+  }else finish();
+}
 async function applyRosterImport(){
   try{
     $('applyImport').disabled=true;$('importStatus').textContent='正在本機檢查名單…';$('importStatus').className='importStatus';
     const fileMode=!$('importFilePanel').classList.contains('hidden');
     const rows=fileMode?await readImportFile($('rosterFile').files[0]):parseDelimitedText($('rosterText').value);
-    const imported=parseRosterRows(rows);
-    const applyImported=()=>{
-      const ns=imported.map(x=>x.name),sx=imported.map(x=>x.sex);
-      const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
-      names=ns;sexes=sx;if(!saveData())return;
-      if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange();resetStudentAttributeAssignments()}
-      tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
-      renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
-      $('importModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
-      setTimeout(()=>alert(`已匯入並儲存 ${imported.length} 位學生。你仍可在這裡檢查或修改名單。`),0);
-    };
-    const rosterChanged=imported.length!==names.length||imported.some((x,i)=>x.name!==names[i]||x.sex!==sexes[i]);
-    const hasHistory=balanceRound>1||balanceRoundDrawn.size>0||hasRaffleHistory();
-    if(rosterChanged&&hasHistory){
-      openSafeConfirm('匯入的新名單會取代目前名單。均衡抽籤與幸運星排行榜依座號保存，為避免紀錄對到錯的學生，套用新名單時會一併重設這些紀錄。確定繼續嗎？',applyImported,{title:'確認匯入學生名單',confirmText:'匯入並儲存'});
-    }else applyImported();
+    const pkg=parseRosterRows(rows);pendingImportPackage=pkg;
+    if(pkg.attributes.length){renderImportAttributeReview(pkg);return}
+    pendingImportResolved=[];proceedResolvedRosterImport('imported');
   }catch(e){showImportError(e?.message||'匯入失敗')}
   finally{$('applyImport').disabled=false}
 }
@@ -2278,8 +2393,8 @@ function openAttributeCreator(){$('newAttributeName').value='';$('newAttributeOr
 function editAttribute(a){const n=prompt('屬性名稱：',a.name);if(n===null)return;const c=prompt('分類（用頓號或逗號分隔）：',a.categories.join('、'));if(c===null)return;const name=n.trim().slice(0,20),cats=[...new Set(c.split(/[、，,\n]+/).map(x=>x.trim().slice(0,20)).filter(Boolean))].slice(0,8);if(!name)return alert('請輸入屬性名稱。');if(cats.length<2)return alert('至少需要 2 個不同分類。');a.name=name;a.categories=cats;Object.keys(a.values).forEach(s=>{if(!cats.includes(a.values[s]))delete a.values[s]});saveStudentAttributes();renderEditGrid()}
 function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid()},{title:'確認刪除屬性',confirmText:'刪除'})}
 function renderEditGrid(){
- loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs');g.style.setProperty('--attr-count',studentAttributes.length);
- g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr">${escapeHtml(a.name)}${a.ordered?' ↕':''}<button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
+ loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs')+(studentAttributes.length>2?' manyAttrs':'');g.style.setProperty('--attr-count',studentAttributes.length);
+ g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
  tempStudents.forEach((s,i)=>{const seat=i+1,attrs=studentAttributes.map(a=>`<select class="editAttrValue" data-seat="${seat}" data-attr="${escapeHtml(a.id)}"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${a.values[seat]===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`).join('');g.insertAdjacentHTML('beforeend',`<div>${String(seat).padStart(2,'0')}</div><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select>${attrs}<button class="danger removeStudent" data-i="${i}">刪除</button>`)});
  document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()});
  document.querySelectorAll('.editAttrValue').forEach(s=>s.onchange=()=>{const a=studentAttributes.find(x=>x.id===s.dataset.attr);if(!a)return;const seat=Number(s.dataset.seat);s.value?a.values[seat]=s.value:delete a.values[seat];saveStudentAttributes()});
@@ -2310,6 +2425,11 @@ $('importStudents').onclick=()=>{$('settingsModal').classList.add('hidden');$('r
 $('closeImport').onclick=$('cancelImport').onclick=()=>$('importModal').classList.add('hidden');
 $('importFileTab').onclick=()=>setImportMode('file');$('importTextTab').onclick=()=>setImportMode('text');
 $('applyImport').onclick=applyRosterImport;
+$('closeImportAttributes').onclick=()=>{$('importAttributeModal').classList.add('hidden');$('importModal').classList.remove('hidden')};
+$('confirmImportAttributes').onclick=()=>{try{pendingImportResolved=resolveImportAttributeSelection();const conflicts=buildImportConflicts(pendingImportPackage,pendingImportResolved);if(conflicts.length)showImportConflicts(conflicts);else proceedResolvedRosterImport('imported')}catch(e){$('importAttributeError').textContent='⚠️ '+(e?.message||'屬性設定有誤');$('importAttributeError').className='importStatus err'}};
+$('closeImportConflict').onclick=()=>{$('importConflictModal').classList.add('hidden');$('importAttributeModal').classList.remove('hidden')};
+$('keepExistingImportConflict').onclick=()=>proceedResolvedRosterImport('existing');
+$('useImportedImportConflict').onclick=()=>proceedResolvedRosterImport('imported');
 
 $('titleSettings').onclick=()=>{$('settingsModal').classList.add('hidden');openTitleSettings()};
 $('closeTitleSettings').onclick=()=>$('titleModal').classList.add('hidden');
@@ -2348,16 +2468,29 @@ $('saveStudents').onclick=()=>{
     if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
     renderStudents();refreshLimits();renderAbsenceUI();$('studentModal').classList.add('hidden');clearResults();
   };
-
-  if(rosterChanged&&hasHistory){
+  const afterAttributeCheck=()=>{
+    if(rosterChanged&&hasHistory){
+      openSafeConfirm(
+        '學生名單有變動。均衡抽籤與幸運星排行榜都是依座號保存，為避免紀錄對到錯的學生，儲存新名單時會一併重設這些紀錄。確定繼續嗎？',
+        commitRoster,
+        {title:'確認變更學生名單',confirmText:'儲存並重設紀錄'}
+      );
+      return;
+    }
+    commitRoster();
+  };
+  loadStudentAttributes();
+  const missing=studentAttributes.map(a=>({name:a.name,seats:Array.from({length:tempStudents.length},(_,i)=>i+1).filter(seat=>!a.values[seat])})).filter(x=>x.seats.length);
+  if(missing.length){
+    const detail=missing.map(x=>`${x.name}：${x.seats.map(n=>String(n).padStart(2,'0')).join('、')} 尚未設定`).join('\n');
     openSafeConfirm(
-      '學生名單有變動。均衡抽籤與幸運星排行榜都是依座號保存，為避免紀錄對到錯的學生，儲存新名單時會一併重設這些紀錄。確定繼續嗎？',
-      commitRoster,
-      {title:'確認變更學生名單',confirmText:'儲存並重設紀錄'}
+      `學生屬性尚未設定完整：\n\n${detail}\n\n可以先儲存，之後再補設定。`,
+      afterAttributeCheck,
+      {title:'學生屬性尚未完成',confirmText:'仍要儲存',cancelText:'返回設定',danger:false}
     );
     return;
   }
-  commitRoster();
+  afterAttributeCheck();
 };
 
 $('resetStudents').onclick=()=>{
