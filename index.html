@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
+<!-- 命運事務局 v13 測試版 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -732,6 +733,18 @@ header{
 /* ===== v12：今日請假 ===== */
 .absenceToggleRow{display:flex;align-items:center;gap:8px;font-weight:800;cursor:pointer;margin:10px 0}.absenceToggleRow input{width:auto}.absenceNotice{margin-top:6px;font-size:13px;color:#8a6a34;line-height:1.5}.absenceStatusBox{border:1px solid var(--fate-line);border-radius:14px;padding:14px;background:#fffaf1;margin-top:12px}.absenceChoice{display:flex;align-items:center;gap:9px;font-weight:800;margin:10px 0;cursor:pointer}.absenceChoice input{width:auto}.absenceSummary{margin-top:12px;padding:10px 12px;border-radius:11px;background:#f4ecdd;color:#604a29;font-weight:800}.absenceMark{display:inline-grid;place-items:center;min-width:24px;height:22px;margin-left:auto;margin-right:6px;padding:0 6px;border:1px solid #c9b486;border-radius:999px;background:#f4ead5;color:#72572b;font-size:11px;font-weight:900;letter-spacing:.04em;flex:0 0 auto}.student .nameLine{min-width:0}.student .absenceMark + .sex{margin-left:0}.tabStatus{display:inline-block;margin-left:5px;font-size:11px;font-weight:900;color:#8a6a34}.tab.active .tabStatus{color:#71572f}@media(max-width:500px){.tabStatus{font-size:10px}}
 
+
+/* ===== v13：v12 實測修正 ===== */
+#absence .field>label:first-child{margin-bottom:6px}
+#absence .absenceStatusBox{padding:12px 14px}
+#absenceNumPad{display:grid;grid-template-columns:repeat(10,minmax(38px,1fr));gap:8px;max-width:720px;margin-top:10px}
+#absenceNumPad .numBtn{width:46px;height:38px;min-width:46px;border-radius:11px;padding:0;font-size:15px;box-shadow:0 2px 0 #d7cbb6}
+#absenceNumPad .numBtn.sel{box-shadow:inset 0 0 0 2px var(--fate-gold),0 2px 0 #182139!important}
+#absence .absenceActions{margin-top:10px;gap:8px}
+#absence .absenceActions button{padding:8px 14px}
+@media(max-width:760px){#absenceNumPad{grid-template-columns:repeat(7,minmax(34px,1fr));gap:7px}#absenceNumPad .numBtn{width:42px;height:36px;min-width:42px}}
+@media(max-width:500px){#absenceNumPad{grid-template-columns:repeat(6,minmax(32px,1fr));gap:6px}#absenceNumPad .numBtn{width:38px;height:34px;min-width:38px;font-size:14px}}
+
 </style>
 </head>
 <body>
@@ -806,9 +819,10 @@ header{
 
   <section id="groups" class="hidden">
     <div class="field">
-      <label>分組數</label>
+      <label>組數</label>
       <select id="groupCount" class="small">
-        <option>2</option><option selected>3</option><option>4</option><option>5</option>
+        <option value="" selected>未選擇</option>
+        <option>2</option><option>3</option><option>4</option><option>5</option>
         <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
       </select>
     </div>
@@ -831,8 +845,8 @@ header{
     <div class="field">
       <label class="absenceToggleRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
       <div id="absenceNoticeGroups" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
-      <label><input id="rangeLimit" type="checkbox" checked style="width:auto;margin-right:8px">調整參與分組範圍</label>
-      <div id="rangeBox">
+      <label><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組名單</label>
+      <div id="rangeBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
           <div class="help">可使用「輸入座號」或「號碼盤點選」其中一種；未設定時仍視為全班參與。</div>
 
@@ -869,17 +883,13 @@ header{
   <section id="absence" class="hidden">
     <div class="field">
       <label>今日請假</label>
-      <div class="help">只用來暫時排除今天不參與抽籤／分組的學生，不記錄請假類型或原因。跨日後會自動回到「未設定」。</div>
       <div class="absenceStatusBox">
-        <label class="absenceChoice"><input type="radio" name="absenceState" id="absenceNone" value="none"> 今日無人請假</label>
-        <label class="absenceChoice"><input type="radio" name="absenceState" id="absenceSome" value="some"> 今日有人請假</label>
-        <div id="absencePadBox" class="hidden">
-          <div class="help" style="margin-top:8px">點選今天請假的座號；再點一次即可取消。</div>
-          <div id="absenceNumPad" class="numPad"></div>
-          <div class="row" style="margin-top:12px"><button class="secondary" id="selectAllAbsence">全選</button><button class="secondary" id="clearAbsence">清除已選</button></div>
-          <div id="absenceSummary" class="absenceSummary">今日請假：尚未選擇</div>
+        <div class="help">點選請假座號，再點一次即可取消。</div>
+        <div id="absenceNumPad" class="numPad"></div>
+        <div class="row absenceActions">
+          <button class="secondary" id="selectAllAbsence">全選</button>
+          <button class="secondary" id="clearAbsence">清除已選</button>
         </div>
-        <div class="row" style="margin-top:16px"><button class="primary" id="saveAbsence">儲存今日狀態</button><button class="secondary" id="clearAbsenceState">恢復未設定</button></div>
       </div>
     </div>
   </section>
@@ -1092,21 +1102,45 @@ const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='none',absenceSeats=new Set(),absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function localDateStamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
-function normalizeAbsenceData(d){if(!d||typeof d!=='object'||d.date!==localDateStamp())return {state:'unset',seats:[]};const state=['unset','none','some'].includes(d.state)?d.state:'unset';const seats=Array.isArray(d.seats)?[...new Set(d.seats.filter(n=>Number.isInteger(n)&&n>=1&&n<=names.length))].sort((a,b)=>a-b):[];return {state:state==='some'&&seats.length===0?'unset':state,seats}}
-function loadAbsenceData(){try{const d=normalizeAbsenceData(JSON.parse(localStorage.getItem(ABSENCE_STORAGE_KEY)||'null'));absenceState=d.state;absenceSeats=new Set(d.seats)}catch(e){absenceState='unset';absenceSeats=new Set()}try{const p=JSON.parse(localStorage.getItem(ABSENCE_PREFS_STORAGE_KEY)||'null');if(p&&typeof p==='object')absencePrefs={random:p.random!==false,custom:p.custom!==false,groups:p.groups!==false}}catch(e){}}
+function normalizeAbsenceData(d){
+  if(!d||typeof d!=='object'||d.date!==localDateStamp())return {state:'none',seats:[]};
+  const seats=Array.isArray(d.seats)?[...new Set(d.seats.filter(n=>Number.isInteger(n)&&n>=1&&n<=names.length))].sort((a,b)=>a-b):[];
+  return {state:seats.length?'some':'none',seats};
+}
+function loadAbsenceData(){
+  try{const d=normalizeAbsenceData(JSON.parse(localStorage.getItem(ABSENCE_STORAGE_KEY)||'null'));absenceState=d.state;absenceSeats=new Set(d.seats)}catch(e){absenceState='none';absenceSeats=new Set()}
+  try{const p=JSON.parse(localStorage.getItem(ABSENCE_PREFS_STORAGE_KEY)||'null');if(p&&typeof p==='object')absencePrefs={random:p.random!==false,custom:p.custom!==false,groups:p.groups!==false}}catch(e){}
+}
 function saveAbsencePrefs(){try{localStorage.setItem(ABSENCE_PREFS_STORAGE_KEY,JSON.stringify(absencePrefs))}catch(e){}}
-function saveAbsenceData(){try{localStorage.setItem(ABSENCE_STORAGE_KEY,JSON.stringify({date:localDateStamp(),state:absenceState,seats:[...absenceSeats].sort((a,b)=>a-b)}))}catch(e){alert('今日請假狀態無法儲存在此瀏覽器。')}}
-function effectiveAbsentSet(){return absenceState==='some'?new Set([...absenceSeats].filter(id=>id>=1&&id<=names.length)):new Set()}
+function saveAbsenceData(){
+  absenceState=absenceSeats.size?'some':'none';
+  try{localStorage.setItem(ABSENCE_STORAGE_KEY,JSON.stringify({date:localDateStamp(),state:absenceState,seats:[...absenceSeats].sort((a,b)=>a-b)}))}catch(e){alert('今日請假狀態無法儲存在此瀏覽器。')}
+}
+function effectiveAbsentSet(){return new Set([...absenceSeats].filter(id=>id>=1&&id<=names.length))}
 function filterAbsent(ids,feature){if(!absencePrefs[feature])return [...ids];const absent=effectiveAbsentSet();return ids.filter(id=>!absent.has(id))}
-function renderAbsencePad(){const box=$('absenceNumPad');if(!box)return;box.innerHTML='';for(let i=1;i<=names.length;i++){const b=document.createElement('button');b.className='numBtn'+(absenceSeats.has(i)?' sel':'');b.textContent=i;b.onclick=()=>{absenceSeats.has(i)?absenceSeats.delete(i):absenceSeats.add(i);renderAbsencePad();renderAbsenceSummary()};box.appendChild(b)}}
-function renderAbsenceSummary(){const el=$('absenceSummary');if(!el)return;const arr=[...absenceSeats].sort((a,b)=>a-b);el.textContent=arr.length?`今日請假：${arr.map(n=>String(n).padStart(2,'0')).join('、')}`:'今日請假：尚未選擇'}
-function renderAbsenceUI(){if(!$('absenceNone'))return;$('absenceNone').checked=absenceState==='none';$('absenceSome').checked=absenceState==='some';$('absencePadBox').classList.toggle('hidden',absenceState!=='some');renderAbsencePad();renderAbsenceSummary();const status=absenceState==='unset'?'未設定':absenceState==='none'?'無':`${absenceSeats.size}人`;$('absenceTabStatus').textContent=status;$('excludeAbsentRandom').checked=absencePrefs.random;$('excludeAbsentCustom').checked=absencePrefs.custom;$('excludeAbsentGroups').checked=absencePrefs.groups;$('absenceNoticeRandom').classList.toggle('hidden',!(absencePrefs.random&&absenceState==='unset'));$('absenceNoticeCustom').classList.toggle('hidden',!(absencePrefs.custom&&absenceState==='unset'));$('absenceNoticeGroups').classList.toggle('hidden',!(absencePrefs.groups&&absenceState==='unset'));renderStudents();updateGenderHint()}
-function clearAbsenceForRosterChange(){absenceState='unset';absenceSeats=new Set();saveAbsenceData()}
+function renderAbsencePad(){
+  const box=$('absenceNumPad');if(!box)return;box.innerHTML='';
+  for(let i=1;i<=names.length;i++){
+    const b=document.createElement('button');b.className='numBtn'+(absenceSeats.has(i)?' sel':'');b.textContent=i;
+    b.onclick=()=>{absenceSeats.has(i)?absenceSeats.delete(i):absenceSeats.add(i);saveAbsenceData();renderAbsenceUI()};
+    box.appendChild(b)
+  }
+}
+function renderAbsenceUI(){
+  if(!$('absenceNumPad'))return;
+  renderAbsencePad();
+  const status=absenceSeats.size?`${absenceSeats.size}人`:'無';
+  $('absenceTabStatus').textContent=status;
+  $('excludeAbsentRandom').checked=absencePrefs.random;$('excludeAbsentCustom').checked=absencePrefs.custom;$('excludeAbsentGroups').checked=absencePrefs.groups;
+  $('absenceNoticeRandom').classList.add('hidden');$('absenceNoticeCustom').classList.add('hidden');$('absenceNoticeGroups').classList.add('hidden');
+  renderStudents();updateGenderHint()
+}
+function clearAbsenceForRosterChange(){absenceState='none';absenceSeats=new Set();saveAbsenceData()}
 function normalizeStoredData(d){
   if(!d||!Array.isArray(d.names)||!Array.isArray(d.sexes)||d.names.length<1||d.names.length>MAX_STUDENTS||d.sexes.length!==d.names.length)return null;
   const safeNames=[],safeSexes=[];
@@ -1183,7 +1217,9 @@ function resetBalanceData(save=true){
 }
 function renderBalanceInfo(){
   balanceRoundDrawn=new Set([...balanceRoundDrawn].filter(id=>id>=1&&id<=names.length));
-  $('balanceStatus').textContent=`目前第 ${balanceRound} 輪｜本輪已抽 ${balanceRoundDrawn.size} / ${names.length} 人`;
+  const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');
+  const doneEligible=eligible.filter(id=>balanceRoundDrawn.has(id)).length;
+  $('balanceStatus').textContent=`目前第 ${balanceRound} 輪｜本輪已抽 ${doneEligible} / ${eligible.length} 人`;
   if(!$('balanceRecord').classList.contains('hidden'))renderBalanceRecord();
 }
 function renderBalanceRecord(){
@@ -1209,10 +1245,11 @@ function advanceBalanceRound(manual=false){
   return true;
 }
 function requestNextBalanceRound(){
-  const remain=names.length-balanceRoundDrawn.size;
+  const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');
+  const remain=eligible.filter(id=>!balanceRoundDrawn.has(id)).length;
   $('roundActionMessage').textContent=remain>0
-    ?`本輪還有 ${remain} 人尚未抽到。確定要直接進入第 ${balanceRound+1} 輪嗎？`
-    :`本輪已完成。確定要進入第 ${balanceRound+1} 輪嗎？`;
+    ?`本輪目前還有 ${remain} 位可參與學生尚未抽到。確定要直接進入第 ${balanceRound+1} 輪嗎？`
+    :`本輪目前可參與學生已完成。確定要進入第 ${balanceRound+1} 輪嗎？`;
   $('roundActionModal').classList.remove('hidden');
 }
 function drawBalanced(count,eligibleIds=null){
@@ -1313,7 +1350,9 @@ function secureRandomFloat(){
   return Math.random();
 }
 function weightedPick(ids,counts){
-  const weights=ids.map(id=>1/Math.sqrt((counts[id-1]||0)+1));
+  const minCount=Math.min(...ids.map(id=>counts[id-1]||0));
+  // 強平衡：每多中 1 次，權重降為前一層的 12%；仍保留非零機率，不做死板輪流。
+  const weights=ids.map(id=>Math.pow(0.12,(counts[id-1]||0)-minCount));
   const total=weights.reduce((a,b)=>a+b,0);
   let x=secureRandomFloat()*total;
   for(let i=0;i<ids.length;i++){x-=weights[i];if(x<0)return ids[i]}
@@ -1417,9 +1456,12 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   ['random','custom','groups','absence'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
+  const isAbsence=t.dataset.tab==='absence';
+  $('resultBox').classList.toggle('hidden',isAbsence);
+  $('resultDetails').classList.toggle('hidden',isAbsence);
   $('balanceRecord').classList.add('hidden');
   $('raffleLeaderboard').classList.add('hidden');
-  clearResults();
+  if(!isAbsence)clearResults();
 });
 $('pureMode').onclick=()=>setRandomMode('pure');$('balancedMode').onclick=()=>setRandomMode('balanced');
 $('viewBalanceRecord').onclick=()=>{$('balanceRecord').classList.toggle('hidden');if(!$('balanceRecord').classList.contains('hidden'))renderBalanceRecord()};
@@ -1547,9 +1589,14 @@ function updateGenderHint(){
   const pool=getGroupPool(false) || names.map((_,i)=>i+1);
   const boys=pool.filter(id=>sexes[id-1]==='男').length;
   const girls=pool.filter(id=>sexes[id-1]==='女').length;
+  const unset=pool.filter(id=>sexes[id-1]!=='男'&&sexes[id-1]!=='女').length;
+  if(!Number.isInteger(g)||g<2){
+    $('boysPerGroup').removeAttribute('max');$('girlsPerGroup').removeAttribute('max');
+    $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。請先選擇組數。`;
+    return;
+  }
   const maxBoy=Math.floor(boys/g),maxGirl=Math.floor(girls/g);
   $('boysPerGroup').max=maxBoy;$('girlsPerGroup').max=maxGirl;
-  const unset=pool.filter(id=>sexes[id-1]!=='男'&&sexes[id-1]!=='女').length;
   $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。男生下限最多 ${maxBoy}、女生下限最多 ${maxGirl}；任一欄留白即代表該性別不限。`;
 }
 function getGroupPool(showError=true){
@@ -1567,9 +1614,10 @@ function getGroupPool(showError=true){
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
 $('makeGroups').onclick=()=>{
   const g=Number($('groupCount').value);
+  if(!Number.isInteger(g)||g<2)return err('請先選擇組數');
   const all=getGroupPool(true);
   if(!all)return;
-  if(g>all.length)return err('分組數不可大於參與分組的學生人數');
+  if(g>all.length)return err('組數不可大於參與分組的學生人數');
 
   const bRaw=$('boysPerGroup').value.trim(),fRaw=$('girlsPerGroup').value.trim();
   if(bRaw==='' && fRaw===''){
@@ -1862,9 +1910,21 @@ async function applyRosterImport(){
     const fileMode=!$('importFilePanel').classList.contains('hidden');
     const rows=fileMode?await readImportFile($('rosterFile').files[0]):parseDelimitedText($('rosterText').value);
     const imported=parseRosterRows(rows);
-    tempStudents=imported;renderEditGrid();
-    $('importModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
-    setTimeout(()=>alert(`已匯入 ${imported.length} 位學生。請先確認內容，再按「儲存學生資料」。`),0);
+    const applyImported=()=>{
+      const ns=imported.map(x=>x.name),sx=imported.map(x=>x.sex);
+      const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
+      names=ns;sexes=sx;saveData();
+      if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
+      tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
+      renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
+      $('importModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
+      setTimeout(()=>alert(`已匯入並儲存 ${imported.length} 位學生。你仍可在這裡檢查或修改名單。`),0);
+    };
+    const rosterChanged=imported.length!==names.length||imported.some((x,i)=>x.name!==names[i]||x.sex!==sexes[i]);
+    const hasHistory=balanceRound>1||balanceRoundDrawn.size>0||hasRaffleHistory();
+    if(rosterChanged&&hasHistory){
+      openSafeConfirm('匯入的新名單會取代目前名單。均衡抽籤與幸運星排行榜依座號保存，為避免紀錄對到錯的學生，套用新名單時會一併重設這些紀錄。確定繼續嗎？',applyImported,{title:'確認匯入學生名單',confirmText:'匯入並儲存'});
+    }else applyImported();
   }catch(e){showImportError(e?.message||'匯入失敗')}
   finally{$('applyImport').disabled=false}
 }
@@ -1875,13 +1935,9 @@ function renderEditGrid(){
   document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()})
 }
 function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
-$('absenceNone').onchange=()=>{if($('absenceNone').checked){absenceState='none';absenceSeats.clear();renderAbsenceUI()}};
-$('absenceSome').onchange=()=>{if($('absenceSome').checked){absenceState='some';renderAbsenceUI()}};
-$('selectAllAbsence').onclick=()=>{absenceState='some';absenceSeats=new Set(names.map((_,i)=>i+1));renderAbsenceUI()};
-$('clearAbsence').onclick=()=>{absenceSeats.clear();renderAbsencePad();renderAbsenceSummary()};
-$('saveAbsence').onclick=()=>{if(absenceState==='unset')return alert('請先選擇「今日無人請假」或「今日有人請假」。');if(absenceState==='some'&&!absenceSeats.size)return alert('請先選擇至少 1 位今日請假的學生。');saveAbsenceData();renderAbsenceUI();alert(absenceState==='none'?'已儲存：今日無人請假。':`已儲存今日請假：${[...absenceSeats].sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join('、')}`)};
-$('clearAbsenceState').onclick=()=>{openSafeConfirm('確定要把今天的請假狀態恢復為「未設定」嗎？',()=>{absenceState='unset';absenceSeats.clear();saveAbsenceData();renderAbsenceUI()},{title:'恢復今日請假未設定',confirmText:'恢復未設定'})};
-$('excludeAbsentRandom').onchange=e=>{absencePrefs.random=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
+$('selectAllAbsence').onclick=()=>{absenceSeats=new Set(names.map((_,i)=>i+1));saveAbsenceData();renderAbsenceUI()};
+$('clearAbsence').onclick=()=>{absenceSeats.clear();saveAbsenceData();renderAbsenceUI()};
+$('excludeAbsentRandom').onchange=e=>{absencePrefs.random=e.target.checked;saveAbsencePrefs();renderAbsenceUI();renderBalanceInfo()};
 $('excludeAbsentCustom').onchange=e=>{absencePrefs.custom=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
 $('excludeAbsentGroups').onchange=e=>{absencePrefs.groups=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
 
@@ -1945,7 +2001,7 @@ $('resetStudents').onclick=()=>{
     '確定要清除目前這個瀏覽器中的學生姓名與性別，重設為 27 個空白座號嗎？均衡抽籤紀錄與幸運星排行榜也會一併重設。',
     ()=>{
       names=[...defaultNames];sexes=[...defaultSex];saveData();
-      resetBalanceData(true);resetAllRaffleRecords(true);absenceState='unset';absenceSeats.clear();saveAbsenceData();
+      resetBalanceData(true);resetAllRaffleRecords(true);absenceState='none';absenceSeats.clear();saveAbsenceData();
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
       renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
     },
@@ -1954,7 +2010,7 @@ $('resetStudents').onclick=()=>{
 };
 
 loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();renderAbsenceUI();
-groupActiveMethod=2;setGroupMethod(2);$('rangeLimit').checked=true;$('rangeBox').classList.remove('hidden');$('exportGroups').disabled=true;
+groupActiveMethod=0;$('rangeLimit').checked=false;$('rangeBox').classList.add('hidden');$('exportGroups').disabled=true;
 setRandomMode('pure');renderRaffleControls();
 </script>
 </body></html>
