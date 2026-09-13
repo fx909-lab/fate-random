@@ -767,12 +767,6 @@ header{
 .storageWarning.show{display:block}
 
 
-.storageDiag{
-  margin:10px 0 14px;padding:12px;border:1px dashed #b9a178;border-radius:12px;
-  background:#fffaf1;color:#5f4b2d;font-size:12px;line-height:1.55;white-space:pre-wrap;
-}
-.storageDiag b{font-size:13px}
-
 </style>
 </head>
 <body>
@@ -780,11 +774,6 @@ header{
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
-<div id="storageDiag" class="storageDiag">
-<b>v17 儲存診斷</b>
-<div id="storageDiagText">尚未執行診斷。</div>
-</div>
-
 <div class="wrap"><div class="layout">
 <main class="card">
   <div class="tabs">
@@ -1166,65 +1155,16 @@ function storageSelfTest(){
   }catch(e){return false}
 }
 
-function getRosterStorageDiagnosis(){
-  const result={
-    origin:location.origin,
-    protocol:location.protocol,
-    key:STORAGE_KEY,
-    rawExists:false,
-    rawLength:0,
-    parseOk:false,
-    normalizedOk:false,
-    namesLength:null,
-    sexesLength:null,
-    firstNames:[],
-    error:''
-  };
-  try{
-    const raw=localStorage.getItem(STORAGE_KEY);
-    result.rawExists=raw!==null;
-    result.rawLength=raw?raw.length:0;
-    if(raw===null)return result;
-    const parsed=JSON.parse(raw);
-    result.parseOk=true;
-    result.namesLength=Array.isArray(parsed?.names)?parsed.names.length:null;
-    result.sexesLength=Array.isArray(parsed?.sexes)?parsed.sexes.length:null;
-    result.firstNames=Array.isArray(parsed?.names)?parsed.names.slice(0,3):[];
-    const normalized=normalizeStoredData(parsed);
-    result.normalizedOk=!!normalized;
-  }catch(e){
-    result.error=String(e&&e.message?e.message:e);
-  }
-  return result;
-}
-function renderStorageDiagnosis(label=''){
-  const el=$('storageDiagText'); if(!el)return;
-  const d=getRosterStorageDiagnosis();
-  const lines=[
-    label?`狀態：${label}`:'',
-    `origin：${d.origin}`,
-    `key：${d.key}`,
-    `rawExists：${d.rawExists}`,
-    `rawLength：${d.rawLength}`,
-    `JSON parse：${d.parseOk}`,
-    `normalizeStoredData：${d.normalizedOk}`,
-    `names.length：${d.namesLength}`,
-    `sexes.length：${d.sexesLength}`,
-    `前3筆姓名：${d.firstNames.map(x=>x||'(空白)').join('｜') || '(無)'}`,
-    d.error?`error：${d.error}`:''
-  ].filter(Boolean);
-  el.textContent=lines.join('\n');
-}
+
+
 function saveData(){
   try{
     const payload=JSON.stringify({names:[...names],sexes:[...sexes]});
     appStorageSet(STORAGE_KEY,payload);
-    const check=normalizeStoredData(JSON.parse(appStorageGet(STORAGE_KEY)||'null'));
-    if(!check||check.names.length!==names.length)throw Error('roster verification failed');
-    renderStorageDiagnosis('剛完成學生名單寫入');
+    const d=normalizeStoredData(JSON.parse(appStorageGet(STORAGE_KEY)||'null'));
+    if(!d)throw Error('roster verification failed');
     return true;
   }catch(e){
-    renderStorageDiagnosis('學生名單寫入失敗');
     alert('學生名單沒有成功儲存。請先不要重新整理頁面，回報此狀況。');
     return false;
   }
@@ -1330,7 +1270,10 @@ function loadData(){
     const raw=appStorageGet(STORAGE_KEY);
     if(raw===null)return;
     const d=normalizeStoredData(JSON.parse(raw));
-    if(d){names=d.names;sexes=d.sexes}
+    if(d){
+      names=[...d.names];
+      sexes=[...d.sexes];
+    }
   }catch(e){}
 }
 
@@ -2167,7 +2110,7 @@ $('resetStudents').onclick=()=>{
   );
 };
 
-const storageOk=storageSelfTest();$('storageWarning')?.classList.toggle('show',!storageOk);loadData();renderStorageDiagnosis('頁面載入完成');loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();renderAbsenceUI();
+const storageOk=storageSelfTest();$('storageWarning')?.classList.toggle('show',!storageOk);loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();refreshLimits();renderGroupPad();renderGroupSelected();renderStudents();renderAbsenceUI();
 groupActiveMethod=0;$('rangeLimit').checked=false;$('rangeBox').classList.add('hidden');$('exportGroups').disabled=true;
 setRandomMode('pure');renderRaffleControls();
 </script>
