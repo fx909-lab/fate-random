@@ -759,10 +759,21 @@ header{
 @media(max-width:760px){#absenceNumPad{grid-template-columns:repeat(7,minmax(32px,1fr));gap:6px}#absenceNumPad .numBtn{width:38px;height:32px;min-width:38px}}
 @media(max-width:500px){#absenceNumPad{grid-template-columns:repeat(6,minmax(30px,1fr));gap:6px}#absenceNumPad .numBtn{width:36px;height:31px;min-width:36px;font-size:13px}}
 
+
+.storageWarning{
+  display:none;margin:10px 0;padding:10px 12px;border:1px solid #b97979;border-radius:12px;
+  background:#fff1f1;color:#7d2f2f;font-weight:800;font-size:13px;line-height:1.5;
+}
+.storageWarning.show{display:block}
+
 </style>
 </head>
 <body>
 <header><h1 id="mainTitle">🎲 命運事務局 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<div id="storageWarning" class="storageWarning">
+⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
+</div>
+
 <div class="wrap"><div class="layout">
 <main class="card">
   <div class="tabs">
@@ -1120,17 +1131,27 @@ const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
-// v14：正式仍以 localStorage 為主；測試檔若瀏覽器對 file/預覽頁的 localStorage 行為不穩，
-// 同步鏡像到 sessionStorage，至少重新整理同一分頁時能安全還原。
+// v15：網站版直接使用 localStorage。每次寫入後立即回讀驗證；
 function appStorageGet(key){
-  try{const v=localStorage.getItem(key);if(v!==null)return v}catch(e){}
-  try{return sessionStorage.getItem(key)}catch(e){return null}
+  try{return localStorage.getItem(key)}catch(e){return null}
 }
 function appStorageSet(key,value){
-  let ok=false;
-  try{localStorage.setItem(key,value);ok=true}catch(e){}
-  try{sessionStorage.setItem(key,value);ok=true}catch(e){}
-  if(!ok)throw Error('storage unavailable');
+  try{
+    localStorage.setItem(key,value);
+    if(localStorage.getItem(key)!==value)throw Error('storage verification failed');
+    return true;
+  }catch(e){
+    throw Error('localStorage unavailable');
+  }
+}
+function storageSelfTest(){
+  const key='__fate_storage_test_v15__',value=String(Date.now());
+  try{
+    localStorage.setItem(key,value);
+    const ok=localStorage.getItem(key)===value;
+    localStorage.removeItem(key);
+    return ok;
+  }catch(e){return false}
 }
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -1227,8 +1248,26 @@ $('customTitleText').disabled=$('disableCustomTitle').checked;
   $('titleModal').classList.remove('hidden');
 }
 
-function loadData(){try{const d=normalizeStoredData(JSON.parse(appStorageGet(STORAGE_KEY)||'null'));if(d){names=d.names;sexes=d.sexes}}catch(e){}}
-function saveData(){try{appStorageSet(STORAGE_KEY,JSON.stringify({names,sexes}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
+function loadData(){
+  try{
+    const raw=appStorageGet(STORAGE_KEY);
+    if(raw===null)return;
+    const d=normalizeStoredData(JSON.parse(raw));
+    if(d){names=d.names;sexes=d.sexes}
+  }catch(e){}
+}}catch(e){}}
+function saveData(){
+  try{
+    const payload=JSON.stringify({names:[...names],sexes:[...sexes]});
+    appStorageSet(STORAGE_KEY,payload);
+    const check=normalizeStoredData(JSON.parse(appStorageGet(STORAGE_KEY)||'null'));
+    if(!check||check.names.length!==names.length)throw Error('roster verification failed');
+    return true;
+  }catch(e){
+    alert('學生名單沒有成功儲存。請先不要重新整理頁面，回報此狀況。');
+    return false;
+  }
+}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
 function loadBalanceData(){
   balanceRound=1;balanceRoundDrawn=new Set();
   try{
@@ -1956,7 +1995,7 @@ async function applyRosterImport(){
     const applyImported=()=>{
       const ns=imported.map(x=>x.name),sx=imported.map(x=>x.sex);
       const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
-      names=ns;sexes=sx;saveData();
+      names=ns;sexes=sx;if(!saveData())return;
       if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
       renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
@@ -2033,7 +2072,7 @@ $('saveStudents').onclick=()=>{
   const hasHistory=balanceRound>1||balanceRoundDrawn.size>0||hasRaffleHistory();
 
   const commitRoster=()=>{
-    names=ns;sexes=sx;saveData();
+    names=ns;sexes=sx;if(!saveData())return;
     if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
     renderStudents();refreshLimits();renderAbsenceUI();$('studentModal').classList.add('hidden');clearResults();
   };
@@ -2053,7 +2092,7 @@ $('resetStudents').onclick=()=>{
   openSafeConfirm(
     '確定要清除目前這個瀏覽器中的學生姓名與性別，重設為 27 個空白座號嗎？均衡抽籤紀錄與幸運星排行榜也會一併重設。',
     ()=>{
-      names=[...defaultNames];sexes=[...defaultSex];saveData();
+      names=[...defaultNames];sexes=[...defaultSex];if(!saveData())return;
       resetBalanceData(true);resetAllRaffleRecords(true);absenceState='unset';absenceSeats.clear();resetAbsenceDraft();saveAbsenceData();
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
       renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
@@ -2062,7 +2101,7 @@ $('resetStudents').onclick=()=>{
   );
 };
 
-loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();renderAbsenceUI();
+const storageOk=storageSelfTest();$('storageWarning')?.classList.toggle('show',!storageOk);loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();renderAbsenceUI();
 groupActiveMethod=0;$('rangeLimit').checked=false;$('rangeBox').classList.add('hidden');$('exportGroups').disabled=true;
 setRandomMode('pure');renderRaffleControls();
 </script>
