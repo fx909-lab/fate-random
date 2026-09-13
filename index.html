@@ -790,6 +790,10 @@ header{
   flex:0 0 auto;
 }
 
+.groupAttrCard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:rgba(255,255,255,.28)}
+.groupAttrHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.groupAttrTitle{font-weight:800}.groupAttrCats{font-size:.9rem;opacity:.8;margin-top:4px}.groupAttrActions{display:flex;gap:6px;flex-wrap:wrap}
+.groupAttrStudentGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}.groupAttrStudent{display:flex;align-items:center;gap:5px}.groupAttrStudent span{min-width:28px;font-size:.88rem}.groupAttrStudent select{margin:0;min-width:0;padding:7px}
+@media(max-width:760px){.groupAttrStudentGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -929,6 +933,19 @@ header{
             <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
             <button type="button" class="danger clearBtn" id="clearAllSpecialRules">清除全部條件</button>
           </div>
+        </div>
+      </div>
+
+      <label class="groupOptionRow"><input id="groupAttrToggle" type="checkbox" style="width:auto;margin-right:8px">自訂學生屬性</label>
+      <div id="groupAttrBox" class="hidden">
+        <div class="subcard" style="margin-top:10px">
+          <div class="help">先建立之後要用於異質分組的分類資料。本版只建立與編輯資料，尚不影響分組結果。</div>
+          <div class="row" style="margin-top:10px;gap:8px;align-items:end">
+            <div class="field" style="flex:1;min-width:150px;margin:0"><label for="groupAttrName">屬性名稱</label><input id="groupAttrName" maxlength="20" placeholder="例如：數學程度"></div>
+            <div class="field" style="flex:2;min-width:220px;margin:0"><label for="groupAttrCats">分類</label><input id="groupAttrCats" maxlength="80" placeholder="例如：A、B、C、D"></div>
+            <button type="button" class="secondary" id="addGroupAttr">＋ 建立</button>
+          </div>
+          <div id="groupAttrList" style="margin-top:12px"></div>
         </div>
       </div>
     </div>
@@ -1158,12 +1175,13 @@ const TITLE_STORAGE_KEY='604_random_title_v1';
 const RAFFLE_STORAGE_KEY='604_custom_raffle_records_v1';
 const ABSENCE_STORAGE_KEY='604_daily_absence_v1';
 const ABSENCE_PREFS_STORAGE_KEY='604_daily_absence_prefs_v1';
+const GROUP_ATTR_STORAGE_KEY='604_group_attributes_v1';
 const MAX_RAFFLE_RECORDS=30;
 const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],groupAttributes=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 // v16：網站版只使用 localStorage。
@@ -1756,6 +1774,50 @@ function getGroupPool(showError=true){
   return filterAbsent(pool,'groups');
 }
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
+
+function normalizeGroupAttributes(raw){
+  if(!Array.isArray(raw))return [];
+  return raw.slice(0,20).map((item,k)=>{
+    if(!item||typeof item!=='object')return null;
+    const name=String(item.name||'').trim().slice(0,20);
+    const categories=Array.isArray(item.categories)?[...new Set(item.categories.map(x=>String(x).trim().slice(0,20)).filter(Boolean))].slice(0,12):[];
+    if(!name||categories.length<2)return null;
+    const values={};
+    if(item.values&&typeof item.values==='object')for(let id=1;id<=names.length;id++){const v=String(item.values[id]||'').trim();if(categories.includes(v))values[id]=v}
+    return {id:String(item.id||('attr_'+k)).slice(0,50),name,categories,values};
+  }).filter(Boolean);
+}
+function loadGroupAttributes(){try{groupAttributes=normalizeGroupAttributes(JSON.parse(appStorageGet(GROUP_ATTR_STORAGE_KEY)||'[]'))}catch(e){groupAttributes=[]}}
+function saveGroupAttributes(){try{appStorageSet(GROUP_ATTR_STORAGE_KEY,JSON.stringify(groupAttributes));return true}catch(e){alert('學生屬性沒有成功儲存。');return false}}
+function parseAttrCategories(text){return [...new Set(String(text||'').split(/[、，,\n]+/).map(x=>x.trim()).filter(Boolean))]}
+function renderGroupAttributes(){
+  const box=$('groupAttrList');box.innerHTML='';
+  if(!groupAttributes.length){box.innerHTML='<div class="help">目前尚未建立學生屬性。</div>';return}
+  groupAttributes.forEach(attr=>{
+    const card=document.createElement('div');card.className='groupAttrCard';
+    card.innerHTML=`<div class="groupAttrHead"><div><div class="groupAttrTitle">${escapeHtml(attr.name)}</div><div class="groupAttrCats">${attr.categories.map(escapeHtml).join(' ／ ')}</div></div><div class="groupAttrActions"><button type="button" class="secondary attrEdit">重新設定</button><button type="button" class="danger clearBtn attrDelete">刪除</button></div></div><div class="groupAttrStudentGrid"></div>`;
+    const grid=card.querySelector('.groupAttrStudentGrid');
+    names.forEach((n,i)=>{
+      const id=i+1,l=document.createElement('label');l.className='groupAttrStudent';
+      const opts=['<option value="">未設定</option>',...attr.categories.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`)].join('');
+      l.innerHTML=`<span>${String(id).padStart(2,'0')}</span><select>${opts}</select>`;
+      const s=l.querySelector('select');s.value=attr.values[id]||'';s.onchange=()=>{s.value?attr.values[id]=s.value:delete attr.values[id];saveGroupAttributes()};grid.appendChild(l);
+    });
+    card.querySelector('.attrDelete').onclick=()=>{if(confirm(`確定刪除「${attr.name}」及這項屬性的學生分類資料嗎？`)){groupAttributes=groupAttributes.filter(x=>x.id!==attr.id);saveGroupAttributes();renderGroupAttributes()}};
+    card.querySelector('.attrEdit').onclick=()=>{
+      const n=prompt('屬性名稱：',attr.name);if(n===null)return;const c=prompt('分類（用頓號或逗號分隔）：',attr.categories.join('、'));if(c===null)return;
+      const nn=n.trim().slice(0,20),cc=parseAttrCategories(c).slice(0,12);if(!nn)return alert('請輸入屬性名稱。');if(cc.length<2)return alert('至少需要 2 個不同分類。');
+      attr.name=nn;attr.categories=cc;Object.keys(attr.values).forEach(id=>{if(!cc.includes(attr.values[id]))delete attr.values[id]});saveGroupAttributes();renderGroupAttributes();
+    };box.appendChild(card);
+  });
+}
+$('groupAttrToggle').onchange=e=>{$('groupAttrBox').classList.toggle('hidden',!e.target.checked);if(e.target.checked)renderGroupAttributes()};
+$('addGroupAttr').onclick=()=>{
+  const name=$('groupAttrName').value.trim().slice(0,20),categories=parseAttrCategories($('groupAttrCats').value).slice(0,12);
+  if(!name)return alert('請輸入屬性名稱。');if(categories.length<2)return alert('至少需要 2 個不同分類。');if(groupAttributes.some(a=>a.name===name))return alert('已經有同名的學生屬性。');
+  groupAttributes.push({id:'attr_'+Date.now(),name,categories,values:{}});if(saveGroupAttributes()){$('groupAttrName').value='';$('groupAttrCats').value='';renderGroupAttributes()}
+};
+
 $('advancedGroupToggle').onchange=e=>{
   $('advancedGroupBox').classList.toggle('hidden',!e.target.checked);
   if(e.target.checked && !$('specialRuleRows').children.length)addSpecialRuleRow();
@@ -2347,6 +2409,7 @@ try{loadTitleSettings();renderTitle()}catch(e){}
 try{loadBalanceData()}catch(e){}
 try{loadRaffleRecords()}catch(e){}
 try{loadAbsenceData()}catch(e){}
+try{loadGroupAttributes()}catch(e){}
 
 // 先直接從裝置端名單 key 還原並渲染，再初始化其他控制元件。
 restoreRosterFromDevice();
