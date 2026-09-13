@@ -776,6 +776,20 @@ header{
   .specialRuleRemove{min-width:34px;padding:8px}
 }
 
+
+.groupOptionRow{
+  display:flex;
+  align-items:center;
+  min-height:28px;
+  margin:8px 0 0;
+  line-height:1.35;
+}
+.groupOptionRow input[type="checkbox"]{
+  width:auto;
+  margin:0 8px 0 0;
+  flex:0 0 auto;
+}
+
 </style>
 </head>
 <body>
@@ -877,9 +891,9 @@ header{
     </div>
 
     <div class="field">
-      <label class="absenceToggleRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
+      <label class="absenceToggleRow groupOptionRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
       <div id="absenceNoticeGroups" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
-      <label><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組名單</label>
+      <label class="groupOptionRow"><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組名單</label>
       <div id="rangeBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
           <div class="help">可使用「輸入座號」或「號碼盤點選」其中一種；未設定時仍視為全班參與。</div>
@@ -906,7 +920,7 @@ header{
         </div>
       </div>
 
-      <label style="margin-top:14px"><input id="advancedGroupToggle" type="checkbox" style="width:auto;margin-right:8px">進階分組條件</label>
+      <label class="groupOptionRow"><input id="advancedGroupToggle" type="checkbox" style="width:auto;margin-right:8px">進階分組條件</label>
       <div id="advancedGroupBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
           <div class="help">按「＋」新增一組條件，再選擇「綁定」或「互斥」並輸入座號。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。</div>
