@@ -790,6 +790,12 @@ header{
   flex:0 0 auto;
 }
 
+.heterogeneousBox{margin-top:10px}
+.heterogeneousSelectRow{display:grid;grid-template-columns:minmax(110px,160px) minmax(180px,1fr);gap:10px;align-items:center;margin-top:10px}
+.heterogeneousSelectRow label{margin:0}
+.heterogeneousSelectRow select{margin:0;min-width:0}
+@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:1fr;gap:6px}}
+
 .attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid select option{text-align:center}.editGrid.attrGrid select.editAttrValue.missingAttr{color:#b42318;font-weight:800}.editGrid.attrGrid select.editAttrValue.missingAttr option{color:#2d2923;font-weight:400}.editGrid.attrGrid select.editAttrValue.missingAttr option[value=""]{color:#b42318;font-weight:800}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
 /* Zero attributes: keep the original 4-column edit layout. */
@@ -934,6 +940,18 @@ header{
           <div class="row" style="margin-top:10px;justify-content:space-between;gap:8px;flex-wrap:wrap">
             <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
             <button type="button" class="danger clearBtn" id="clearAllSpecialRules">清除全部條件</button>
+          </div>
+
+          <div class="subcard heterogeneousBox">
+            <label class="groupOptionRow" style="margin-top:0"><input id="heterogeneousGroupToggle" type="checkbox">異質性分組</label>
+            <div class="help">一次選擇 1 個學生屬性，系統會在符合綁定／互斥、組別人數與性別條件的前提下，盡量把不同分類平均分散到各組。</div>
+            <div id="heterogeneousGroupBox" class="hidden">
+              <div class="heterogeneousSelectRow">
+                <label for="heterogeneousAttribute">分組屬性</label>
+                <select id="heterogeneousAttribute"></select>
+              </div>
+              <div id="heterogeneousAttributeHint" class="help" style="margin-top:8px"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1791,8 +1809,43 @@ function getGroupPool(showError=true){
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
 $('advancedGroupToggle').onchange=e=>{
   $('advancedGroupBox').classList.toggle('hidden',!e.target.checked);
-  if(e.target.checked && !$('specialRuleRows').children.length)addSpecialRuleRow();
+  if(e.target.checked){
+    if(!$('specialRuleRows').children.length)addSpecialRuleRow();
+    renderHeterogeneousAttributeOptions();
+  }
 };
+
+function renderHeterogeneousAttributeOptions(){
+  loadStudentAttributes();
+  const sel=$('heterogeneousAttribute');
+  const current=sel.value;
+  if(!studentAttributes.length){
+    sel.innerHTML='<option value="">尚未建立學生屬性</option>';
+    sel.disabled=true;
+    $('heterogeneousGroupToggle').disabled=true;
+    $('heterogeneousGroupToggle').checked=false;
+    $('heterogeneousGroupBox').classList.add('hidden');
+    $('heterogeneousAttributeHint').textContent='請先到「設定 → 新增／修改學生」建立學生屬性。';
+    return;
+  }
+  $('heterogeneousGroupToggle').disabled=false;
+  sel.disabled=false;
+  sel.innerHTML='<option value="">請選擇學生屬性</option>'+studentAttributes.map(a=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}${a.ordered?'（程度高 → 低）':''}</option>`).join('');
+  if(studentAttributes.some(a=>a.id===current))sel.value=current;
+  updateHeterogeneousAttributeHint();
+}
+function updateHeterogeneousAttributeHint(){
+  const a=studentAttributes.find(x=>x.id===$('heterogeneousAttribute').value);
+  if(!a){$('heterogeneousAttributeHint').textContent='每次分組只使用 1 個學生屬性。';return}
+  $('heterogeneousAttributeHint').textContent=a.ordered
+    ?`「${a.name}」具有程度順序：${a.categories.join(' → ')}。系統會優先讓各組的整體程度分布接近。`
+    :`「${a.name}」沒有高低順序。系統只會盡量把「${a.categories.join('、')}」等不同分類平均分散。`;
+}
+$('heterogeneousGroupToggle').onchange=e=>{
+  $('heterogeneousGroupBox').classList.toggle('hidden',!e.target.checked);
+  if(e.target.checked)renderHeterogeneousAttributeOptions();
+};
+$('heterogeneousAttribute').onchange=updateHeterogeneousAttributeHint;
 
 function addSpecialRuleRow(type='exclude',value=''){
   const row=document.createElement('div');
@@ -1951,6 +2004,129 @@ function buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows){
   return groups.map(gr=>shuffle(gr.ids));
 }
 
+function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr){
+  const poolSet=new Set(all);
+  const referenced=[...bindRows,...excludeRows].flat();
+  const outside=[...new Set(referenced.filter(id=>!poolSet.has(id)))].sort((a,b)=>a-b);
+  if(outside.length)throw Error(`進階條件包含目前未參與分組的座號：${outside.join('、')}。請先調整參與名單或請假設定。`);
+  for(const row of excludeRows){
+    if(row.length>g)throw Error(`互斥條件「${row.join('、')}」共有 ${row.length} 人，但目前只有 ${g} 組，無法讓每個人都在不同組。`);
+  }
+
+  const parent=new Map(all.map(id=>[id,id]));
+  const find=x=>{
+    let p=parent.get(x);
+    while(p!==parent.get(p)){parent.set(p,parent.get(parent.get(p)));p=parent.get(p)}
+    while(x!==p){const n=parent.get(x);parent.set(x,p);x=n}
+    return p;
+  };
+  const union=(a,b)=>{const ra=find(a),rb=find(b);if(ra!==rb)parent.set(rb,ra)};
+  bindRows.forEach(row=>{for(let i=1;i<row.length;i++)union(row[0],row[i])});
+
+  const compMap=new Map();
+  all.forEach(id=>{const r=find(id);if(!compMap.has(r))compMap.set(r,[]);compMap.get(r).push(id)});
+  const rootConflicts=new Map();
+  const addConflict=(a,b)=>{
+    const ra=find(a),rb=find(b);
+    if(ra===rb)throw Error(`座號 ${a} 與 ${b} 同時被設定為「一定同組」與「彼此不同組」，條件互相衝突。`);
+    if(!rootConflicts.has(ra))rootConflicts.set(ra,new Set());
+    if(!rootConflicts.has(rb))rootConflicts.set(rb,new Set());
+    rootConflicts.get(ra).add(rb);rootConflicts.get(rb).add(ra);
+  };
+  excludeRows.forEach(row=>{for(let i=0;i<row.length;i++)for(let j=i+1;j<row.length;j++)addConflict(row[i],row[j])});
+
+  const base=Math.floor(all.length/g),extra=all.length%g;
+  const capacities=Array.from({length:g},(_,i)=>base+(i<extra?1:0));
+  const maxCap=Math.max(...capacities);
+  const catIndex=new Map(attr.categories.map((c,i)=>[c,i]));
+  const rankOf=c=>attr.ordered?(catIndex.get(c)+1):0;
+
+  let units=[...compMap.entries()].map(([root,ids])=>{
+    const attrCounts=Array(attr.categories.length).fill(0);
+    let attrRankSum=0;
+    ids.forEach(id=>{const v=attr.values[id];const ci=catIndex.get(v);if(ci!==undefined){attrCounts[ci]++;attrRankSum+=rankOf(v)}});
+    return {
+      root,ids:[...ids],size:ids.length,
+      boys:ids.filter(id=>sexes[id-1]==='男').length,
+      girls:ids.filter(id=>sexes[id-1]==='女').length,
+      conflicts:rootConflicts.get(root)||new Set(),attrCounts,attrRankSum
+    };
+  });
+  const oversized=units.find(u=>u.size>maxCap);
+  if(oversized)throw Error(`綁定條件「${oversized.ids.join('、')}」共有 ${oversized.size} 人，但目前每組最多 ${maxCap} 人，無法同組。`);
+
+  units=units.map(u=>({...u,tie:secureRandomInt(1000000)}))
+    .sort((a,b)=>b.size-a.size || b.conflicts.size-a.conflicts.size || a.tie-b.tie);
+
+  const groups=capacities.map(cap=>({cap,ids:[],roots:new Set(),boys:0,girls:0,attrCounts:Array(attr.categories.length).fill(0),attrRankSum:0}));
+  const totalB=units.reduce((s,u)=>s+u.boys,0),totalF=units.reduce((s,u)=>s+u.girls,0);
+  const totalCats=Array(attr.categories.length).fill(0);
+  let totalRank=0;units.forEach(u=>{u.attrCounts.forEach((n,i)=>totalCats[i]+=n);totalRank+=u.attrRankSum});
+  const totalN=all.length;
+
+  function groupAccepts(gr,u){
+    if(gr.ids.length+u.size>gr.cap)return false;
+    for(const r of gr.roots)if(u.conflicts.has(r))return false;
+    return true;
+  }
+  function projectedPenalty(gr,u){
+    const nextSize=gr.ids.length+u.size,nextB=gr.boys+u.boys;
+    const gender=Math.abs(nextB*totalN-totalB*nextSize);
+    let cat=0;
+    for(let i=0;i<totalCats.length;i++)cat+=Math.abs((gr.attrCounts[i]+u.attrCounts[i])*totalN-totalCats[i]*nextSize);
+    const rank=attr.ordered?Math.abs((gr.attrRankSum+u.attrRankSum)*totalN-totalRank*nextSize):0;
+    return {gender,attr:attr.ordered?rank*8+cat:cat};
+  }
+  function completeScore(){
+    let gender=0,cat=0,rank=0;
+    groups.forEach(gr=>{
+      gender+=Math.abs(gr.boys*totalN-totalB*gr.cap);
+      for(let i=0;i<totalCats.length;i++)cat+=Math.abs(gr.attrCounts[i]*totalN-totalCats[i]*gr.cap);
+      if(attr.ordered)rank+=Math.abs(gr.attrRankSum*totalN-totalRank*gr.cap);
+    });
+    return [gender,attr.ordered?rank*8+cat:cat];
+  }
+  function better(a,b){return !b || a[0]<b[0] || (a[0]===b[0]&&a[1]<b[1])}
+
+  let nodes=0,solutions=0,bestScore=null,bestGroups=null;
+  const NODE_LIMIT=220000,MAX_SOLUTIONS=320;
+  function dfs(idx,remB,remF){
+    if(++nodes>NODE_LIMIT)return true;
+    if(idx===units.length){
+      if(!groups.every(gr=>gr.ids.length===gr.cap&&gr.boys>=bMin&&gr.girls>=fMin))return false;
+      solutions++;const score=completeScore();
+      if(better(score,bestScore)){bestScore=score;bestGroups=groups.map(gr=>[...gr.ids])}
+      return solutions>=MAX_SOLUTIONS;
+    }
+    const u=units[idx];
+    let candidates=groups.map((gr,i)=>({gr,i}))
+      .filter(x=>groupAccepts(x.gr,u))
+      .map(x=>{const p=projectedPenalty(x.gr,u);return {...x,needScore:Math.max(0,bMin-x.gr.boys)*(u.boys>0?2:0)+Math.max(0,fMin-x.gr.girls)*(u.girls>0?2:0),genderPenalty:p.gender,attrPenalty:p.attr,size:x.gr.ids.length,tie:secureRandomInt(1000000)}})
+      .sort((a,b)=>b.needScore-a.needScore || a.genderPenalty-b.genderPenalty || a.attrPenalty-b.attrPenalty || a.size-b.size || a.tie-b.tie);
+
+    const seenSignatures=new Set();
+    for(const {gr} of candidates){
+      const sig=`${gr.cap-gr.ids.length}|${gr.boys}|${gr.girls}|${gr.attrCounts.join(',')}|${gr.attrRankSum}|${[...gr.roots].sort((a,b)=>a-b).join(',')}`;
+      if(seenSignatures.has(sig))continue;seenSignatures.add(sig);
+      gr.ids.push(...u.ids);gr.roots.add(u.root);gr.boys+=u.boys;gr.girls+=u.girls;gr.attrRankSum+=u.attrRankSum;u.attrCounts.forEach((n,i)=>gr.attrCounts[i]+=n);
+      const nextB=remB-u.boys,nextF=remF-u.girls;
+      let possible=true,totalBDef=0,totalFDef=0;
+      for(const x of groups){
+        const bDef=Math.max(0,bMin-x.boys),fDef=Math.max(0,fMin-x.girls),slots=x.cap-x.ids.length;
+        if(slots<bDef+fDef){possible=false;break}
+        totalBDef+=bDef;totalFDef+=fDef;
+      }
+      const stop=possible&&nextB>=totalBDef&&nextF>=totalFDef&&dfs(idx+1,nextB,nextF);
+      gr.ids.splice(gr.ids.length-u.size,u.size);gr.roots.delete(u.root);gr.boys-=u.boys;gr.girls-=u.girls;gr.attrRankSum-=u.attrRankSum;u.attrCounts.forEach((n,i)=>gr.attrCounts[i]-=n);
+      if(stop)return true;
+    }
+    return false;
+  }
+  dfs(0,totalB,totalF);
+  if(!bestGroups)throw Error('目前的綁定、互斥、組數、性別下限與參與名單無法同時成立。請調整其中一項條件後再試。');
+  return bestGroups.map(gr=>shuffle(gr));
+}
+
 $('makeGroups').onclick=()=>{
   const g=Number($('groupCount').value);
   if(!Number.isInteger(g)||g<2)return err('請先選擇組數');
@@ -1977,8 +2153,18 @@ $('makeGroups').onclick=()=>{
   if($('advancedGroupToggle').checked){
     try{
       const {bindRows,excludeRows}=readSpecialGroupRules();
-      if(!bindRows.length&&!excludeRows.length)throw Error('已開啟進階分組條件，但目前沒有輸入任何綁定或互斥條件。');
-      const gs=buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
+      let attr=null;
+      if($('heterogeneousGroupToggle').checked){
+        loadStudentAttributes();
+        attr=studentAttributes.find(a=>a.id===$('heterogeneousAttribute').value)||null;
+        if(!attr)throw Error('請先選擇這次異質性分組要使用的學生屬性。');
+        const missing=all.filter(id=>!attr.values[id]);
+        if(missing.length)throw Error(`「${attr.name}」尚未設定完整。未設定座號：${missing.map(n=>String(n).padStart(2,'0')).join('、')}。請先到「設定 → 新增／修改學生」補上資料後再分組。`);
+      }
+      if(!bindRows.length&&!excludeRows.length&&!attr)throw Error('已開啟進階分組條件，但目前沒有輸入綁定／互斥條件，也沒有開啟異質性分組。');
+      const gs=attr
+        ?buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr)
+        :buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
       return renderGroups(gs);
     }catch(e){
       return err(e.message);
