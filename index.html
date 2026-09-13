@@ -790,7 +790,18 @@ header{
   flex:0 0 auto;
 }
 
-.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:60px minmax(150px,1fr) 100px repeat(var(--attr-count),minmax(125px,160px)) 82px;min-width:max-content}.attrHdr{display:flex;align-items:center;gap:4px;white-space:nowrap}.attrHdr button{padding:2px 5px;font-size:11px}@media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid{grid-template-columns:50px minmax(120px,1fr) 85px repeat(var(--attr-count),minmax(120px,145px)) 68px}}</style>
+.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:60px minmax(150px,1fr) 100px repeat(var(--attr-count),minmax(125px,160px)) 82px;min-width:max-content}.attrHdr{display:flex;align-items:center;gap:4px;white-space:nowrap}.attrHdr button{padding:2px 5px;font-size:11px}@media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid{grid-template-columns:50px minmax(120px,1fr) 85px repeat(var(--attr-count),minmax(120px,145px)) 68px}}
+.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}
+.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
+
+/* Zero attributes: keep the original 4-column edit layout.
+   One or more attributes: switch to the dynamic attribute grid. */
+.editGrid.attrGrid.noAttrs{grid-template-columns:60px minmax(150px,1fr) 100px 82px;min-width:0}
+@media(max-width:700px){
+  .editGrid.attrGrid.noAttrs{grid-template-columns:50px minmax(120px,1fr) 85px 68px;min-width:0}
+}
+
+</style>
 </head>
 <body>
 <header><h1 id="mainTitle">🎲 命運事務局 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
@@ -1150,7 +1161,7 @@ header{
 <div id="attributeCreatorModal" class="modal hidden"><div class="modalBox" style="width:min(560px,96vw)">
 <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 class="modalTitle">新增學生屬性</h2><button class="secondary" id="closeAttributeCreator">關閉</button></div>
 <div class="field"><label>屬性名稱</label><input id="newAttributeName" maxlength="20" autocomplete="off" placeholder="例如：數學程度"></div>
-<label class="checkline"><input id="newAttributeOrdered" type="checkbox">分類具有程度／順序意義</label>
+<label class="attributeOrderedRow"><input id="newAttributeOrdered" type="checkbox"><span>分類具有程度／順序意義</span></label>
 <div class="help" style="margin:6px 0 12px">勾選後，分類 1 → 4 代表你設定的順序；一般類別請不要勾選。</div>
 <div class="attributeCategoryInputs"><input class="newAttributeCategory" maxlength="20" placeholder="分類 1"><input class="newAttributeCategory" maxlength="20" placeholder="分類 2"><input class="newAttributeCategory" maxlength="20" placeholder="分類 3"><input class="newAttributeCategory" maxlength="20" placeholder="分類 4"></div>
 <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="primary" id="confirmCreateAttribute">建立屬性</button></div>
@@ -2267,7 +2278,7 @@ function openAttributeCreator(){$('newAttributeName').value='';$('newAttributeOr
 function editAttribute(a){const n=prompt('屬性名稱：',a.name);if(n===null)return;const c=prompt('分類（用頓號或逗號分隔）：',a.categories.join('、'));if(c===null)return;const name=n.trim().slice(0,20),cats=[...new Set(c.split(/[、，,\n]+/).map(x=>x.trim().slice(0,20)).filter(Boolean))].slice(0,8);if(!name)return alert('請輸入屬性名稱。');if(cats.length<2)return alert('至少需要 2 個不同分類。');a.name=name;a.categories=cats;Object.keys(a.values).forEach(s=>{if(!cats.includes(a.values[s]))delete a.values[s]});saveStudentAttributes();renderEditGrid()}
 function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid()},{title:'確認刪除屬性',confirmText:'刪除'})}
 function renderEditGrid(){
- loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid';g.style.setProperty('--attr-count',studentAttributes.length);
+ loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs');g.style.setProperty('--attr-count',studentAttributes.length);
  g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr">${escapeHtml(a.name)}${a.ordered?' ↕':''}<button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
  tempStudents.forEach((s,i)=>{const seat=i+1,attrs=studentAttributes.map(a=>`<select class="editAttrValue" data-seat="${seat}" data-attr="${escapeHtml(a.id)}"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${a.values[seat]===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`).join('');g.insertAdjacentHTML('beforeend',`<div>${String(seat).padStart(2,'0')}</div><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select>${attrs}<button class="danger removeStudent" data-i="${i}">刪除</button>`)});
  document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()});
