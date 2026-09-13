@@ -1131,7 +1131,8 @@ const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
-// v15：網站版直接使用 localStorage。每次寫入後立即回讀驗證；
+// v16：網站版只使用 localStorage。
+// 每次寫入後立即回讀驗證；載入時絕不主動覆寫既有資料。
 function appStorageGet(key){
   try{return localStorage.getItem(key)}catch(e){return null}
 }
@@ -1145,7 +1146,7 @@ function appStorageSet(key,value){
   }
 }
 function storageSelfTest(){
-  const key='__fate_storage_test_v15__',value=String(Date.now());
+  const key='__fate_storage_test_v16__',value=String(Date.now());
   try{
     localStorage.setItem(key,value);
     const ok=localStorage.getItem(key)===value;
@@ -1255,7 +1256,7 @@ function loadData(){
     const d=normalizeStoredData(JSON.parse(raw));
     if(d){names=d.names;sexes=d.sexes}
   }catch(e){}
-}}catch(e){}}
+}
 function saveData(){
   try{
     const payload=JSON.stringify({names:[...names],sexes:[...sexes]});
@@ -1267,7 +1268,7 @@ function saveData(){
     alert('學生名單沒有成功儲存。請先不要重新整理頁面，回報此狀況。');
     return false;
   }
-}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
+}
 function loadBalanceData(){
   balanceRound=1;balanceRoundDrawn=new Set();
   try{
