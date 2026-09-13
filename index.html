@@ -925,8 +925,9 @@ header{
         <div class="subcard" style="margin-top:10px">
           <div class="help">按「＋」新增一組條件，再選擇「綁定」或「互斥」並輸入座號。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。</div>
           <div id="specialRuleRows" style="margin-top:12px"></div>
-          <div class="row" style="margin-top:10px">
+          <div class="row" style="margin-top:10px;justify-content:space-between;gap:8px;flex-wrap:wrap">
             <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
+            <button type="button" class="secondary" id="clearAllSpecialRules">清除全部條件</button>
           </div>
         </div>
       </div>
@@ -1774,6 +1775,9 @@ function addSpecialRuleRow(type='bind',value=''){
   $('specialRuleRows').appendChild(row);
 }
 $('addSpecialRule').onclick=()=>addSpecialRuleRow();
+$('clearAllSpecialRules').onclick=()=>{
+  $('specialRuleRows').innerHTML='';
+};
 
 function readSpecialGroupRules(){
   const bindRows=[],excludeRows=[];
