@@ -728,6 +728,10 @@ header{
   .exportChoiceGrid{grid-template-columns:1fr}
 }
 
+
+/* ===== v12：今日請假 ===== */
+.absenceToggleRow{display:flex;align-items:center;gap:8px;font-weight:800;cursor:pointer;margin:10px 0}.absenceToggleRow input{width:auto}.absenceNotice{margin-top:6px;font-size:13px;color:#8a6a34;line-height:1.5}.absenceStatusBox{border:1px solid var(--fate-line);border-radius:14px;padding:14px;background:#fffaf1;margin-top:12px}.absenceChoice{display:flex;align-items:center;gap:9px;font-weight:800;margin:10px 0;cursor:pointer}.absenceChoice input{width:auto}.absenceSummary{margin-top:12px;padding:10px 12px;border-radius:11px;background:#f4ecdd;color:#604a29;font-weight:800}.absenceMark{display:inline-grid;place-items:center;min-width:24px;height:22px;margin-left:auto;margin-right:6px;padding:0 6px;border:1px solid #c9b486;border-radius:999px;background:#f4ead5;color:#72572b;font-size:11px;font-weight:900;letter-spacing:.04em;flex:0 0 auto}.student .nameLine{min-width:0}.student .absenceMark + .sex{margin-left:0}.tabStatus{display:inline-block;margin-left:5px;font-size:11px;font-weight:900;color:#8a6a34}.tab.active .tabStatus{color:#71572f}@media(max-width:500px){.tabStatus{font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -738,6 +742,7 @@ header{
     <button class="tab active" data-tab="random">🎲 隨機抽籤</button>
     <button class="tab" data-tab="custom">✏️ 自訂座號抽籤</button>
     <button class="tab" data-tab="groups">👥 隨機分組</button>
+    <button class="tab" data-tab="absence">📋 今日請假 <span id="absenceTabStatus" class="tabStatus">未設定</span></button>
   </div>
 
   <section id="random">
@@ -755,6 +760,8 @@ header{
       </div>
     </div>
     <div class="field"><label>抽取人數</label><input id="randomCount" class="small" type="number" min="1" value="1"></div>
+    <label class="absenceToggleRow"><input id="excludeAbsentRandom" type="checkbox" checked> 排除今日請假</label>
+    <div id="absenceNoticeRandom" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
     <div class="row"><button class="primary" id="drawRandom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
   </section>
 
@@ -792,6 +799,8 @@ header{
       </div>
     </div>
 
+    <label class="absenceToggleRow"><input id="excludeAbsentCustom" type="checkbox" checked> 排除今日請假</label>
+    <div id="absenceNoticeCustom" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
     <div class="row"><button class="primary" id="drawCustom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
   </section>
 
@@ -820,6 +829,8 @@ header{
     </div>
 
     <div class="field">
+      <label class="absenceToggleRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
+      <div id="absenceNoticeGroups" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
       <label><input id="rangeLimit" type="checkbox" checked style="width:auto;margin-right:8px">調整參與分組範圍</label>
       <div id="rangeBox">
         <div class="subcard" style="margin-top:10px">
@@ -852,6 +863,24 @@ header{
       <button class="primary" id="makeGroups">👥 開始分組</button>
       <button class="secondary" id="exportGroups" disabled>⬇ 匯出分組</button>
       <button class="danger clearBtn">清除結果</button>
+    </div>
+  </section>
+
+  <section id="absence" class="hidden">
+    <div class="field">
+      <label>今日請假</label>
+      <div class="help">只用來暫時排除今天不參與抽籤／分組的學生，不記錄請假類型或原因。跨日後會自動回到「未設定」。</div>
+      <div class="absenceStatusBox">
+        <label class="absenceChoice"><input type="radio" name="absenceState" id="absenceNone" value="none"> 今日無人請假</label>
+        <label class="absenceChoice"><input type="radio" name="absenceState" id="absenceSome" value="some"> 今日有人請假</label>
+        <div id="absencePadBox" class="hidden">
+          <div class="help" style="margin-top:8px">點選今天請假的座號；再點一次即可取消。</div>
+          <div id="absenceNumPad" class="numPad"></div>
+          <div class="row" style="margin-top:12px"><button class="secondary" id="selectAllAbsence">全選</button><button class="secondary" id="clearAbsence">清除已選</button></div>
+          <div id="absenceSummary" class="absenceSummary">今日請假：尚未選擇</div>
+        </div>
+        <div class="row" style="margin-top:16px"><button class="primary" id="saveAbsence">儲存今日狀態</button><button class="secondary" id="clearAbsenceState">恢復未設定</button></div>
+      </div>
     </div>
   </section>
 
@@ -1056,15 +1085,28 @@ const STORAGE_KEY='lingzhou604_students';
 const BALANCE_STORAGE_KEY='604_random_balance_v1';
 const TITLE_STORAGE_KEY='604_random_title_v1';
 const RAFFLE_STORAGE_KEY='604_custom_raffle_records_v1';
+const ABSENCE_STORAGE_KEY='604_daily_absence_v1';
+const ABSENCE_PREFS_STORAGE_KEY='604_daily_absence_prefs_v1';
 const MAX_RAFFLE_RECORDS=30;
 const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[];
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function localDateStamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
+function normalizeAbsenceData(d){if(!d||typeof d!=='object'||d.date!==localDateStamp())return {state:'unset',seats:[]};const state=['unset','none','some'].includes(d.state)?d.state:'unset';const seats=Array.isArray(d.seats)?[...new Set(d.seats.filter(n=>Number.isInteger(n)&&n>=1&&n<=names.length))].sort((a,b)=>a-b):[];return {state:state==='some'&&seats.length===0?'unset':state,seats}}
+function loadAbsenceData(){try{const d=normalizeAbsenceData(JSON.parse(localStorage.getItem(ABSENCE_STORAGE_KEY)||'null'));absenceState=d.state;absenceSeats=new Set(d.seats)}catch(e){absenceState='unset';absenceSeats=new Set()}try{const p=JSON.parse(localStorage.getItem(ABSENCE_PREFS_STORAGE_KEY)||'null');if(p&&typeof p==='object')absencePrefs={random:p.random!==false,custom:p.custom!==false,groups:p.groups!==false}}catch(e){}}
+function saveAbsencePrefs(){try{localStorage.setItem(ABSENCE_PREFS_STORAGE_KEY,JSON.stringify(absencePrefs))}catch(e){}}
+function saveAbsenceData(){try{localStorage.setItem(ABSENCE_STORAGE_KEY,JSON.stringify({date:localDateStamp(),state:absenceState,seats:[...absenceSeats].sort((a,b)=>a-b)}))}catch(e){alert('今日請假狀態無法儲存在此瀏覽器。')}}
+function effectiveAbsentSet(){return absenceState==='some'?new Set([...absenceSeats].filter(id=>id>=1&&id<=names.length)):new Set()}
+function filterAbsent(ids,feature){if(!absencePrefs[feature])return [...ids];const absent=effectiveAbsentSet();return ids.filter(id=>!absent.has(id))}
+function renderAbsencePad(){const box=$('absenceNumPad');if(!box)return;box.innerHTML='';for(let i=1;i<=names.length;i++){const b=document.createElement('button');b.className='numBtn'+(absenceSeats.has(i)?' sel':'');b.textContent=i;b.onclick=()=>{absenceSeats.has(i)?absenceSeats.delete(i):absenceSeats.add(i);renderAbsencePad();renderAbsenceSummary()};box.appendChild(b)}}
+function renderAbsenceSummary(){const el=$('absenceSummary');if(!el)return;const arr=[...absenceSeats].sort((a,b)=>a-b);el.textContent=arr.length?`今日請假：${arr.map(n=>String(n).padStart(2,'0')).join('、')}`:'今日請假：尚未選擇'}
+function renderAbsenceUI(){if(!$('absenceNone'))return;$('absenceNone').checked=absenceState==='none';$('absenceSome').checked=absenceState==='some';$('absencePadBox').classList.toggle('hidden',absenceState!=='some');renderAbsencePad();renderAbsenceSummary();const status=absenceState==='unset'?'未設定':absenceState==='none'?'無':`${absenceSeats.size}人`;$('absenceTabStatus').textContent=status;$('excludeAbsentRandom').checked=absencePrefs.random;$('excludeAbsentCustom').checked=absencePrefs.custom;$('excludeAbsentGroups').checked=absencePrefs.groups;$('absenceNoticeRandom').classList.toggle('hidden',!(absencePrefs.random&&absenceState==='unset'));$('absenceNoticeCustom').classList.toggle('hidden',!(absencePrefs.custom&&absenceState==='unset'));$('absenceNoticeGroups').classList.toggle('hidden',!(absencePrefs.groups&&absenceState==='unset'));renderStudents();updateGenderHint()}
+function clearAbsenceForRosterChange(){absenceState='unset';absenceSeats=new Set();saveAbsenceData()}
 function normalizeStoredData(d){
   if(!d||!Array.isArray(d.names)||!Array.isArray(d.sexes)||d.names.length<1||d.names.length>MAX_STUDENTS||d.sexes.length!==d.names.length)return null;
   const safeNames=[],safeSexes=[];
@@ -1173,22 +1215,30 @@ function requestNextBalanceRound(){
     :`本輪已完成。確定要進入第 ${balanceRound+1} 輪嗎？`;
   $('roundActionModal').classList.remove('hidden');
 }
-function drawBalanced(count){
+function drawBalanced(count,eligibleIds=null){
+  const eligible=eligibleIds?new Set(eligibleIds):new Set(names.map((_,i)=>i+1));
+  if(count>eligible.size)throw Error(`目前可抽學生只有 ${eligible.size} 人`);
+  const remainingEligible=[...eligible].filter(id=>!balanceRoundDrawn.has(id));
+  const remainingOverall=names.map((_,i)=>i+1).filter(id=>!balanceRoundDrawn.has(id));
+  const blockedByAbsence=remainingOverall.some(id=>!eligible.has(id));
+  if(blockedByAbsence&&count>remainingEligible.length){
+    throw Error(`本輪目前只剩 ${remainingEligible.length} 位可抽學生；其餘尚未抽到者在今日請假名單中。請減少抽取人數、取消「排除今日請假」，或手動進入下一輪。`);
+  }
   const picked=[],batchPicked=new Set();
   while(picked.length<count){
-    let candidates=names.map((_,i)=>i+1).filter(id=>!balanceRoundDrawn.has(id)&&!batchPicked.has(id));
+    let candidates=[...eligible].filter(id=>!balanceRoundDrawn.has(id)&&!batchPicked.has(id));
     if(!candidates.length){
+      const remainingOverall=names.map((_,i)=>i+1).filter(id=>!balanceRoundDrawn.has(id));
+      if(remainingOverall.length)throw Error('本輪剩餘可抽學生目前都在今日請假名單中；可取消「排除今日請假」或手動進入下一輪。');
       advanceBalanceRound(false);
-      candidates=names.map((_,i)=>i+1).filter(id=>!batchPicked.has(id));
+      candidates=[...eligible].filter(id=>!batchPicked.has(id));
     }
+    if(!candidates.length)throw Error('目前沒有可抽的學生');
     const id=candidates[secureRandomInt(candidates.length)];
-    picked.push(id);
-    batchPicked.add(id);
-    balanceRoundDrawn.add(id);
+    picked.push(id);batchPicked.add(id);balanceRoundDrawn.add(id);
     if(balanceRoundDrawn.size===names.length&&picked.length<count)advanceBalanceRound(false);
   }
-  if(balanceRoundDrawn.size===names.length)advanceBalanceRound(false);
-  else{saveBalanceData();renderBalanceInfo()}
+  if(balanceRoundDrawn.size===names.length)advanceBalanceRound(false);else{saveBalanceData();renderBalanceInfo()}
   return picked;
 }
 
@@ -1302,7 +1352,8 @@ function refreshLimits(){
 }
 function renderStudents(){
   students.innerHTML='';
-  names.forEach((n,i)=>{const d=document.createElement('div');d.className='student';d.id='s'+(i+1);d.innerHTML=`<span class="nameLine">${String(i+1).padStart(2,'0')}${n?'. '+escapeHtml(n):''}</span><span class="sex">${escapeHtml(sexes[i]||'')}</span>`;students.appendChild(d)});
+  const absent=effectiveAbsentSet();
+  names.forEach((n,i)=>{const id=i+1,d=document.createElement('div');d.className='student';d.id='s'+id;d.innerHTML=`<span class="nameLine">${String(id).padStart(2,'0')}${n?'. '+escapeHtml(n):''}</span>${absent.has(id)?'<span class="absenceMark" title="今日請假">假</span>':''}<span class="sex">${escapeHtml(sexes[i]||'')}</span>`;students.appendChild(d)});
 }
 function clearMarks(){document.querySelectorAll('.student').forEach(x=>x.className='student')}
 function clearResults(){
@@ -1365,7 +1416,7 @@ $('clearGroupPad').onclick=()=>{groupPadSelected.clear();groupActiveMethod=0;ren
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
-  ['random','custom','groups'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
+  ['random','custom','groups','absence'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
   $('balanceRecord').classList.add('hidden');
   $('raffleLeaderboard').classList.add('hidden');
   clearResults();
@@ -1378,8 +1429,8 @@ function closeBalanceResetModal(){$('balanceResetModal').classList.add('hidden')
 $('closeBalanceReset').onclick=closeBalanceResetModal;
 $('cancelBalanceReset').onclick=closeBalanceResetModal;
 $('confirmBalanceReset').onclick=()=>{resetBalanceData(true);$('balanceRecord').classList.add('hidden');closeBalanceResetModal()};
-$('drawRandom').onclick=()=>{const c=Number($('randomCount').value);if(!Number.isInteger(c)||c<1||c>names.length)return err(`抽取人數請設定為 1～${names.length}`);const ids=randomMode==='balanced'?drawBalanced(c):shuffle(names.map((_,i)=>i+1)).slice(0,c);showDraw(ids)};
-$('drawCustom').onclick=()=>{try{const pool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!pool.length)throw Error('請先選擇座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
+$('drawRandom').onclick=()=>{try{const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');const c=Number($('randomCount').value);if(!eligible.length)throw Error('排除今日請假後，目前沒有可抽的學生');if(!Number.isInteger(c)||c<1||c>eligible.length)throw Error(`抽取人數請設定為 1～${eligible.length}`);const ids=randomMode==='balanced'?drawBalanced(c,eligible):shuffle(eligible).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
+$('drawCustom').onclick=()=>{try{const rawPool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!rawPool.length)throw Error('請先選擇座號');const pool=filterAbsent(rawPool,'custom');if(!pool.length)throw Error('排除今日請假後，目前沒有可抽的座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
 $('selectAllPad').onclick=()=>{
   activeMethod=2;
   setMethod(2);
@@ -1502,20 +1553,16 @@ function updateGenderHint(){
   $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。男生下限最多 ${maxBoy}、女生下限最多 ${maxGirl}；任一欄留白即代表該性別不限。`;
 }
 function getGroupPool(showError=true){
-  if(!$('rangeLimit').checked)return names.map((_,i)=>i+1);
-  const txt=$('groupInput').value.trim();
-  if(groupActiveMethod===1){
-    if(!txt)return names.map((_,i)=>i+1);
-    try{return parseCustom(txt)}catch(e){if(showError)err(e.message);return null}
+  let pool;
+  if(!$('rangeLimit').checked)pool=names.map((_,i)=>i+1);
+  else{
+    const txt=$('groupInput').value.trim();
+    if(groupActiveMethod===1){if(!txt)pool=names.map((_,i)=>i+1);else try{pool=parseCustom(txt)}catch(e){if(showError)err(e.message);return null}}
+    else if(groupActiveMethod===2)pool=groupPadSelected.size?[...groupPadSelected]:names.map((_,i)=>i+1);
+    else if(txt){try{pool=parseCustom(txt)}catch(e){if(showError)err(e.message);return null}}
+    else if(groupPadSelected.size)pool=[...groupPadSelected];else pool=names.map((_,i)=>i+1);
   }
-  if(groupActiveMethod===2){
-    return groupPadSelected.size?[...groupPadSelected]:names.map((_,i)=>i+1);
-  }
-  if(txt){
-    try{return parseCustom(txt)}catch(e){if(showError)err(e.message);return null}
-  }
-  if(groupPadSelected.size)return [...groupPadSelected];
-  return names.map((_,i)=>i+1);
+  return filterAbsent(pool,'groups');
 }
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
 $('makeGroups').onclick=()=>{
@@ -1828,6 +1875,16 @@ function renderEditGrid(){
   document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()})
 }
 function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
+$('absenceNone').onchange=()=>{if($('absenceNone').checked){absenceState='none';absenceSeats.clear();renderAbsenceUI()}};
+$('absenceSome').onchange=()=>{if($('absenceSome').checked){absenceState='some';renderAbsenceUI()}};
+$('selectAllAbsence').onclick=()=>{absenceState='some';absenceSeats=new Set(names.map((_,i)=>i+1));renderAbsenceUI()};
+$('clearAbsence').onclick=()=>{absenceSeats.clear();renderAbsencePad();renderAbsenceSummary()};
+$('saveAbsence').onclick=()=>{if(absenceState==='unset')return alert('請先選擇「今日無人請假」或「今日有人請假」。');if(absenceState==='some'&&!absenceSeats.size)return alert('請先選擇至少 1 位今日請假的學生。');saveAbsenceData();renderAbsenceUI();alert(absenceState==='none'?'已儲存：今日無人請假。':`已儲存今日請假：${[...absenceSeats].sort((a,b)=>a-b).map(n=>String(n).padStart(2,'0')).join('、')}`)};
+$('clearAbsenceState').onclick=()=>{openSafeConfirm('確定要把今天的請假狀態恢復為「未設定」嗎？',()=>{absenceState='unset';absenceSeats.clear();saveAbsenceData();renderAbsenceUI()},{title:'恢復今日請假未設定',confirmText:'恢復未設定'})};
+$('excludeAbsentRandom').onchange=e=>{absencePrefs.random=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
+$('excludeAbsentCustom').onchange=e=>{absencePrefs.custom=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
+$('excludeAbsentGroups').onchange=e=>{absencePrefs.groups=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
+
 $('appSettings').onclick=()=>$('settingsModal').classList.remove('hidden');
 $('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');
 
@@ -1868,8 +1925,8 @@ $('saveStudents').onclick=()=>{
 
   const commitRoster=()=>{
     names=ns;sexes=sx;saveData();
-    if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true)}
-    renderStudents();refreshLimits();$('studentModal').classList.add('hidden');clearResults();
+    if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
+    renderStudents();refreshLimits();renderAbsenceUI();$('studentModal').classList.add('hidden');clearResults();
   };
 
   if(rosterChanged&&hasHistory){
@@ -1888,15 +1945,15 @@ $('resetStudents').onclick=()=>{
     '確定要清除目前這個瀏覽器中的學生姓名與性別，重設為 27 個空白座號嗎？均衡抽籤紀錄與幸運星排行榜也會一併重設。',
     ()=>{
       names=[...defaultNames];sexes=[...defaultSex];saveData();
-      resetBalanceData(true);resetAllRaffleRecords(true);
+      resetBalanceData(true);resetAllRaffleRecords(true);absenceState='unset';absenceSeats.clear();saveAbsenceData();
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
-      renderStudents();refreshLimits();renderEditGrid();clearResults();
+      renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
     },
     {title:'清除學生資料',confirmText:'確定清除'}
   );
 };
 
-loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();
+loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();renderStudents();refreshLimits();renderGroupPad();renderGroupSelected();renderAbsenceUI();
 groupActiveMethod=2;setGroupMethod(2);$('rangeLimit').checked=true;$('rangeBox').classList.remove('hidden');$('exportGroups').disabled=true;
 setRandomMode('pure');renderRaffleControls();
 </script>
