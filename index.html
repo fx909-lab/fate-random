@@ -767,6 +767,15 @@ header{
 .storageWarning.show{display:block}
 
 
+
+.specialRuleRow{display:grid;grid-template-columns:110px 1fr auto;gap:8px;align-items:center;margin-top:8px}
+.specialRuleRow select,.specialRuleRow input{margin:0}
+.specialRuleRemove{min-width:38px;padding:8px 10px}
+@media(max-width:640px){
+  .specialRuleRow{grid-template-columns:92px 1fr auto;gap:6px}
+  .specialRuleRemove{min-width:34px;padding:8px}
+}
+
 </style>
 </head>
 <body>
@@ -900,14 +909,10 @@ header{
       <label style="margin-top:14px"><input id="advancedGroupToggle" type="checkbox" style="width:auto;margin-right:8px">進階分組條件</label>
       <div id="advancedGroupBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
-          <div class="help">每一行代表一組條件。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。條件只套用於目前實際參與分組的學生。</div>
-          <div class="field" style="margin-top:12px">
-            <label for="bindGroupInput">綁定｜同一行的學生一定同組</label>
-            <textarea id="bindGroupInput" rows="3" placeholder="例如：1、5&#10;8 + 12"></textarea>
-          </div>
-          <div class="field">
-            <label for="excludeGroupInput">互斥｜同一行的學生彼此不能同組</label>
-            <textarea id="excludeGroupInput" rows="3" placeholder="例如：2、6、9&#10;14 + 18"></textarea>
+          <div class="help">按「＋」新增一組條件，再選擇「綁定」或「互斥」並輸入座號。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。</div>
+          <div id="specialRuleRows" style="margin-top:12px"></div>
+          <div class="row" style="margin-top:10px">
+            <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
           </div>
         </div>
       </div>
@@ -1736,23 +1741,43 @@ function getGroupPool(showError=true){
   return filterAbsent(pool,'groups');
 }
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
-$('advancedGroupToggle').onchange=e=>{$('advancedGroupBox').classList.toggle('hidden',!e.target.checked)};
+$('advancedGroupToggle').onchange=e=>{
+  $('advancedGroupBox').classList.toggle('hidden',!e.target.checked);
+  if(e.target.checked && !$('specialRuleRows').children.length)addSpecialRuleRow();
+};
 
-function parseSpecialGroupRules(text,label){
-  const rows=[];
-  const lines=String(text||'').split(/\r?\n/);
-  for(let i=0;i<lines.length;i++){
-    const raw=lines[i].trim();
-    if(!raw)continue;
-    if(raw.includes('-'))throw Error(`${label}第 ${i+1} 行不可使用「-」；請用空格、頓號、逗號、句點或 + 分隔座號。`);
+function addSpecialRuleRow(type='bind',value=''){
+  const row=document.createElement('div');
+  row.className='specialRuleRow';
+  row.innerHTML=`
+    <select class="specialRuleType" aria-label="條件類型">
+      <option value="bind"${type==='bind'?' selected':''}>綁定</option>
+      <option value="exclude"${type==='exclude'?' selected':''}>互斥</option>
+    </select>
+    <input class="specialRuleInput" type="text" inputmode="numeric" placeholder="例如：1、5、8" value="${escapeHtml(value)}">
+    <button type="button" class="secondary specialRuleRemove" title="刪除此條件">×</button>`;
+  row.querySelector('.specialRuleRemove').onclick=()=>row.remove();
+  $('specialRuleRows').appendChild(row);
+}
+$('addSpecialRule').onclick=()=>addSpecialRuleRow();
+
+function readSpecialGroupRules(){
+  const bindRows=[],excludeRows=[];
+  const rows=[...$('specialRuleRows').querySelectorAll('.specialRuleRow')];
+  rows.forEach((row,i)=>{
+    const type=row.querySelector('.specialRuleType').value;
+    const raw=row.querySelector('.specialRuleInput').value.trim();
+    if(!raw)return;
+    const label=type==='bind'?'綁定':'互斥';
+    if(raw.includes('-'))throw Error(`第 ${i+1} 組${label}條件不可使用「-」；請用空格、頓號、逗號、句點或 + 分隔座號。`);
     const parts=raw.split(/[、，,.\+\s]+/).filter(Boolean);
-    if(parts.some(x=>!/^\d+$/.test(x)))throw Error(`${label}第 ${i+1} 行有無法辨識的內容。`);
+    if(parts.some(x=>!/^\d+$/.test(x)))throw Error(`第 ${i+1} 組${label}條件有無法辨識的內容。`);
     const ids=[...new Set(parts.map(Number))];
-    if(ids.some(n=>n<1||n>names.length))throw Error(`${label}第 ${i+1} 行的座號只能是 1～${names.length}。`);
-    if(ids.length<2)throw Error(`${label}第 ${i+1} 行至少需要 2 個不同座號。`);
-    rows.push(ids);
-  }
-  return rows;
+    if(ids.some(n=>n<1||n>names.length))throw Error(`第 ${i+1} 組${label}條件的座號只能是 1～${names.length}。`);
+    if(ids.length<2)throw Error(`第 ${i+1} 組${label}條件至少需要 2 個不同座號。`);
+    (type==='bind'?bindRows:excludeRows).push(ids);
+  });
+  return {bindRows,excludeRows};
 }
 
 function buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows){
@@ -1900,8 +1925,7 @@ $('makeGroups').onclick=()=>{
 
   if($('advancedGroupToggle').checked){
     try{
-      const bindRows=parseSpecialGroupRules($('bindGroupInput').value,'綁定條件');
-      const excludeRows=parseSpecialGroupRules($('excludeGroupInput').value,'互斥條件');
+      const {bindRows,excludeRows}=readSpecialGroupRules();
       if(!bindRows.length&&!excludeRows.length)throw Error('已開啟進階分組條件，但目前沒有輸入任何綁定或互斥條件。');
       const gs=buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
       return renderGroups(gs);
