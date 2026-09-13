@@ -896,6 +896,21 @@ header{
           </div>
         </div>
       </div>
+
+      <label style="margin-top:14px"><input id="advancedGroupToggle" type="checkbox" style="width:auto;margin-right:8px">進階分組條件</label>
+      <div id="advancedGroupBox" class="hidden">
+        <div class="subcard" style="margin-top:10px">
+          <div class="help">每一行代表一組條件。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。條件只套用於目前實際參與分組的學生。</div>
+          <div class="field" style="margin-top:12px">
+            <label for="bindGroupInput">綁定｜同一行的學生一定同組</label>
+            <textarea id="bindGroupInput" rows="3" placeholder="例如：1、5&#10;8 + 12"></textarea>
+          </div>
+          <div class="field">
+            <label for="excludeGroupInput">互斥｜同一行的學生彼此不能同組</label>
+            <textarea id="excludeGroupInput" rows="3" placeholder="例如：2、6、9&#10;14 + 18"></textarea>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row" style="margin-top:16px">
@@ -1721,6 +1736,145 @@ function getGroupPool(showError=true){
   return filterAbsent(pool,'groups');
 }
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
+$('advancedGroupToggle').onchange=e=>{$('advancedGroupBox').classList.toggle('hidden',!e.target.checked)};
+
+function parseSpecialGroupRules(text,label){
+  const rows=[];
+  const lines=String(text||'').split(/\r?\n/);
+  for(let i=0;i<lines.length;i++){
+    const raw=lines[i].trim();
+    if(!raw)continue;
+    if(raw.includes('-'))throw Error(`${label}第 ${i+1} 行不可使用「-」；請用空格、頓號、逗號、句點或 + 分隔座號。`);
+    const parts=raw.split(/[、，,.\+\s]+/).filter(Boolean);
+    if(parts.some(x=>!/^\d+$/.test(x)))throw Error(`${label}第 ${i+1} 行有無法辨識的內容。`);
+    const ids=[...new Set(parts.map(Number))];
+    if(ids.some(n=>n<1||n>names.length))throw Error(`${label}第 ${i+1} 行的座號只能是 1～${names.length}。`);
+    if(ids.length<2)throw Error(`${label}第 ${i+1} 行至少需要 2 個不同座號。`);
+    rows.push(ids);
+  }
+  return rows;
+}
+
+function buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows){
+  const poolSet=new Set(all);
+  const referenced=[...bindRows,...excludeRows].flat();
+  const outside=[...new Set(referenced.filter(id=>!poolSet.has(id)))].sort((a,b)=>a-b);
+  if(outside.length)throw Error(`進階條件包含目前未參與分組的座號：${outside.join('、')}。請先調整參與名單或請假設定。`);
+
+  for(const row of excludeRows){
+    if(row.length>g)throw Error(`互斥條件「${row.join('、')}」共有 ${row.length} 人，但目前只有 ${g} 組，無法讓每個人都在不同組。`);
+  }
+
+  const parent=new Map(all.map(id=>[id,id]));
+  const find=x=>{
+    let p=parent.get(x);
+    while(p!==parent.get(p)){parent.set(p,parent.get(parent.get(p)));p=parent.get(p)}
+    while(x!==p){const n=parent.get(x);parent.set(x,p);x=n}
+    return p;
+  };
+  const union=(a,b)=>{
+    let ra=find(a),rb=find(b);
+    if(ra!==rb)parent.set(rb,ra);
+  };
+  bindRows.forEach(row=>{for(let i=1;i<row.length;i++)union(row[0],row[i])});
+
+  const compMap=new Map();
+  all.forEach(id=>{
+    const r=find(id);
+    if(!compMap.has(r))compMap.set(r,[]);
+    compMap.get(r).push(id);
+  });
+
+  const conflictPairs=new Set();
+  const rootConflicts=new Map();
+  const addConflict=(a,b)=>{
+    const ra=find(a),rb=find(b);
+    if(ra===rb)throw Error(`座號 ${a} 與 ${b} 同時被設定為「一定同組」與「彼此不同組」，條件互相衝突。`);
+    const key=ra<rb?`${ra}:${rb}`:`${rb}:${ra}`;
+    conflictPairs.add(key);
+    if(!rootConflicts.has(ra))rootConflicts.set(ra,new Set());
+    if(!rootConflicts.has(rb))rootConflicts.set(rb,new Set());
+    rootConflicts.get(ra).add(rb);rootConflicts.get(rb).add(ra);
+  };
+  excludeRows.forEach(row=>{
+    for(let i=0;i<row.length;i++)for(let j=i+1;j<row.length;j++)addConflict(row[i],row[j]);
+  });
+
+  const base=Math.floor(all.length/g),extra=all.length%g;
+  const capacities=Array.from({length:g},(_,i)=>base+(i<extra?1:0));
+  const maxCap=Math.max(...capacities);
+
+  let units=[...compMap.entries()].map(([root,ids])=>({
+    root,
+    ids:[...ids],
+    size:ids.length,
+    boys:ids.filter(id=>sexes[id-1]==='男').length,
+    girls:ids.filter(id=>sexes[id-1]==='女').length,
+    conflicts:rootConflicts.get(root)||new Set()
+  }));
+
+  const oversized=units.find(u=>u.size>maxCap);
+  if(oversized)throw Error(`綁定條件「${oversized.ids.join('、')}」共有 ${oversized.size} 人，但目前每組最多 ${maxCap} 人，無法同組。`);
+
+  // Harder units first; equal-difficulty units receive a secure random tie-break.
+  units=units.map(u=>({...u,tie:secureRandomInt(1000000)}))
+    .sort((a,b)=>b.size-a.size || b.conflicts.size-a.conflicts.size || a.tie-b.tie);
+
+  const groups=capacities.map(cap=>({cap,ids:[],roots:new Set(),boys:0,girls:0}));
+
+  function groupAccepts(gr,u){
+    if(gr.ids.length+u.size>gr.cap)return false;
+    for(const r of gr.roots)if(u.conflicts.has(r))return false;
+    return true;
+  }
+
+  let nodes=0;
+  const NODE_LIMIT=180000;
+
+  function dfs(idx,remB,remF){
+    if(++nodes>NODE_LIMIT)return false;
+    if(idx===units.length){
+      return groups.every(gr=>gr.ids.length===gr.cap && gr.boys>=bMin && gr.girls>=fMin);
+    }
+    const u=units[idx];
+    let candidates=groups.map((gr,i)=>({gr,i}))
+      .filter(x=>groupAccepts(x.gr,u))
+      .map(x=>({
+        ...x,
+        needScore:Math.max(0,bMin-x.gr.boys)*(u.boys>0?2:0)+Math.max(0,fMin-x.gr.girls)*(u.girls>0?2:0),
+        size:x.gr.ids.length,
+        tie:secureRandomInt(1000000)
+      }))
+      .sort((a,b)=>b.needScore-a.needScore || a.size-b.size || a.tie-b.tie);
+
+    const seenSignatures=new Set();
+    for(const {gr} of candidates){
+      const sig=`${gr.cap-gr.ids.length}|${gr.boys}|${gr.girls}|${[...gr.roots].sort((a,b)=>a-b).join(',')}`;
+      if(seenSignatures.has(sig))continue;
+      seenSignatures.add(sig);
+
+      gr.ids.push(...u.ids);gr.roots.add(u.root);gr.boys+=u.boys;gr.girls+=u.girls;
+      const nextB=remB-u.boys,nextF=remF-u.girls;
+
+      let possible=true,totalBDef=0,totalFDef=0;
+      for(const x of groups){
+        const bDef=Math.max(0,bMin-x.boys),fDef=Math.max(0,fMin-x.girls);
+        const slots=x.cap-x.ids.length;
+        if(slots<bDef+fDef){possible=false;break}
+        totalBDef+=bDef;totalFDef+=fDef;
+      }
+      if(possible && nextB>=totalBDef && nextF>=totalFDef && dfs(idx+1,nextB,nextF))return true;
+
+      gr.ids.splice(gr.ids.length-u.size,u.size);gr.roots.delete(u.root);gr.boys-=u.boys;gr.girls-=u.girls;
+    }
+    return false;
+  }
+
+  const totalB=units.reduce((s,u)=>s+u.boys,0),totalF=units.reduce((s,u)=>s+u.girls,0);
+  if(!dfs(0,totalB,totalF))throw Error('目前的綁定、互斥、組數、性別下限與參與名單無法同時成立。請調整其中一項條件後再試。');
+  return groups.map(gr=>shuffle(gr.ids));
+}
+
 $('makeGroups').onclick=()=>{
   const g=Number($('groupCount').value);
   if(!Number.isInteger(g)||g<2)return err('請先選擇組數');
@@ -1729,6 +1883,33 @@ $('makeGroups').onclick=()=>{
   if(g>all.length)return err('組數不可大於參與分組的學生人數');
 
   const bRaw=$('boysPerGroup').value.trim(),fRaw=$('girlsPerGroup').value.trim();
+  const bMin=bRaw===''?0:Number(bRaw),
+        fMin=fRaw===''?0:Number(fRaw);
+
+  if(!Number.isInteger(bMin)||bMin<0||!Number.isInteger(fMin)||fMin<0)
+    return err('男女生下限請輸入 0 或以上整數，或直接留白表示不限');
+
+  const boys=shuffle(all.filter(id=>sexes[id-1]==='男')),
+        girls=shuffle(all.filter(id=>sexes[id-1]==='女'));
+
+  if(bMin*g>boys.length)
+    return err(`目前參與分組的男生共有 ${boys.length} 人，分成 ${g} 組時，每組男生下限最多只能設定 ${Math.floor(boys.length/g)} 人。`);
+
+  if(fMin*g>girls.length)
+    return err(`目前參與分組的女生共有 ${girls.length} 人，分成 ${g} 組時，每組女生下限最多只能設定 ${Math.floor(girls.length/g)} 人。`);
+
+  if($('advancedGroupToggle').checked){
+    try{
+      const bindRows=parseSpecialGroupRules($('bindGroupInput').value,'綁定條件');
+      const excludeRows=parseSpecialGroupRules($('excludeGroupInput').value,'互斥條件');
+      if(!bindRows.length&&!excludeRows.length)throw Error('已開啟進階分組條件，但目前沒有輸入任何綁定或互斥條件。');
+      const gs=buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
+      return renderGroups(gs);
+    }catch(e){
+      return err(e.message);
+    }
+  }
+
   if(bRaw==='' && fRaw===''){
     const a=shuffle(all),base=Math.floor(all.length/g),extra=all.length%g,gs=[];let p=0;
     for(let i=0;i<g;i++){
@@ -1738,20 +1919,7 @@ $('makeGroups').onclick=()=>{
     return renderGroups(gs);
   }
 
-  const boys=shuffle(all.filter(id=>sexes[id-1]==='男')),
-        girls=shuffle(all.filter(id=>sexes[id-1]==='女'));
 
-  const bMin=bRaw===''?0:Number(bRaw),
-        fMin=fRaw===''?0:Number(fRaw);
-
-  if(!Number.isInteger(bMin)||bMin<0||!Number.isInteger(fMin)||fMin<0)
-    return err('男女生下限請輸入 0 或以上整數，或直接留白表示不限');
-
-  if(bMin*g>boys.length)
-    return err(`目前參與分組的男生共有 ${boys.length} 人，分成 ${g} 組時，每組男生下限最多只能設定 ${Math.floor(boys.length/g)} 人。`);
-
-  if(fMin*g>girls.length)
-    return err(`目前參與分組的女生共有 ${girls.length} 人，分成 ${g} 組時，每組女生下限最多只能設定 ${Math.floor(girls.length/g)} 人。`);
 
   const gs=Array.from({length:g},()=>[]);
 
