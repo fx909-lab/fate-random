@@ -745,6 +745,20 @@ header{
 @media(max-width:760px){#absenceNumPad{grid-template-columns:repeat(7,minmax(34px,1fr));gap:7px}#absenceNumPad .numBtn{width:42px;height:36px;min-width:42px}}
 @media(max-width:500px){#absenceNumPad{grid-template-columns:repeat(6,minmax(32px,1fr));gap:6px}#absenceNumPad .numBtn{width:38px;height:34px;min-width:38px;font-size:14px}}
 
+
+/* ===== v14：今日請假確認制 + 測試環境儲存保護 ===== */
+#absence .field>label:first-child{display:none!important}
+#absence .absenceStatusBox{padding:12px 14px;margin-top:4px}
+#absence .absenceTopRow{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:800}
+#absence .absenceTopRow input{width:auto}
+#absence .absenceActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+#absence .absenceActions button{width:100%;padding:9px 14px}
+#absenceNumPad{display:grid;grid-template-columns:repeat(10,minmax(34px,1fr));gap:7px;max-width:620px;margin-top:8px}
+#absenceNumPad .numBtn{width:40px;height:34px;min-width:40px;border-radius:10px;padding:0;font-size:14px}
+#absenceNumPad.isDisabled{opacity:.42;pointer-events:none}
+@media(max-width:760px){#absenceNumPad{grid-template-columns:repeat(7,minmax(32px,1fr));gap:6px}#absenceNumPad .numBtn{width:38px;height:32px;min-width:38px}}
+@media(max-width:500px){#absenceNumPad{grid-template-columns:repeat(6,minmax(30px,1fr));gap:6px}#absenceNumPad .numBtn{width:36px;height:31px;min-width:36px;font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -884,11 +898,12 @@ header{
     <div class="field">
       <label>今日請假</label>
       <div class="absenceStatusBox">
-        <div class="help">點選請假座號，再點一次即可取消。</div>
+        <label class="absenceTopRow"><input id="absenceNoneCheck" type="checkbox"> 今日無人請假</label>
+        <div class="help">點選請假座號；確認後才會套用今天的請假名單。</div>
         <div id="absenceNumPad" class="numPad"></div>
-        <div class="row absenceActions">
-          <button class="secondary" id="selectAllAbsence">全選</button>
+        <div class="absenceActions">
           <button class="secondary" id="clearAbsence">清除已選</button>
+          <button class="primary" id="confirmAbsence">確認</button>
         </div>
       </div>
     </div>
@@ -1054,7 +1069,7 @@ header{
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
       <h2 class="modalTitle">匯入學生名單</h2><button class="secondary" id="closeImport">關閉</button>
     </div>
-    <div class="help" style="margin:8px 0 14px">匯入只在目前瀏覽器本機處理，不會上傳檔案。匯入後會先帶到「新增／修改學生」頁面供你確認，按下「儲存學生資料」後才會取代目前名單。</div>
+    <div class="help" style="margin:8px 0 14px">匯入只在目前瀏覽器本機處理，不會上傳檔案。匯入檢查通過後會立即儲存到目前瀏覽器，並帶到「新增／修改學生」頁面供你再次確認或調整。</div>
     <div class="importTabs">
       <button class="secondary active" id="importFileTab">📄 Excel／CSV 檔案</button>
       <button class="secondary" id="importTextTab">📋 直接貼上</button>
@@ -1069,7 +1084,7 @@ header{
     </div>
     <div id="importStatus" class="importStatus"></div>
     <div class="row" style="margin-top:16px"><button class="primary" id="applyImport">套用並檢查</button><button class="secondary" id="cancelImport">取消</button></div>
-    <div class="footerNote">資安提醒：檔案內容只在此頁面記憶體中解析，不會傳送到 GitHub、雲端或第三方服務；匯入後仍需在確認頁按「儲存學生資料」才會寫入這個瀏覽器。</div>
+    <div class="footerNote">資安提醒：檔案內容只在此頁面記憶體中解析，不會傳送到 GitHub、雲端或第三方服務；匯入檢查通過後會寫入目前瀏覽器；不會傳送到 GitHub、雲端或第三方服務。</div>
   </div>
 </div>
 
@@ -1102,45 +1117,72 @@ const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='none',absenceSeats=new Set(),absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
+
+// v14：正式仍以 localStorage 為主；測試檔若瀏覽器對 file/預覽頁的 localStorage 行為不穩，
+// 同步鏡像到 sessionStorage，至少重新整理同一分頁時能安全還原。
+function appStorageGet(key){
+  try{const v=localStorage.getItem(key);if(v!==null)return v}catch(e){}
+  try{return sessionStorage.getItem(key)}catch(e){return null}
+}
+function appStorageSet(key,value){
+  let ok=false;
+  try{localStorage.setItem(key,value);ok=true}catch(e){}
+  try{sessionStorage.setItem(key,value);ok=true}catch(e){}
+  if(!ok)throw Error('storage unavailable');
+}
 
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function localDateStamp(){const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`}
 function normalizeAbsenceData(d){
-  if(!d||typeof d!=='object'||d.date!==localDateStamp())return {state:'none',seats:[]};
+  if(!d||typeof d!=='object'||d.date!==localDateStamp())return {state:'unset',seats:[]};
   const seats=Array.isArray(d.seats)?[...new Set(d.seats.filter(n=>Number.isInteger(n)&&n>=1&&n<=names.length))].sort((a,b)=>a-b):[];
-  return {state:seats.length?'some':'none',seats};
+  const state=d.state==='none'?'none':(d.state==='some'&&seats.length?'some':'unset');
+  return {state,seats:state==='some'?seats:[]};
+}
+function resetAbsenceDraft(){
+  absenceDraftSeats=new Set(absenceSeats);
+  absenceDraftNone=absenceState==='none';
 }
 function loadAbsenceData(){
-  try{const d=normalizeAbsenceData(JSON.parse(localStorage.getItem(ABSENCE_STORAGE_KEY)||'null'));absenceState=d.state;absenceSeats=new Set(d.seats)}catch(e){absenceState='none';absenceSeats=new Set()}
-  try{const p=JSON.parse(localStorage.getItem(ABSENCE_PREFS_STORAGE_KEY)||'null');if(p&&typeof p==='object')absencePrefs={random:p.random!==false,custom:p.custom!==false,groups:p.groups!==false}}catch(e){}
+  try{const d=normalizeAbsenceData(JSON.parse(appStorageGet(ABSENCE_STORAGE_KEY)||'null'));absenceState=d.state;absenceSeats=new Set(d.seats)}catch(e){absenceState='unset';absenceSeats=new Set()}
+  try{const p=JSON.parse(appStorageGet(ABSENCE_PREFS_STORAGE_KEY)||'null');if(p&&typeof p==='object')absencePrefs={random:p.random!==false,custom:p.custom!==false,groups:p.groups!==false}}catch(e){}
+  resetAbsenceDraft();
 }
-function saveAbsencePrefs(){try{localStorage.setItem(ABSENCE_PREFS_STORAGE_KEY,JSON.stringify(absencePrefs))}catch(e){}}
+function saveAbsencePrefs(){try{appStorageSet(ABSENCE_PREFS_STORAGE_KEY,JSON.stringify(absencePrefs))}catch(e){}}
 function saveAbsenceData(){
-  absenceState=absenceSeats.size?'some':'none';
-  try{localStorage.setItem(ABSENCE_STORAGE_KEY,JSON.stringify({date:localDateStamp(),state:absenceState,seats:[...absenceSeats].sort((a,b)=>a-b)}))}catch(e){alert('今日請假狀態無法儲存在此瀏覽器。')}
+  try{appStorageSet(ABSENCE_STORAGE_KEY,JSON.stringify({date:localDateStamp(),state:absenceState,seats:[...absenceSeats].sort((a,b)=>a-b)}))}catch(e){alert('今日請假狀態無法儲存在此瀏覽器。')}
 }
-function effectiveAbsentSet(){return new Set([...absenceSeats].filter(id=>id>=1&&id<=names.length))}
+function effectiveAbsentSet(){return absenceState==='some'?new Set([...absenceSeats].filter(id=>id>=1&&id<=names.length)):new Set()}
 function filterAbsent(ids,feature){if(!absencePrefs[feature])return [...ids];const absent=effectiveAbsentSet();return ids.filter(id=>!absent.has(id))}
 function renderAbsencePad(){
   const box=$('absenceNumPad');if(!box)return;box.innerHTML='';
+  box.classList.toggle('isDisabled',absenceDraftNone);
   for(let i=1;i<=names.length;i++){
-    const b=document.createElement('button');b.className='numBtn'+(absenceSeats.has(i)?' sel':'');b.textContent=i;
-    b.onclick=()=>{absenceSeats.has(i)?absenceSeats.delete(i):absenceSeats.add(i);saveAbsenceData();renderAbsenceUI()};
+    const b=document.createElement('button');b.className='numBtn'+(absenceDraftSeats.has(i)?' sel':'');b.textContent=i;
+    b.onclick=()=>{
+      absenceDraftNone=false;$('absenceNoneCheck').checked=false;
+      absenceDraftSeats.has(i)?absenceDraftSeats.delete(i):absenceDraftSeats.add(i);
+      renderAbsencePad();
+    };
     box.appendChild(b)
   }
 }
 function renderAbsenceUI(){
   if(!$('absenceNumPad'))return;
+  $('absenceNoneCheck').checked=absenceDraftNone;
   renderAbsencePad();
-  const status=absenceSeats.size?`${absenceSeats.size}人`:'無';
+  const status=absenceState==='unset'?'未設定':absenceState==='none'?'無':`${absenceSeats.size}人`;
   $('absenceTabStatus').textContent=status;
   $('excludeAbsentRandom').checked=absencePrefs.random;$('excludeAbsentCustom').checked=absencePrefs.custom;$('excludeAbsentGroups').checked=absencePrefs.groups;
-  $('absenceNoticeRandom').classList.add('hidden');$('absenceNoticeCustom').classList.add('hidden');$('absenceNoticeGroups').classList.add('hidden');
+  const unconfigured=absenceState==='unset';
+  $('absenceNoticeRandom').classList.toggle('hidden',!(absencePrefs.random&&unconfigured));
+  $('absenceNoticeCustom').classList.toggle('hidden',!(absencePrefs.custom&&unconfigured));
+  $('absenceNoticeGroups').classList.toggle('hidden',!(absencePrefs.groups&&unconfigured));
   renderStudents();updateGenderHint()
 }
-function clearAbsenceForRosterChange(){absenceState='none';absenceSeats=new Set();saveAbsenceData()}
+function clearAbsenceForRosterChange(){absenceState='unset';absenceSeats=new Set();resetAbsenceDraft();saveAbsenceData()}
 function normalizeStoredData(d){
   if(!d||!Array.isArray(d.names)||!Array.isArray(d.sexes)||d.names.length<1||d.names.length>MAX_STUDENTS||d.sexes.length!==d.names.length)return null;
   const safeNames=[],safeSexes=[];
@@ -1160,7 +1202,7 @@ function normalizeTitleSettings(d){
   return {enabled,text};
 }
 function loadTitleSettings(){
-  try{titleSettings=normalizeTitleSettings(JSON.parse(localStorage.getItem(TITLE_STORAGE_KEY)||'null'))}
+  try{titleSettings=normalizeTitleSettings(JSON.parse(appStorageGet(TITLE_STORAGE_KEY)||'null'))}
   catch(e){titleSettings={enabled:true,text:''}}
 
   if(titleSettings.enabled===false&&!titleSettings.text){
@@ -1169,7 +1211,7 @@ function loadTitleSettings(){
   }
 }
 function saveTitleSettingsData(){
-  try{localStorage.setItem(TITLE_STORAGE_KEY,JSON.stringify(titleSettings))}
+  try{appStorageSet(TITLE_STORAGE_KEY,JSON.stringify(titleSettings))}
   catch(e){alert('標題設定無法儲存在此瀏覽器。')}
 }
 function renderTitle(){
@@ -1185,12 +1227,12 @@ $('customTitleText').disabled=$('disableCustomTitle').checked;
   $('titleModal').classList.remove('hidden');
 }
 
-function loadData(){try{const d=normalizeStoredData(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'));if(d){names=d.names;sexes=d.sexes}}catch(e){}}
-function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({names,sexes}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
+function loadData(){try{const d=normalizeStoredData(JSON.parse(appStorageGet(STORAGE_KEY)||'null'));if(d){names=d.names;sexes=d.sexes}}catch(e){}}
+function saveData(){try{appStorageSet(STORAGE_KEY,JSON.stringify({names,sexes}))}catch(e){alert('學生資料無法儲存在此瀏覽器，請確認瀏覽器允許網站儲存資料。')}}
 function loadBalanceData(){
   balanceRound=1;balanceRoundDrawn=new Set();
   try{
-    const d=JSON.parse(localStorage.getItem(BALANCE_STORAGE_KEY)||'null');
+    const d=JSON.parse(appStorageGet(BALANCE_STORAGE_KEY)||'null');
     if(!d||typeof d!=='object')return;
     if(Number.isInteger(d.round)&&d.round>=1&&d.round<=1000000&&Array.isArray(d.drawn)&&d.drawn.every(n=>Number.isInteger(n)&&n>=1&&n<=names.length)){
       balanceRound=d.round;
@@ -1207,7 +1249,7 @@ function loadBalanceData(){
   }catch(e){}
 }
 function saveBalanceData(){
-  try{localStorage.setItem(BALANCE_STORAGE_KEY,JSON.stringify({round:balanceRound,drawn:[...balanceRoundDrawn]}))}
+  try{appStorageSet(BALANCE_STORAGE_KEY,JSON.stringify({round:balanceRound,drawn:[...balanceRoundDrawn]}))}
   catch(e){alert('均衡抽籤紀錄無法儲存在此瀏覽器。')}
 }
 function resetBalanceData(save=true){
@@ -1292,12 +1334,12 @@ function normalizeRaffleRecords(d){
   return out;
 }
 function loadRaffleRecords(){
-  try{raffleRecords=normalizeRaffleRecords(JSON.parse(localStorage.getItem(RAFFLE_STORAGE_KEY)||'[]'))}
+  try{raffleRecords=normalizeRaffleRecords(JSON.parse(appStorageGet(RAFFLE_STORAGE_KEY)||'[]'))}
   catch(e){raffleRecords=[]}
   activeRaffleId=raffleRecords[0]?.id||'';
 }
 function saveRaffleRecords(){
-  try{localStorage.setItem(RAFFLE_STORAGE_KEY,JSON.stringify(raffleRecords))}
+  try{appStorageSet(RAFFLE_STORAGE_KEY,JSON.stringify(raffleRecords))}
   catch(e){alert('中獎紀錄無法儲存在此瀏覽器。')}
 }
 function makeRaffleId(){
@@ -1457,6 +1499,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   t.classList.add('active');
   ['random','custom','groups','absence'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
   const isAbsence=t.dataset.tab==='absence';
+  if(isAbsence){resetAbsenceDraft();renderAbsenceUI()}
   $('resultBox').classList.toggle('hidden',isAbsence);
   $('resultDetails').classList.toggle('hidden',isAbsence);
   $('balanceRecord').classList.add('hidden');
@@ -1935,8 +1978,18 @@ function renderEditGrid(){
   document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()})
 }
 function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
-$('selectAllAbsence').onclick=()=>{absenceSeats=new Set(names.map((_,i)=>i+1));saveAbsenceData();renderAbsenceUI()};
-$('clearAbsence').onclick=()=>{absenceSeats.clear();saveAbsenceData();renderAbsenceUI()};
+$('absenceNoneCheck').onchange=e=>{
+  absenceDraftNone=e.target.checked;
+  if(absenceDraftNone)absenceDraftSeats.clear();
+  renderAbsenceUI();
+};
+$('clearAbsence').onclick=()=>{absenceDraftSeats.clear();absenceDraftNone=false;$('absenceNoneCheck').checked=false;renderAbsenceUI()};
+$('confirmAbsence').onclick=()=>{
+  if(absenceDraftNone){absenceState='none';absenceSeats.clear()}
+  else if(absenceDraftSeats.size){absenceState='some';absenceSeats=new Set(absenceDraftSeats)}
+  else return alert('請勾選「今日無人請假」，或選擇至少 1 位請假學生。');
+  saveAbsenceData();resetAbsenceDraft();renderAbsenceUI();
+};
 $('excludeAbsentRandom').onchange=e=>{absencePrefs.random=e.target.checked;saveAbsencePrefs();renderAbsenceUI();renderBalanceInfo()};
 $('excludeAbsentCustom').onchange=e=>{absencePrefs.custom=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
 $('excludeAbsentGroups').onchange=e=>{absencePrefs.groups=e.target.checked;saveAbsencePrefs();renderAbsenceUI()};
@@ -2001,7 +2054,7 @@ $('resetStudents').onclick=()=>{
     '確定要清除目前這個瀏覽器中的學生姓名與性別，重設為 27 個空白座號嗎？均衡抽籤紀錄與幸運星排行榜也會一併重設。',
     ()=>{
       names=[...defaultNames];sexes=[...defaultSex];saveData();
-      resetBalanceData(true);resetAllRaffleRecords(true);absenceState='none';absenceSeats.clear();saveAbsenceData();
+      resetBalanceData(true);resetAllRaffleRecords(true);absenceState='unset';absenceSeats.clear();resetAbsenceDraft();saveAbsenceData();
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
       renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
     },
