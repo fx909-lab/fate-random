@@ -790,10 +790,19 @@ header{
   flex:0 0 auto;
 }
 
-.groupAttrCard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:rgba(255,255,255,.28)}
-.groupAttrHead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.groupAttrTitle{font-weight:800}.groupAttrCats{font-size:.9rem;opacity:.8;margin-top:4px}.groupAttrActions{display:flex;gap:6px;flex-wrap:wrap}
-.groupAttrStudentGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}.groupAttrStudent{display:flex;align-items:center;gap:5px}.groupAttrStudent span{min-width:28px;font-size:.88rem}.groupAttrStudent select{margin:0;min-width:0;padding:7px}
-@media(max-width:760px){.groupAttrStudentGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.attributeCard{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:#f8f3e9}
+.attributeHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.attributeTitle{font-weight:900;color:var(--ink)}
+.attributeCats{font-size:13px;color:var(--muted);margin-top:3px}
+.attributeActions{display:flex;gap:6px;flex-wrap:wrap}
+.attributeGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.attributeStudent{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:5px}
+.attributeStudent .seat{font-weight:800;text-align:center}
+.attributeStudent select{margin:0;min-width:0;padding:8px}
+.attributeEmpty{padding:18px 10px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+@media(max-width:760px){.attributeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -933,19 +942,6 @@ header{
             <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
             <button type="button" class="danger clearBtn" id="clearAllSpecialRules">清除全部條件</button>
           </div>
-        </div>
-      </div>
-
-      <label class="groupOptionRow"><input id="groupAttrToggle" type="checkbox" style="width:auto;margin-right:8px">自訂學生屬性</label>
-      <div id="groupAttrBox" class="hidden">
-        <div class="subcard" style="margin-top:10px">
-          <div class="help">先建立之後要用於異質分組的分類資料。本版只建立與編輯資料，尚不影響分組結果。</div>
-          <div class="row" style="margin-top:10px;gap:8px;align-items:end">
-            <div class="field" style="flex:1;min-width:150px;margin:0"><label for="groupAttrName">屬性名稱</label><input id="groupAttrName" maxlength="20" placeholder="例如：數學程度"></div>
-            <div class="field" style="flex:2;min-width:220px;margin:0"><label for="groupAttrCats">分類</label><input id="groupAttrCats" maxlength="80" placeholder="例如：A、B、C、D"></div>
-            <button type="button" class="secondary" id="addGroupAttr">＋ 建立</button>
-          </div>
-          <div id="groupAttrList" style="margin-top:12px"></div>
         </div>
       </div>
     </div>
@@ -1102,6 +1098,10 @@ header{
         <span class="icon">✏️</span>
         <span class="settingText"><span class="settingTitle">新增／修改學生資料</span><span class="settingDesc">調整姓名、性別、新增或刪除學生。</span></span>
       </button>
+      <button class="settingsItem" id="studentAttributes">
+        <span class="icon">▦</span>
+        <span class="settingText"><span class="settingTitle">學生屬性設定</span><span class="settingDesc">建立程度／類別，並設定各座號的分類；不顯示在平常分組畫面。</span></span>
+      </button>
     </div>
   </div>
 </div>
@@ -1161,6 +1161,29 @@ header{
     <div class="row" style="margin-top:14px"><button class="outline" id="addStudent">＋ 新增學生</button></div>
     <div class="row" style="margin-top:16px"><button class="primary" id="saveStudents">儲存學生資料</button><button class="secondary" id="resetStudents">重設空白名單</button></div>
     <div class="footerNote">學生資料只儲存在此瀏覽器；清除瀏覽器網站資料後，姓名與性別會消失並回到空白座號。</div>
+  </div>
+</div>
+
+<div id="attributeModal" class="modal hidden">
+  <div class="modalBox">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle">學生屬性設定</h2><button class="secondary" id="closeAttributeModal">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 14px">這裡是教師設定區。可建立例如「數學程度：A／B／C／D」，再替各座號指定分類。這些個別分類不會顯示在平常的分組操作畫面，只儲存在目前瀏覽器。</div>
+    <div class="row" style="gap:8px;align-items:end">
+      <div class="field" style="flex:1;min-width:150px;margin:0">
+        <label for="attributeName">屬性名稱</label>
+        <input id="attributeName" type="text" maxlength="20" autocomplete="off" placeholder="例如：數學程度">
+      </div>
+      <div class="field" style="flex:2;min-width:220px;margin:0">
+        <label for="attributeCategories">分類</label>
+        <input id="attributeCategories" type="text" maxlength="100" autocomplete="off" placeholder="例如：A、B、C、D">
+      </div>
+      <button type="button" class="primary" id="createAttribute">＋ 建立</button>
+    </div>
+    <div class="help" style="margin-top:8px">分類可用「、」「，」或逗號分隔；至少 2 類，重複分類會自動合併。</div>
+    <div id="attributeList" style="margin-top:14px"></div>
+    <div class="footerNote">隱私提醒：學生屬性可能反映教師對學生的分類，請避免投影此設定頁。資料不會寫入公開 HTML，也不會上傳到 GitHub 或第三方服務。</div>
   </div>
 </div>
 
@@ -1284,6 +1307,110 @@ function normalizeStoredData(d){
     safeNames.push(name);safeSexes.push(sx);
   }
   return {names:safeNames,sexes:safeSexes};
+}
+
+
+function parseAttributeCategories(text){
+  return [...new Set(String(text||'').split(/[、，,\n]+/).map(x=>x.trim().slice(0,20)).filter(Boolean))].slice(0,12);
+}
+function normalizeGroupAttributes(raw){
+  if(!Array.isArray(raw))return [];
+  const out=[];
+  for(const item of raw.slice(0,20)){
+    if(!item||typeof item!=='object')continue;
+    const name=String(item.name||'').trim().slice(0,20);
+    const categories=Array.isArray(item.categories)
+      ? [...new Set(item.categories.map(x=>String(x).trim().slice(0,20)).filter(Boolean))].slice(0,12)
+      : [];
+    if(!name||categories.length<2)continue;
+    const values={};
+    if(item.values&&typeof item.values==='object'){
+      for(let seat=1;seat<=names.length;seat++){
+        const v=String(item.values[seat]||'').trim();
+        if(categories.includes(v))values[seat]=v;
+      }
+    }
+    out.push({id:String(item.id||('attr_'+Date.now()+'_'+out.length)).slice(0,60),name,categories,values});
+  }
+  return out;
+}
+function loadGroupAttributes(){
+  try{groupAttributes=normalizeGroupAttributes(JSON.parse(appStorageGet(GROUP_ATTR_STORAGE_KEY)||'[]'))}
+  catch(e){groupAttributes=[]}
+}
+function saveGroupAttributes(){
+  try{
+    const payload=JSON.stringify(groupAttributes);
+    appStorageSet(GROUP_ATTR_STORAGE_KEY,payload);
+    groupAttributes=normalizeGroupAttributes(JSON.parse(appStorageGet(GROUP_ATTR_STORAGE_KEY)||'[]'));
+    return true;
+  }catch(e){
+    alert('學生屬性沒有成功儲存。請先不要重新整理頁面，回報此狀況。');
+    return false;
+  }
+}
+function clearAttributesForRosterChange(){
+  if(!groupAttributes.length)return;
+  groupAttributes.forEach(a=>a.values={});
+  saveGroupAttributes();
+}
+function renderAttributeList(){
+  const box=$('attributeList');
+  box.innerHTML='';
+  if(!groupAttributes.length){
+    box.innerHTML='<div class="attributeEmpty">目前尚未建立學生屬性。</div>';
+    return;
+  }
+  groupAttributes.forEach(attr=>{
+    const card=document.createElement('div');
+    card.className='attributeCard';
+    card.innerHTML=`<div class="attributeHead">
+      <div><div class="attributeTitle">${escapeHtml(attr.name)}</div><div class="attributeCats">${attr.categories.map(escapeHtml).join(' ／ ')}</div></div>
+      <div class="attributeActions"><button type="button" class="secondary editAttribute">修改名稱／分類</button><button type="button" class="danger clearBtn deleteAttribute">刪除</button></div>
+    </div><div class="attributeGrid"></div>`;
+    const grid=card.querySelector('.attributeGrid');
+    names.forEach((name,i)=>{
+      const seat=i+1;
+      const row=document.createElement('label');
+      row.className='attributeStudent';
+      const options=['<option value="">未設定</option>',...attr.categories.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`)].join('');
+      row.innerHTML=`<span class="seat">${String(seat).padStart(2,'0')}</span><select aria-label="${String(seat).padStart(2,'0')}號 ${escapeHtml(attr.name)}">${options}</select>`;
+      const sel=row.querySelector('select');
+      sel.value=attr.values[seat]||'';
+      sel.onchange=()=>{
+        if(sel.value)attr.values[seat]=sel.value; else delete attr.values[seat];
+        saveGroupAttributes();
+      };
+      grid.appendChild(row);
+    });
+    card.querySelector('.editAttribute').onclick=()=>{
+      const newName=prompt('屬性名稱：',attr.name);
+      if(newName===null)return;
+      const newCatsText=prompt('分類（用頓號或逗號分隔）：',attr.categories.join('、'));
+      if(newCatsText===null)return;
+      const name=String(newName).trim().slice(0,20),cats=parseAttributeCategories(newCatsText);
+      if(!name)return alert('請輸入屬性名稱。');
+      if(cats.length<2)return alert('至少需要 2 個不同分類。');
+      if(groupAttributes.some(a=>a.id!==attr.id&&a.name===name))return alert('已經有同名的學生屬性。');
+      attr.name=name;attr.categories=cats;
+      Object.keys(attr.values).forEach(seat=>{if(!cats.includes(attr.values[seat]))delete attr.values[seat]});
+      saveGroupAttributes();renderAttributeList();
+    };
+    card.querySelector('.deleteAttribute').onclick=()=>{
+      openSafeConfirm(`刪除「${attr.name}」後，這項屬性的所有學生分類也會一起刪除。確定繼續嗎？`,()=>{
+        groupAttributes=groupAttributes.filter(a=>a.id!==attr.id);
+        saveGroupAttributes();renderAttributeList();
+      },{title:'確認刪除學生屬性',confirmText:'刪除'});
+    };
+    box.appendChild(card);
+  });
+}
+function openAttributeSettings(){
+  loadGroupAttributes();
+  $('attributeName').value='';
+  $('attributeCategories').value='';
+  renderAttributeList();
+  $('attributeModal').classList.remove('hidden');
 }
 
 function normalizeTitleSettings(d){
@@ -1774,50 +1901,6 @@ function getGroupPool(showError=true){
   return filterAbsent(pool,'groups');
 }
 $('rangeLimit').onchange=e=>{$('rangeBox').classList.toggle('hidden',!e.target.checked);if(!e.target.checked)updateGenderHint()};$('groupCount').onchange=updateGenderHint;$('groupInput').addEventListener('input',updateGenderHint);$('boysPerGroup').addEventListener('input',updateGenderHint);$('girlsPerGroup').addEventListener('input',updateGenderHint);
-
-function normalizeGroupAttributes(raw){
-  if(!Array.isArray(raw))return [];
-  return raw.slice(0,20).map((item,k)=>{
-    if(!item||typeof item!=='object')return null;
-    const name=String(item.name||'').trim().slice(0,20);
-    const categories=Array.isArray(item.categories)?[...new Set(item.categories.map(x=>String(x).trim().slice(0,20)).filter(Boolean))].slice(0,12):[];
-    if(!name||categories.length<2)return null;
-    const values={};
-    if(item.values&&typeof item.values==='object')for(let id=1;id<=names.length;id++){const v=String(item.values[id]||'').trim();if(categories.includes(v))values[id]=v}
-    return {id:String(item.id||('attr_'+k)).slice(0,50),name,categories,values};
-  }).filter(Boolean);
-}
-function loadGroupAttributes(){try{groupAttributes=normalizeGroupAttributes(JSON.parse(appStorageGet(GROUP_ATTR_STORAGE_KEY)||'[]'))}catch(e){groupAttributes=[]}}
-function saveGroupAttributes(){try{appStorageSet(GROUP_ATTR_STORAGE_KEY,JSON.stringify(groupAttributes));return true}catch(e){alert('學生屬性沒有成功儲存。');return false}}
-function parseAttrCategories(text){return [...new Set(String(text||'').split(/[、，,\n]+/).map(x=>x.trim()).filter(Boolean))]}
-function renderGroupAttributes(){
-  const box=$('groupAttrList');box.innerHTML='';
-  if(!groupAttributes.length){box.innerHTML='<div class="help">目前尚未建立學生屬性。</div>';return}
-  groupAttributes.forEach(attr=>{
-    const card=document.createElement('div');card.className='groupAttrCard';
-    card.innerHTML=`<div class="groupAttrHead"><div><div class="groupAttrTitle">${escapeHtml(attr.name)}</div><div class="groupAttrCats">${attr.categories.map(escapeHtml).join(' ／ ')}</div></div><div class="groupAttrActions"><button type="button" class="secondary attrEdit">重新設定</button><button type="button" class="danger clearBtn attrDelete">刪除</button></div></div><div class="groupAttrStudentGrid"></div>`;
-    const grid=card.querySelector('.groupAttrStudentGrid');
-    names.forEach((n,i)=>{
-      const id=i+1,l=document.createElement('label');l.className='groupAttrStudent';
-      const opts=['<option value="">未設定</option>',...attr.categories.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`)].join('');
-      l.innerHTML=`<span>${String(id).padStart(2,'0')}</span><select>${opts}</select>`;
-      const s=l.querySelector('select');s.value=attr.values[id]||'';s.onchange=()=>{s.value?attr.values[id]=s.value:delete attr.values[id];saveGroupAttributes()};grid.appendChild(l);
-    });
-    card.querySelector('.attrDelete').onclick=()=>{if(confirm(`確定刪除「${attr.name}」及這項屬性的學生分類資料嗎？`)){groupAttributes=groupAttributes.filter(x=>x.id!==attr.id);saveGroupAttributes();renderGroupAttributes()}};
-    card.querySelector('.attrEdit').onclick=()=>{
-      const n=prompt('屬性名稱：',attr.name);if(n===null)return;const c=prompt('分類（用頓號或逗號分隔）：',attr.categories.join('、'));if(c===null)return;
-      const nn=n.trim().slice(0,20),cc=parseAttrCategories(c).slice(0,12);if(!nn)return alert('請輸入屬性名稱。');if(cc.length<2)return alert('至少需要 2 個不同分類。');
-      attr.name=nn;attr.categories=cc;Object.keys(attr.values).forEach(id=>{if(!cc.includes(attr.values[id]))delete attr.values[id]});saveGroupAttributes();renderGroupAttributes();
-    };box.appendChild(card);
-  });
-}
-$('groupAttrToggle').onchange=e=>{$('groupAttrBox').classList.toggle('hidden',!e.target.checked);if(e.target.checked)renderGroupAttributes()};
-$('addGroupAttr').onclick=()=>{
-  const name=$('groupAttrName').value.trim().slice(0,20),categories=parseAttrCategories($('groupAttrCats').value).slice(0,12);
-  if(!name)return alert('請輸入屬性名稱。');if(categories.length<2)return alert('至少需要 2 個不同分類。');if(groupAttributes.some(a=>a.name===name))return alert('已經有同名的學生屬性。');
-  groupAttributes.push({id:'attr_'+Date.now(),name,categories,values:{}});if(saveGroupAttributes()){$('groupAttrName').value='';$('groupAttrCats').value='';renderGroupAttributes()}
-};
-
 $('advancedGroupToggle').onchange=e=>{
   $('advancedGroupBox').classList.toggle('hidden',!e.target.checked);
   if(e.target.checked && !$('specialRuleRows').children.length)addSpecialRuleRow();
@@ -2295,7 +2378,7 @@ async function applyRosterImport(){
       const ns=imported.map(x=>x.name),sx=imported.map(x=>x.sex);
       const rosterChanged=ns.length!==names.length||ns.some((n,i)=>n!==names[i]||sx[i]!==sexes[i]);
       names=ns;sexes=sx;if(!saveData())return;
-      if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
+      if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange();clearAttributesForRosterChange()}
       tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
       renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
       $('importModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
@@ -2334,6 +2417,21 @@ $('excludeAbsentGroups').onchange=e=>{absencePrefs.groups=e.target.checked;saveA
 
 $('appSettings').onclick=()=>$('settingsModal').classList.remove('hidden');
 $('closeSettings').onclick=()=>$('settingsModal').classList.add('hidden');
+
+$('studentAttributes').onclick=()=>{$('settingsModal').classList.add('hidden');openAttributeSettings()};
+$('closeAttributeModal').onclick=()=>$('attributeModal').classList.add('hidden');
+$('createAttribute').onclick=()=>{
+  const name=$('attributeName').value.trim().slice(0,20);
+  const categories=parseAttributeCategories($('attributeCategories').value);
+  if(!name)return alert('請輸入屬性名稱。');
+  if(categories.length<2)return alert('至少需要 2 個不同分類。');
+  if(groupAttributes.some(a=>a.name===name))return alert('已經有同名的學生屬性。');
+  groupAttributes.push({id:'attr_'+Date.now(),name,categories,values:{}});
+  if(saveGroupAttributes()){
+    $('attributeName').value='';$('attributeCategories').value='';
+    renderAttributeList();
+  }
+};
 
 $('importStudents').onclick=()=>{$('settingsModal').classList.add('hidden');$('rosterFile').value='';$('rosterText').value='';setImportMode('file');$('importModal').classList.remove('hidden')};
 $('closeImport').onclick=$('cancelImport').onclick=()=>$('importModal').classList.add('hidden');
