@@ -790,7 +790,7 @@ header{
   flex:0 0 auto;
 }
 
-.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
+.attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
 /* Zero attributes: keep the original 4-column edit layout. */
 .editGrid.attrGrid.noAttrs{grid-template-columns:54px minmax(120px,1fr) 76px 68px;min-width:0}
@@ -1173,7 +1173,7 @@ header{
 <div class="field"><label>屬性名稱</label><input id="newAttributeName" maxlength="20" autocomplete="off" placeholder="例如：數學程度"></div>
 <label class="attributeOrderedRow"><input id="newAttributeOrdered" type="checkbox"><span>分類具有程度／順序意義</span></label>
 <div class="help" style="margin:6px 0 12px">勾選後，分類將依「程度高 → 低」排列（分類 1 最高）；系統可依此進行異質分組。若各分類沒有高低之分，請勿勾選。</div>
-<div class="attributeCategoryInputs"><input class="newAttributeCategory" maxlength="20" placeholder="分類 1"><input class="newAttributeCategory" maxlength="20" placeholder="分類 2"><input class="newAttributeCategory" maxlength="20" placeholder="分類 3"><input class="newAttributeCategory" maxlength="20" placeholder="分類 4"></div>
+<div class="attributeCategoryInputs"><input class="newAttributeCategory" maxlength="20" placeholder="分類 1"><input class="newAttributeCategory" maxlength="20" placeholder="分類 2"><input class="newAttributeCategory" maxlength="20" placeholder="分類 3"><input class="newAttributeCategory" maxlength="20" placeholder="分類 4"><input class="newAttributeCategory" maxlength="20" placeholder="分類 5（選填）"><input class="newAttributeCategory" maxlength="20" placeholder="分類 6（選填）"><input class="newAttributeCategory" maxlength="20" placeholder="分類 7（選填）"><input class="newAttributeCategory" maxlength="20" placeholder="分類 8（選填）"></div>
 <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="primary" id="confirmCreateAttribute">建立屬性</button></div>
 </div></div>
 
@@ -1194,7 +1194,7 @@ const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],pendingImportPackage=null,pendingImportResolved=null,randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],editingAttributeId='',pendingImportPackage=null,pendingImportResolved=null,randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 // v16：網站版只使用 localStorage。
@@ -2389,17 +2389,36 @@ function normalizeStudentAttributes(raw){if(!Array.isArray(raw))return [];return
 function loadStudentAttributes(){try{studentAttributes=normalizeStudentAttributes(JSON.parse(appStorageGet(STUDENT_ATTR_STORAGE_KEY)||'[]'))}catch(e){studentAttributes=[]}}
 function saveStudentAttributes(){try{appStorageSet(STUDENT_ATTR_STORAGE_KEY,JSON.stringify(studentAttributes));return true}catch(e){alert('學生屬性沒有成功儲存。');return false}}
 function resetStudentAttributeAssignments(){studentAttributes.forEach(a=>a.values={});saveStudentAttributes()}
-function openAttributeCreator(){$('newAttributeName').value='';$('newAttributeOrdered').checked=false;document.querySelectorAll('.newAttributeCategory').forEach(x=>x.value='');$('attributeCreatorModal').classList.remove('hidden')}
-function editAttribute(a){const n=prompt('屬性名稱：',a.name);if(n===null)return;const c=prompt('分類（用頓號或逗號分隔）：',a.categories.join('、'));if(c===null)return;const name=n.trim().slice(0,20),cats=[...new Set(c.split(/[、，,\n]+/).map(x=>x.trim().slice(0,20)).filter(Boolean))].slice(0,8);if(!name)return alert('請輸入屬性名稱。');if(cats.length<2)return alert('至少需要 2 個不同分類。');a.name=name;a.categories=cats;Object.keys(a.values).forEach(s=>{if(!cats.includes(a.values[s]))delete a.values[s]});saveStudentAttributes();renderEditGrid()}
+function fillAttributeEditor(a=null){
+ editingAttributeId=a?.id||'';
+ $('attributeCreatorModal').querySelector('.modalTitle').textContent=a?'修改學生屬性':'新增學生屬性';
+ $('confirmCreateAttribute').textContent=a?'儲存修改':'建立屬性';
+ $('newAttributeName').value=a?.name||'';$('newAttributeOrdered').checked=!!a?.ordered;
+ document.querySelectorAll('.newAttributeCategory').forEach((x,i)=>x.value=a?.categories?.[i]||'');
+}
+function openAttributeCreator(){fillAttributeEditor();$('attributeCreatorModal').classList.remove('hidden')}
+function editAttribute(a){fillAttributeEditor(a);$('attributeCreatorModal').classList.remove('hidden')}
+function moveAttribute(fromId,toId){
+ if(!fromId||!toId||fromId===toId)return;
+ const from=studentAttributes.findIndex(a=>a.id===fromId),to=studentAttributes.findIndex(a=>a.id===toId);if(from<0||to<0)return;
+ const [item]=studentAttributes.splice(from,1);studentAttributes.splice(to,0,item);saveStudentAttributes();renderEditGrid();
+}
 function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid()},{title:'確認刪除屬性',confirmText:'刪除'})}
 function renderEditGrid(){
  loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs')+(studentAttributes.length>2?' manyAttrs':'');g.style.setProperty('--attr-count',studentAttributes.length);
- g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
- tempStudents.forEach((s,i)=>{const seat=i+1,attrs=studentAttributes.map(a=>`<select class="editAttrValue" data-seat="${seat}" data-attr="${escapeHtml(a.id)}"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${a.values[seat]===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`).join('');g.insertAdjacentHTML('beforeend',`<div>${String(seat).padStart(2,'0')}</div><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select>${attrs}<button class="danger removeStudent" data-i="${i}">刪除</button>`)});
+ g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr" draggable="true" data-attr-drag="${escapeHtml(a.id)}" title="拖曳可調整屬性左右順序"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
+ tempStudents.forEach((s,i)=>{const seat=i+1,attrs=studentAttributes.map(a=>`<select class="editAttrValue" data-seat="${seat}" data-attr="${escapeHtml(a.id)}"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${a.values[seat]===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`).join('');g.insertAdjacentHTML('beforeend',`<div class="seatCell">${String(seat).padStart(2,'0')}</div><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select>${attrs}<button class="danger removeStudent" data-i="${i}">刪除</button>`)});
  document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()});
  document.querySelectorAll('.editAttrValue').forEach(s=>s.onchange=()=>{const a=studentAttributes.find(x=>x.id===s.dataset.attr);if(!a)return;const seat=Number(s.dataset.seat);s.value?a.values[seat]=s.value:delete a.values[seat];saveStudentAttributes()});
  document.querySelectorAll('.editAttr').forEach(b=>b.onclick=()=>{const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)editAttribute(a)});
  document.querySelectorAll('.deleteAttr').forEach(b=>b.onclick=()=>{const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)deleteAttribute(a)});
+ let draggedAttr='';document.querySelectorAll('.attrHdr[data-attr-drag]').forEach(h=>{
+   h.ondragstart=e=>{if(e.target.closest('button')){e.preventDefault();return}draggedAttr=h.dataset.attrDrag;h.classList.add('dragging');e.dataTransfer.effectAllowed='move'};
+   h.ondragend=()=>{h.classList.remove('dragging');document.querySelectorAll('.attrHdr').forEach(x=>x.classList.remove('dragOver'));draggedAttr=''};
+   h.ondragover=e=>{if(draggedAttr&&draggedAttr!==h.dataset.attrDrag){e.preventDefault();h.classList.add('dragOver')}};
+   h.ondragleave=()=>h.classList.remove('dragOver');
+   h.ondrop=e=>{e.preventDefault();h.classList.remove('dragOver');moveAttribute(draggedAttr,h.dataset.attrDrag)};
+ });
 }
 function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
 $('absenceNoneCheck').onchange=e=>{
@@ -2447,8 +2466,26 @@ $('saveTitleSettings').onclick=()=>{
   saveTitleSettingsData();renderTitle();$('titleModal').classList.add('hidden');
 };
 
-$('openAttributeCreator').onclick=openAttributeCreator;$('closeAttributeCreator').onclick=()=>$('attributeCreatorModal').classList.add('hidden');
-$('confirmCreateAttribute').onclick=()=>{const name=$('newAttributeName').value.trim().slice(0,20),categories=[...new Set([...document.querySelectorAll('.newAttributeCategory')].map(x=>x.value.trim().slice(0,20)).filter(Boolean))];if(!name)return alert('請輸入屬性名稱。');if(categories.length<2)return alert('至少需要填寫 2 個不同分類。');if(studentAttributes.some(a=>a.name===name))return alert('已有同名屬性。');studentAttributes.push({id:'attr_'+Date.now(),name,categories,ordered:$('newAttributeOrdered').checked,values:{}});if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');renderEditGrid()}};
+$('openAttributeCreator').onclick=openAttributeCreator;$('closeAttributeCreator').onclick=()=>{$('attributeCreatorModal').classList.add('hidden');editingAttributeId=''};
+$('confirmCreateAttribute').onclick=()=>{
+ const name=$('newAttributeName').value.trim().slice(0,20),categories=[...new Set([...document.querySelectorAll('.newAttributeCategory')].map(x=>x.value.trim().slice(0,20)).filter(Boolean))].slice(0,8),ordered=$('newAttributeOrdered').checked;
+ if(!name)return alert('請輸入屬性名稱。');if(categories.length<2)return alert('至少需要填寫 2 個不同分類。');
+ if(studentAttributes.some(a=>a.name===name&&a.id!==editingAttributeId))return alert('已有同名屬性。');
+ if(!editingAttributeId){studentAttributes.push({id:'attr_'+Date.now(),name,categories,ordered,values:{}});if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');renderEditGrid()}return}
+ const a=studentAttributes.find(x=>x.id===editingAttributeId);if(!a)return;
+ const oldCats=[...a.categories],oldValues={...a.values},changedCats=oldCats.length!==categories.length||oldCats.some((c,i)=>c!==categories[i]);
+ const apply=()=>{
+   const mapped={};Object.entries(oldValues).forEach(([seat,val])=>{const oldIndex=oldCats.indexOf(val);if(categories.includes(val))mapped[seat]=val;else if(oldIndex>=0&&categories[oldIndex])mapped[seat]=categories[oldIndex]});
+   a.name=name;a.categories=categories;a.ordered=ordered;a.values=mapped;
+   if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');editingAttributeId='';renderEditGrid()}
+ };
+ if(changedCats){
+   const affected=Object.entries(oldValues).filter(([seat,val])=>!categories.includes(val)).map(([seat])=>String(seat).padStart(2,'0'));
+   const msg=affected.length?`分類內容已變更。受影響學生座號：${affected.join('、')}。\n\n若是同一位置的分類改名，既有學生資料會一起改成新名稱；若該位置已被刪除，該學生此屬性會改為未設定。確定儲存嗎？`:'分類內容已變更。確定套用新的分類設定嗎？';
+   openSafeConfirm(msg,apply,{title:'確認修改屬性分類',confirmText:'套用修改',cancelText:'返回設定',danger:false});return;
+ }
+ apply();
+};
 $('editStudents').onclick=()=>{$('settingsModal').classList.add('hidden');tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));renderEditGrid();$('studentModal').classList.remove('hidden')};
 $('closeModal').onclick=()=>$('studentModal').classList.add('hidden');
 $('addStudent').onclick=()=>{syncTemp();if(tempStudents.length>=MAX_STUDENTS)return alert(`學生人數最多 ${MAX_STUDENTS} 人`);tempStudents.push({name:'',sex:''});renderEditGrid();setTimeout(()=>{const es=[...document.querySelectorAll('.editName')];es.at(-1)?.focus()},0)};
