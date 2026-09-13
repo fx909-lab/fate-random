@@ -1484,6 +1484,24 @@ function renderStudents(){
   const absent=effectiveAbsentSet();
   names.forEach((n,i)=>{const id=i+1,d=document.createElement('div');d.className='student';d.id='s'+id;d.innerHTML=`<span class="nameLine">${String(id).padStart(2,'0')}${n?'. '+escapeHtml(n):''}</span>${absent.has(id)?'<span class="absenceMark" title="今日請假">假</span>':''}<span class="sex">${escapeHtml(sexes[i]||'')}</span>`;students.appendChild(d)});
 }
+
+function restoreRosterFromDevice(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw!==null){
+      const d=normalizeStoredData(JSON.parse(raw));
+      if(d){
+        names=[...d.names];
+        sexes=[...d.sexes];
+      }
+    }
+    renderStudents();
+    return true;
+  }catch(e){
+    try{renderStudents()}catch(_){}
+    return false;
+  }
+}
 function clearMarks(){document.querySelectorAll('.student').forEach(x=>x.className='student')}
 function clearResults(){
   clearMarks();
@@ -2110,8 +2128,31 @@ $('resetStudents').onclick=()=>{
   );
 };
 
-const storageOk=storageSelfTest();$('storageWarning')?.classList.toggle('show',!storageOk);loadData();loadTitleSettings();renderTitle();loadBalanceData();loadRaffleRecords();loadAbsenceData();refreshLimits();renderGroupPad();renderGroupSelected();renderStudents();renderAbsenceUI();
-groupActiveMethod=0;$('rangeLimit').checked=false;$('rangeBox').classList.add('hidden');$('exportGroups').disabled=true;
-setRandomMode('pure');renderRaffleControls();
+const storageOk=storageSelfTest();
+$('storageWarning')?.classList.toggle('show',!storageOk);
+
+// v19：每個初始化步驟分開保護，避免其中一項錯誤讓學生名單完全不渲染。
+try{loadData()}catch(e){}
+try{loadTitleSettings();renderTitle()}catch(e){}
+try{loadBalanceData()}catch(e){}
+try{loadRaffleRecords()}catch(e){}
+try{loadAbsenceData()}catch(e){}
+
+// 先直接從裝置端名單 key 還原並渲染，再初始化其他控制元件。
+restoreRosterFromDevice();
+
+try{refreshLimits()}catch(e){}
+try{renderGroupPad();renderGroupSelected()}catch(e){}
+try{renderAbsenceUI()}catch(e){}
+try{
+  groupActiveMethod=0;
+  $('rangeLimit').checked=false;
+  $('rangeBox').classList.add('hidden');
+  $('exportGroups').disabled=true;
+}catch(e){}
+try{setRandomMode('pure');renderRaffleControls()}catch(e){}
+
+// 頁面完整載入後再確認一次 roster，確保其他初始化不會留下空白名單。
+window.addEventListener('load',()=>{restoreRosterFromDevice()},{once:true});
 </script>
 </body></html>
