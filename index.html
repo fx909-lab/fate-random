@@ -794,12 +794,12 @@ header{
 .heterogeneousSelectRow{display:grid;grid-template-columns:auto minmax(180px,1fr);gap:8px;align-items:center;margin-top:0}
 .heterogeneousSelectRow label{margin:0}
 .heterogeneousSelectRow select{margin:0;min-width:0}
-.heterogeneousMinRow{display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;margin-top:14px;padding:2px 0 1px}
-.heterogeneousMinRow .minLabel{white-space:nowrap;font-weight:700;line-height:1.35;margin-right:2px}
-.heterogeneousMinItem{display:inline-flex;align-items:center;gap:7px;min-height:40px;font-size:15px;line-height:1.2}
-.heterogeneousMinItem>span{display:inline-flex;align-items:center;min-height:36px;white-space:nowrap}
+.heterogeneousMinRow{display:flex;align-items:center;column-gap:24px;row-gap:10px;flex-wrap:wrap;margin-top:14px;padding:2px 0 1px}
+.heterogeneousMinRow .minLabel{display:inline-flex;align-items:center;height:40px;white-space:nowrap;font-weight:700;line-height:1.2;margin:0}
+.heterogeneousMinItem{display:inline-flex;align-items:center;gap:6px;height:40px;font-size:15px;line-height:1.2;margin:0}
+.heterogeneousMinItem>span{display:inline-flex;align-items:center;height:40px;white-space:nowrap;line-height:1.2}
 .heterogeneousMinItem input{width:54px;height:40px;margin:0;text-align:center;padding:7px 6px;font:inherit;line-height:1.2}
-@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:auto minmax(0,1fr);gap:8px}.heterogeneousSelectRow select{width:100%}.heterogeneousMinRow{gap:10px 14px}.heterogeneousMinRow .minLabel{flex-basis:100%;margin-bottom:-2px}.heterogeneousMinItem{gap:6px}}
+@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:auto minmax(0,1fr);gap:8px}.heterogeneousSelectRow select{width:100%}.heterogeneousMinRow{column-gap:18px;row-gap:10px}.heterogeneousMinRow .minLabel{flex-basis:100%;height:auto;margin-bottom:0}.heterogeneousMinItem{gap:6px}}
 
 .attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid select option{text-align:center}.editGrid.attrGrid select.editAttrValue.missingAttr{color:#b42318;font-weight:800}.editGrid.attrGrid select.editAttrValue.missingAttr option{color:#2d2923;font-weight:400}.editGrid.attrGrid select.editAttrValue.missingAttr option[value=""]{color:#b42318;font-weight:800}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
@@ -2007,7 +2007,7 @@ function buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows){
   return groups.map(gr=>shuffle(gr.ids));
 }
 
-function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attrMins){
+function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attrMins,diagnose=true){
   const poolSet=new Set(all);
   const referenced=[...bindRows,...excludeRows].flat();
   const outside=[...new Set(referenced.filter(id=>!poolSet.has(id)))].sort((a,b)=>a-b);
@@ -2146,8 +2146,38 @@ function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attr
     if(bMin>0)active.push(`男生每組至少 ${bMin} 人`);
     if(fMin>0)active.push(`女生每組至少 ${fMin} 人`);
     attrMins.forEach((m,i)=>{if(m>0)active.push(`${attr.name}「${attr.categories[i]}」每組至少 ${m} 人`)});
+
+    if(diagnose){
+      const removable=[];
+      const works=(nextBind,nextExclude,nextB,nextF,nextMins)=>{
+        try{
+          buildHeterogeneousGroups(all,g,nextB,nextF,nextBind,nextExclude,attr,nextMins,false);
+          return true;
+        }catch(_){return false}
+      };
+      bindRows.forEach((row,i)=>{
+        const next=bindRows.filter((_,j)=>j!==i);
+        if(works(next,excludeRows,bMin,fMin,attrMins))removable.push(`綁定：${row.join('、')}`);
+      });
+      excludeRows.forEach((row,i)=>{
+        const next=excludeRows.filter((_,j)=>j!==i);
+        if(works(bindRows,next,bMin,fMin,attrMins))removable.push(`互斥：${row.join('、')}`);
+      });
+      if(bMin>0&&works(bindRows,excludeRows,0,fMin,attrMins))removable.push(`男生每組至少 ${bMin} 人`);
+      if(fMin>0&&works(bindRows,excludeRows,bMin,0,attrMins))removable.push(`女生每組至少 ${fMin} 人`);
+      attrMins.forEach((m,i)=>{
+        if(m<=0)return;
+        const next=[...attrMins];next[i]=0;
+        if(works(bindRows,excludeRows,bMin,fMin,next))removable.push(`${attr.name}「${attr.categories[i]}」每組至少 ${m} 人`);
+      });
+      if(removable.length){
+        const unique=[...new Set(removable)];
+        throw Error(`目前的條件無法同時成立。經逐項檢查，移除以下任一規則後可成立：${unique.join('；')}。`);
+      }
+    }
+
     const details=active.length?`目前同時生效的規則：${active.join('；')}。`:'目前沒有可進一步拆解的單一衝突條件。';
-    throw Error(`目前的條件無法同時成立。${details}請調整其中一項條件後再試。`);
+    throw Error(`目前的條件無法同時成立。${details}目前無法判定單一規則就是唯一衝突來源，請調整其中一項條件後再試。`);
   }
   return bestGroups.map(gr=>shuffle(gr));
 }
