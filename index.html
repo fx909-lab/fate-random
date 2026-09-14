@@ -30,7 +30,7 @@ input,textarea,select{width:100%;border:2px solid #d9dfeb;border-radius:11px;pad
 .help{font-size:14px;color:var(--muted);line-height:1.6}.hidden{display:none!important}
 .resultBox{margin-top:16px;border:3px dashed #d7deeb;border-radius:18px;min-height:210px;padding:18px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;text-align:center}
 .resultBall{min-width:110px;border-radius:18px;background:#eff6ff;color:var(--blue);padding:15px 18px;font-size:clamp(42px,7vw,72px);font-weight:900;line-height:1}
-.resultBall .nm{font-size:18px;color:#1e3a8a;margin-top:10px}.empty{font-size:20px;color:#94a3b8;font-weight:800}
+.resultBall .nm{font-size:18px;color:#1e3a8a;margin-top:10px}.empty{font-size:20px;color:#94a3b8;font-weight:800;white-space:pre-line}
 .subcard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}.subcard h3{margin:0 0 10px;font-size:19px}
 .method.activeMethod{border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe}
 .numPad{display:grid;grid-template-columns:repeat(10,minmax(42px,1fr));gap:8px;margin-top:12px}
@@ -794,12 +794,12 @@ header{
 .heterogeneousSelectRow{display:grid;grid-template-columns:auto minmax(180px,1fr);gap:8px;align-items:center;margin-top:0}
 .heterogeneousSelectRow label{margin:0}
 .heterogeneousSelectRow select{margin:0;min-width:0}
-.heterogeneousMinRow{display:flex;align-items:center;column-gap:24px;row-gap:10px;flex-wrap:wrap;margin-top:14px;padding:2px 0 1px}
+.heterogeneousMinRow{display:flex;align-items:center;column-gap:1.5em;row-gap:10px;flex-wrap:wrap;margin-top:14px;padding:2px 0 1px}
 .heterogeneousMinRow .minLabel{display:inline-flex;align-items:center;height:40px;white-space:nowrap;font-weight:700;line-height:1.2;margin:0}
-.heterogeneousMinItem{display:inline-flex;align-items:center;gap:6px;height:40px;font-size:15px;line-height:1.2;margin:0}
+.heterogeneousMinItem{display:inline-flex;align-items:center;gap:.5em;height:40px;font-size:15px;line-height:1.2;margin:0}
 .heterogeneousMinItem>span{display:inline-flex;align-items:center;height:40px;white-space:nowrap;line-height:1.2}
 .heterogeneousMinItem input{width:54px;height:40px;margin:0;text-align:center;padding:7px 6px;font:inherit;line-height:1.2}
-@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:auto minmax(0,1fr);gap:8px}.heterogeneousSelectRow select{width:100%}.heterogeneousMinRow{column-gap:18px;row-gap:10px}.heterogeneousMinRow .minLabel{flex-basis:100%;height:auto;margin-bottom:0}.heterogeneousMinItem{gap:6px}}
+@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:auto minmax(0,1fr);gap:8px}.heterogeneousSelectRow select{width:100%}.heterogeneousMinRow{column-gap:1.5em;row-gap:10px}.heterogeneousMinRow .minLabel{flex-basis:100%;height:auto;margin-bottom:0}.heterogeneousMinItem{gap:.5em}}
 
 .attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid select option{text-align:center}.editGrid.attrGrid select.editAttrValue.missingAttr{color:#b42318;font-weight:800}.editGrid.attrGrid select.editAttrValue.missingAttr option{color:#2d2923;font-weight:400}.editGrid.attrGrid select.editAttrValue.missingAttr option[value=""]{color:#b42318;font-weight:800}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
@@ -2172,7 +2172,7 @@ function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attr
       });
       if(removable.length){
         const unique=[...new Set(removable)];
-        throw Error(`目前的條件無法同時成立。經逐項檢查，移除以下任一規則後可成立：${unique.join('；')}。`);
+        throw Error(`目前的條件無法同時成立。\n經逐項檢查，移除以下任一規則後可成立：\n${unique.map((rule,i)=>rule+(i<unique.length-1?'；':'。')).join('\n')}`);
       }
     }
 
