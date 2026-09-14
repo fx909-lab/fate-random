@@ -807,6 +807,20 @@ header{
 
 .attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid select option{text-align:center}.editGrid.attrGrid select.editAttrValue.missingAttr{color:#b42318;font-weight:800}.editGrid.attrGrid select.editAttrValue.missingAttr option{color:#2d2923;font-weight:400}.editGrid.attrGrid select.editAttrValue.missingAttr option[value=""]{color:#b42318;font-weight:800}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
+
+/* v43：分組設定範本 */
+.groupPresetChecklist{display:grid;gap:8px;margin:12px 0 4px}
+.groupPresetCheckRow{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid var(--fate-line,#d9cfbc);border-radius:10px;background:#fffdf8;line-height:1.45}
+.groupPresetCheckRow input[type="checkbox"]{width:auto;margin:3px 0 0;flex:0 0 auto}
+.groupPresetCheckRow span{min-width:0;overflow-wrap:anywhere}
+.groupPresetCheckRow.disabled{opacity:.52}
+.groupPresetList{display:grid;gap:9px;margin-top:12px}
+.groupPresetItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--fate-line,#d9cfbc);border-radius:12px;background:#fffdf8}
+.groupPresetItemName{font-weight:900;min-width:0;overflow-wrap:anywhere}
+.groupPresetItemActions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.groupPresetEmpty{padding:14px;border:1px dashed #cfc4af;border-radius:12px;color:var(--muted);text-align:center}
+@media(max-width:560px){.groupPresetItem{align-items:flex-start;flex-direction:column}.groupPresetItemActions{width:100%;justify-content:flex-start}}
+
 /* Zero attributes: keep the original 4-column edit layout. */
 .editGrid.attrGrid.noAttrs{grid-template-columns:54px minmax(120px,1fr) 76px 68px;min-width:0}
 @media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid,.editGrid.attrGrid.manyAttrs{grid-template-columns:48px minmax(110px,135px) 72px repeat(var(--attr-count),minmax(100px,125px)) 64px;min-width:max-content}.editGrid.attrGrid.noAttrs{grid-template-columns:48px minmax(120px,1fr) 72px 64px;min-width:0}}
@@ -966,6 +980,8 @@ header{
       <button class="primary" id="makeGroups">👥 開始分組</button>
       <button class="secondary" id="exportGroups" disabled>⬇ 匯出分組</button>
       <button class="danger clearBtn">清除結果</button>
+      <button class="secondary" id="loadGroupPreset">套用已存條件</button>
+      <button class="secondary" id="saveGroupPreset">儲存本次條件</button>
     </div>
   </section>
 
@@ -1095,6 +1111,50 @@ header{
   </div>
 </div>
 
+
+<div id="saveGroupPresetModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="saveGroupPresetTitle">
+  <div class="modalBox" style="width:min(620px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="saveGroupPresetTitle">儲存分組條件</h2>
+      <button class="secondary" id="closeSaveGroupPreset">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 10px">勾選要存入範本的條件。今日請假、排除今日請假與本次參與分組名單不會儲存。</div>
+    <div id="groupPresetChecklist" class="groupPresetChecklist"></div>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button class="secondary" id="cancelSaveGroupPreset">取消</button>
+      <button class="primary" id="confirmSaveGroupPreset">確認</button>
+    </div>
+  </div>
+</div>
+
+<div id="groupPresetNameModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupPresetNameTitle">
+  <div class="modalBox" style="width:min(500px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="groupPresetNameTitle">範本名稱</h2>
+      <button class="secondary" id="closeGroupPresetName">關閉</button>
+    </div>
+    <div class="field" style="margin-top:14px">
+      <label for="groupPresetNameInput">名稱</label>
+      <input id="groupPresetNameInput" type="text" maxlength="30" placeholder="例如：平常分組、國語異質分組">
+    </div>
+    <div class="row" style="margin-top:16px;justify-content:flex-end">
+      <button class="secondary" id="cancelGroupPresetName">取消</button>
+      <button class="primary" id="confirmGroupPresetName">儲存</button>
+    </div>
+  </div>
+</div>
+
+<div id="loadGroupPresetModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="loadGroupPresetTitle">
+  <div class="modalBox" style="width:min(620px,96vw)">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <h2 class="modalTitle" id="loadGroupPresetTitle">已存分組條件</h2>
+      <button class="secondary" id="closeLoadGroupPreset">關閉</button>
+    </div>
+    <div class="help" style="margin:8px 0 10px">套用只會填回範本有儲存的項目，不會自動開始分組；今日請假與本次參與分組名單保持目前狀態。</div>
+    <div id="groupPresetList" class="groupPresetList"></div>
+  </div>
+</div>
+
 <div id="settingsModal" class="modal hidden">
   <div class="modalBox" style="width:min(560px,96vw)">
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
@@ -1213,12 +1273,13 @@ const RAFFLE_STORAGE_KEY='604_custom_raffle_records_v1';
 const ABSENCE_STORAGE_KEY='604_daily_absence_v1';
 const ABSENCE_PREFS_STORAGE_KEY='604_daily_absence_prefs_v1';
 const STUDENT_ATTR_STORAGE_KEY='604_student_attributes_v1';
+const GROUP_PRESET_STORAGE_KEY='604_group_presets_v1';
 const MAX_RAFFLE_RECORDS=30;
 const MAX_RAFFLE_NAME_LENGTH=30;
 const MAX_TITLE_LENGTH=30;
 const defaultNames=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
 const defaultSex=Array.from({length:DEFAULT_STUDENT_COUNT},()=> '');
-let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],editingAttributeId='',pendingImportPackage=null,pendingImportResolved=null,randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true};
+let names=[...defaultNames],sexes=[...defaultSex],padSelected=new Set(),activeMethod=1,groupPadSelected=new Set(),groupActiveMethod=0,tempStudents=[],studentAttributes=[],editingAttributeId='',pendingImportPackage=null,pendingImportResolved=null,randomMode='pure',balanceRound=1,balanceRoundDrawn=new Set(),titleSettings={enabled:true,text:''},raffleRecords=[],activeRaffleId='',raffleActionMode='rename',lastGroups=[],absenceState='unset',absenceSeats=new Set(),absenceDraftSeats=new Set(),absenceDraftNone=false,absencePrefs={random:true,custom:true,groups:true},groupPresets=[],pendingPresetItems=[];
 const $=id=>document.getElementById(id),students=$('students'),resultBox=$('resultBox');
 
 // v16：網站版只使用 localStorage。
@@ -2184,6 +2245,156 @@ function buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attr
     throw Error(`目前的條件無法同時成立。${details}目前無法判定單一規則就是唯一衝突來源，請調整其中一項條件後再試。`);
   }
   return bestGroups.map(gr=>shuffle(gr));
+}
+
+
+function normalizeGroupPresets(raw){
+  if(!Array.isArray(raw))return [];
+  return raw.slice(0,30).map(p=>{
+    if(!p||typeof p!=='object')return null;
+    const id=String(p.id||'').slice(0,80),name=String(p.name||'').trim().slice(0,30);
+    if(!id||!name||!Array.isArray(p.items))return null;
+    const items=p.items.slice(0,80).filter(x=>x&&typeof x==='object'&&typeof x.kind==='string');
+    return {id,name,items,updatedAt:Number(p.updatedAt)||0};
+  }).filter(Boolean);
+}
+function loadGroupPresets(){
+  try{groupPresets=normalizeGroupPresets(JSON.parse(appStorageGet(GROUP_PRESET_STORAGE_KEY)||'[]'))}catch(e){groupPresets=[]}
+}
+function saveGroupPresets(){
+  try{appStorageSet(GROUP_PRESET_STORAGE_KEY,JSON.stringify(groupPresets));return true}
+  catch(e){alert('分組條件範本沒有成功儲存。');return false}
+}
+function closeGroupPresetModal(id){$(id)?.classList.add('hidden')}
+function currentSpecialRuleItems(){
+  const out=[];
+  [...$('specialRuleRows').querySelectorAll('.specialRuleRow')].forEach(row=>{
+    const raw=row.querySelector('.specialRuleInput').value.trim();
+    if(!raw)return;
+    const type=row.querySelector('.specialRuleType').value==='bind'?'bind':'exclude';
+    try{
+      if(raw.includes('-'))return;
+      const ids=[...new Set(raw.split(/[、，,.\+\s]+/).filter(Boolean).map(Number).filter(Number.isInteger))];
+      if(ids.length>=2)out.push({kind:'specialRule',type,ids,label:`${type==='bind'?'綁定':'互斥'}：${ids.join('、')}`});
+    }catch(_){ }
+  });
+  return out;
+}
+function buildCurrentPresetItems(){
+  const items=[];
+  const g=Number($('groupCount').value);
+  if(Number.isInteger(g)&&g>=2)items.push({kind:'groupCount',value:g,label:`組數：${g} 組`});
+  const bRaw=$('boysPerGroup').value.trim(),fRaw=$('girlsPerGroup').value.trim();
+  if(bRaw!==''&&Number.isInteger(Number(bRaw))&&Number(bRaw)>=0)items.push({kind:'boysMin',value:Number(bRaw),label:`男生每組人數下限：${Number(bRaw)} 人`});
+  if(fRaw!==''&&Number.isInteger(Number(fRaw))&&Number(fRaw)>=0)items.push({kind:'girlsMin',value:Number(fRaw),label:`女生每組人數下限：${Number(fRaw)} 人`});
+  if($('advancedGroupToggle').checked){
+    items.push(...currentSpecialRuleItems());
+    loadStudentAttributes();
+    const attr=studentAttributes.find(a=>a.id===$('heterogeneousAttribute').value)||null;
+    if(attr){
+      items.push({kind:'attribute',attrId:attr.id,attrName:attr.name,label:`分組屬性：${attr.name}`});
+      try{
+        const mins=readHeterogeneousMinimums(attr);
+        mins.forEach((m,i)=>{if(m>0)items.push({kind:'attributeMin',attrId:attr.id,attrName:attr.name,category:attr.categories[i],value:m,label:`${attr.name}「${attr.categories[i]}」每組人數下限：${m} 人`})});
+      }catch(_){ }
+    }
+  }
+  return items;
+}
+function renderGroupPresetChecklist(){
+  pendingPresetItems=buildCurrentPresetItems();
+  const box=$('groupPresetChecklist');
+  if(!pendingPresetItems.length){box.innerHTML='<div class="groupPresetEmpty">目前沒有可儲存的分組條件。</div>';return}
+  box.innerHTML=pendingPresetItems.map((item,i)=>`<label class="groupPresetCheckRow"><input type="checkbox" class="groupPresetItemCheck" data-index="${i}" checked><span>${escapeHtml(item.label)}</span></label>`).join('');
+  const attrCheck=[...box.querySelectorAll('.groupPresetItemCheck')].find(c=>pendingPresetItems[Number(c.dataset.index)]?.kind==='attribute');
+  const sync=()=>{
+    const attrOn=!attrCheck||attrCheck.checked;
+    [...box.querySelectorAll('.groupPresetItemCheck')].forEach(c=>{
+      const it=pendingPresetItems[Number(c.dataset.index)];
+      if(it?.kind==='attributeMin'){
+        c.disabled=!attrOn;if(!attrOn)c.checked=false;
+        c.closest('.groupPresetCheckRow')?.classList.toggle('disabled',!attrOn);
+      }
+    });
+  };
+  if(attrCheck)attrCheck.addEventListener('change',sync);sync();
+}
+function openSaveGroupPreset(){renderGroupPresetChecklist();$('saveGroupPresetModal').classList.remove('hidden')}
+$('saveGroupPreset').onclick=openSaveGroupPreset;
+$('closeSaveGroupPreset').onclick=$('cancelSaveGroupPreset').onclick=()=>closeGroupPresetModal('saveGroupPresetModal');
+$('confirmSaveGroupPreset').onclick=()=>{
+  const checks=[...document.querySelectorAll('.groupPresetItemCheck:checked')];
+  if(!checks.length)return alert('請至少勾選一項要儲存的分組條件。');
+  pendingPresetItems=checks.map(c=>pendingPresetItems[Number(c.dataset.index)]).filter(Boolean);
+  closeGroupPresetModal('saveGroupPresetModal');
+  $('groupPresetNameInput').value='';
+  $('groupPresetNameModal').classList.remove('hidden');
+  setTimeout(()=>$('groupPresetNameInput').focus(),0);
+};
+$('closeGroupPresetName').onclick=$('cancelGroupPresetName').onclick=()=>closeGroupPresetModal('groupPresetNameModal');
+$('confirmGroupPresetName').onclick=()=>{
+  const name=$('groupPresetNameInput').value.trim().slice(0,30);
+  if(!name)return alert('請輸入範本名稱。');
+  loadGroupPresets();
+  const existing=groupPresets.find(p=>p.name===name);
+  const commit=()=>{
+    const rec={id:existing?.id||('gp_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)),name,items:JSON.parse(JSON.stringify(pendingPresetItems)),updatedAt:Date.now()};
+    if(existing)groupPresets=groupPresets.map(p=>p.id===existing.id?rec:p);else groupPresets.push(rec);
+    if(saveGroupPresets()){closeGroupPresetModal('groupPresetNameModal');alert(existing?'已覆蓋同名分組條件範本。':'分組條件範本已儲存。')}
+  };
+  if(existing)openSafeConfirm(`已經有名為「${name}」的分組條件範本。要用本次勾選的條件覆蓋它嗎？`,commit,{title:'覆蓋分組條件範本',confirmText:'覆蓋',cancelText:'取消',danger:false});
+  else commit();
+};
+function renderGroupPresetList(){
+  loadGroupPresets();
+  const box=$('groupPresetList');
+  if(!groupPresets.length){box.innerHTML='<div class="groupPresetEmpty">目前尚未儲存分組條件。</div>';return}
+  box.innerHTML=groupPresets.map(p=>`<div class="groupPresetItem" data-id="${escapeHtml(p.id)}"><div class="groupPresetItemName">${escapeHtml(p.name)}</div><div class="groupPresetItemActions"><button class="primary applyGroupPreset" type="button">套用</button><button class="danger deleteGroupPreset" type="button">刪除</button></div></div>`).join('');
+  box.querySelectorAll('.applyGroupPreset').forEach(btn=>btn.onclick=()=>applyGroupPreset(btn.closest('.groupPresetItem').dataset.id));
+  box.querySelectorAll('.deleteGroupPreset').forEach(btn=>btn.onclick=()=>deleteGroupPreset(btn.closest('.groupPresetItem').dataset.id));
+}
+$('loadGroupPreset').onclick=()=>{renderGroupPresetList();$('loadGroupPresetModal').classList.remove('hidden')};
+$('closeLoadGroupPreset').onclick=()=>closeGroupPresetModal('loadGroupPresetModal');
+function deleteGroupPreset(id){
+  loadGroupPresets();const p=groupPresets.find(x=>x.id===id);if(!p)return;
+  openSafeConfirm(`確定要刪除分組條件範本「${p.name}」嗎？`,()=>{groupPresets=groupPresets.filter(x=>x.id!==id);if(saveGroupPresets())renderGroupPresetList()},{title:'刪除分組條件範本',confirmText:'刪除',cancelText:'取消'});
+}
+function applyGroupPreset(id){
+  loadGroupPresets();const p=groupPresets.find(x=>x.id===id);if(!p)return;
+  const warnings=[];
+  const items=p.items||[];
+  const gc=items.find(x=>x.kind==='groupCount');if(gc&&Number.isInteger(Number(gc.value)))$('groupCount').value=String(gc.value);
+  const bm=items.find(x=>x.kind==='boysMin');if(bm)$('boysPerGroup').value=String(bm.value);
+  const fm=items.find(x=>x.kind==='girlsMin');if(fm)$('girlsPerGroup').value=String(fm.value);
+  const ruleItems=items.filter(x=>x.kind==='specialRule');
+  const attrItem=items.find(x=>x.kind==='attribute');
+  const attrMinItems=items.filter(x=>x.kind==='attributeMin');
+  if(ruleItems.length||attrItem||attrMinItems.length){
+    $('advancedGroupToggle').checked=true;$('advancedGroupBox').classList.remove('hidden');
+  }
+  if(ruleItems.length){
+    const valid=ruleItems.filter(r=>Array.isArray(r.ids)&&r.ids.length>=2&&r.ids.every(n=>Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=names.length));
+    if(valid.length!==ruleItems.length)warnings.push('部分綁定／互斥條件引用了目前不存在的座號，已略過。');
+    $('specialRuleRows').innerHTML='';
+    valid.forEach(r=>addSpecialRuleRow(r.type==='bind'?'bind':'exclude',(r.ids||[]).join('、')));
+  }
+  if(attrItem||attrMinItems.length){
+    loadStudentAttributes();renderHeterogeneousAttributeOptions();
+    const wantedId=attrItem?.attrId||attrMinItems[0]?.attrId||'';
+    const attr=studentAttributes.find(a=>a.id===wantedId)||studentAttributes.find(a=>a.name===(attrItem?.attrName||attrMinItems[0]?.attrName));
+    if(!attr)warnings.push(`分組屬性「${attrItem?.attrName||attrMinItems[0]?.attrName||''}」已不存在，因此沒有套用該屬性設定。`);
+    else{
+      $('heterogeneousAttribute').value=attr.id;renderHeterogeneousMinimums();
+      attrMinItems.forEach(mi=>{
+        const idx=attr.categories.indexOf(mi.category);
+        if(idx<0){warnings.push(`${attr.name}的分類「${mi.category}」已不存在，因此沒有套用該項人數下限。`);return}
+        const inp=document.querySelector(`.heterogeneousMinInput[data-cat-index="${idx}"]`);if(inp)inp.value=String(mi.value);
+      });
+    }
+  }
+  updateGenderHint();
+  closeGroupPresetModal('loadGroupPresetModal');
+  if(warnings.length)alert('範本已套用，但有部分設定需要注意：\n\n'+warnings.join('\n'));
 }
 
 $('makeGroups').onclick=()=>{
