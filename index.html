@@ -790,11 +790,11 @@ header{
   flex:0 0 auto;
 }
 
-.heterogeneousBox{margin-top:10px}
-.heterogeneousSelectRow{display:grid;grid-template-columns:minmax(110px,160px) minmax(180px,1fr);gap:10px;align-items:center;margin-top:10px}
+.heterogeneousBox{margin-top:10px;padding:12px 14px}
+.heterogeneousSelectRow{display:grid;grid-template-columns:auto minmax(180px,1fr);gap:8px;align-items:center;margin-top:0}
 .heterogeneousSelectRow label{margin:0}
 .heterogeneousSelectRow select{margin:0;min-width:0}
-@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:1fr;gap:6px}}
+@media(max-width:560px){.heterogeneousSelectRow{grid-template-columns:auto minmax(0,1fr);gap:8px}.heterogeneousSelectRow select{width:100%}}
 
 .attributeCategoryInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.attributeCategoryInputs input{margin:0}.editGridWrap{overflow-x:auto;padding-bottom:4px}.editGrid.attrGrid{grid-template-columns:54px minmax(105px,1fr) 76px repeat(var(--attr-count),minmax(96px,1fr)) 68px;min-width:0}.editGrid.attrGrid.manyAttrs{grid-template-columns:54px minmax(100px,135px) 72px repeat(var(--attr-count),minmax(92px,118px)) 68px;min-width:max-content}.editGrid .hdr{text-align:center}.attrHdr{display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;min-width:0}.attrHdr .attrTitle{overflow:hidden;text-overflow:ellipsis}.attrHdr button{padding:2px 4px;font-size:10px;flex:0 0 auto}.editGrid.attrGrid input,.editGrid.attrGrid select{min-width:0;width:100%;text-align:center}.editGrid.attrGrid select{text-align-last:center}.editGrid.attrGrid select option{text-align:center}.editGrid.attrGrid select.editAttrValue.missingAttr{color:#b42318;font-weight:800}.editGrid.attrGrid select.editAttrValue.missingAttr option{color:#2d2923;font-weight:400}.editGrid.attrGrid select.editAttrValue.missingAttr option[value=""]{color:#b42318;font-weight:800}.editGrid.attrGrid .seatCell{text-align:center}.attrHdr[draggable="true"]{cursor:grab}.attrHdr.dragging{opacity:.45}.attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}.importAttrList{display:grid;gap:10px;margin-top:10px}.importAttrRow{border:1px solid #d6cfbf;border-radius:10px;padding:10px;background:#fffdf8}.importAttrTop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.importAttrTop input[type="checkbox"],.importAttrTop input[type="radio"]{width:auto;margin:0}.importAttrName{font-weight:800}.importAttrBadge{font-size:12px;padding:2px 7px;border-radius:999px;background:#efe9dc;color:#6d5b39}.importAttrConfig{display:grid;grid-template-columns:1fr;gap:7px;margin-top:8px}.importAttrConfig input[type="text"]{margin:0}.importConflictList{max-height:240px;overflow:auto;border:1px solid #ded7c8;border-radius:10px;padding:8px 10px;background:#fffdf8;margin:10px 0}.importConflictLine{padding:5px 0;border-bottom:1px dashed #e4ddcf}.importConflictLine:last-child{border-bottom:0}.attributeOrderedRow{display:flex;align-items:center;gap:8px;margin:8px 0 12px;line-height:1.35}.attributeOrderedRow input[type="checkbox"]{width:auto;margin:0;flex:0 0 auto}
 
@@ -941,17 +941,12 @@ header{
             <button type="button" class="secondary" id="addSpecialRule">＋ 新增條件</button>
             <button type="button" class="danger clearBtn" id="clearAllSpecialRules">清除全部條件</button>
           </div>
+        </div>
 
-          <div class="subcard heterogeneousBox">
-            <label class="groupOptionRow" style="margin-top:0"><input id="heterogeneousGroupToggle" type="checkbox">異質性分組</label>
-            <div class="help">一次選擇 1 個學生屬性，系統會在符合綁定／互斥、組別人數與性別條件的前提下，盡量把不同分類平均分散到各組。</div>
-            <div id="heterogeneousGroupBox" class="hidden">
-              <div class="heterogeneousSelectRow">
-                <label for="heterogeneousAttribute">分組屬性</label>
-                <select id="heterogeneousAttribute"></select>
-              </div>
-              <div id="heterogeneousAttributeHint" class="help" style="margin-top:8px"></div>
-            </div>
+        <div class="subcard heterogeneousBox">
+          <div class="heterogeneousSelectRow">
+            <label for="heterogeneousAttribute">分組屬性</label>
+            <select id="heterogeneousAttribute"></select>
           </div>
         </div>
       </div>
@@ -1822,30 +1817,12 @@ function renderHeterogeneousAttributeOptions(){
   if(!studentAttributes.length){
     sel.innerHTML='<option value="">尚未建立學生屬性</option>';
     sel.disabled=true;
-    $('heterogeneousGroupToggle').disabled=true;
-    $('heterogeneousGroupToggle').checked=false;
-    $('heterogeneousGroupBox').classList.add('hidden');
-    $('heterogeneousAttributeHint').textContent='請先到「設定 → 新增／修改學生」建立學生屬性。';
     return;
   }
-  $('heterogeneousGroupToggle').disabled=false;
   sel.disabled=false;
-  sel.innerHTML='<option value="">請選擇學生屬性</option>'+studentAttributes.map(a=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}${a.ordered?'（程度高 → 低）':''}</option>`).join('');
+  sel.innerHTML='<option value="">不指定</option>'+studentAttributes.map(a=>`<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
   if(studentAttributes.some(a=>a.id===current))sel.value=current;
-  updateHeterogeneousAttributeHint();
 }
-function updateHeterogeneousAttributeHint(){
-  const a=studentAttributes.find(x=>x.id===$('heterogeneousAttribute').value);
-  if(!a){$('heterogeneousAttributeHint').textContent='每次分組只使用 1 個學生屬性。';return}
-  $('heterogeneousAttributeHint').textContent=a.ordered
-    ?`「${a.name}」具有程度順序：${a.categories.join(' → ')}。系統會優先讓各組的整體程度分布接近。`
-    :`「${a.name}」沒有高低順序。系統只會盡量把「${a.categories.join('、')}」等不同分類平均分散。`;
-}
-$('heterogeneousGroupToggle').onchange=e=>{
-  $('heterogeneousGroupBox').classList.toggle('hidden',!e.target.checked);
-  if(e.target.checked)renderHeterogeneousAttributeOptions();
-};
-$('heterogeneousAttribute').onchange=updateHeterogeneousAttributeHint;
 
 function addSpecialRuleRow(type='exclude',value=''){
   const row=document.createElement('div');
@@ -2153,15 +2130,13 @@ $('makeGroups').onclick=()=>{
   if($('advancedGroupToggle').checked){
     try{
       const {bindRows,excludeRows}=readSpecialGroupRules();
-      let attr=null;
-      if($('heterogeneousGroupToggle').checked){
-        loadStudentAttributes();
-        attr=studentAttributes.find(a=>a.id===$('heterogeneousAttribute').value)||null;
-        if(!attr)throw Error('請先選擇這次異質性分組要使用的學生屬性。');
+      loadStudentAttributes();
+      const attr=studentAttributes.find(a=>a.id===$('heterogeneousAttribute').value)||null;
+      if(attr){
         const missing=all.filter(id=>!attr.values[id]);
         if(missing.length)throw Error(`「${attr.name}」尚未設定完整。未設定座號：${missing.map(n=>String(n).padStart(2,'0')).join('、')}。請先到「設定 → 新增／修改學生」補上資料後再分組。`);
       }
-      if(!bindRows.length&&!excludeRows.length&&!attr)throw Error('已開啟進階分組條件，但目前沒有輸入綁定／互斥條件，也沒有開啟異質性分組。');
+      if(!bindRows.length&&!excludeRows.length&&!attr)throw Error('已開啟進階分組條件，但目前沒有輸入綁定／互斥條件，也沒有指定分組屬性。');
       const gs=attr
         ?buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr)
         :buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
