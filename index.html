@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v32 測試版 -->
+<!-- 命運事務局 v45 測試版 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -825,10 +825,18 @@ header{
 .editGrid.attrGrid.noAttrs{grid-template-columns:54px minmax(120px,1fr) 76px 68px;min-width:0}
 @media(max-width:700px){.attributeCategoryInputs{grid-template-columns:1fr}.editGrid.attrGrid,.editGrid.attrGrid.manyAttrs{grid-template-columns:48px minmax(110px,135px) 72px repeat(var(--attr-count),minmax(100px,125px)) 64px;min-width:max-content}.editGrid.attrGrid.noAttrs{grid-template-columns:48px minmax(120px,1fr) 72px 64px;min-width:0}}
 
+
+/* v45: version badge + student attribute horizontal scroll */
+.titleLine{display:flex;align-items:baseline;justify-content:center;gap:8px;min-width:0}
+.titleLine h1{margin:0}
+.versionTag{font-size:12px;font-weight:700;color:#8b8b86;letter-spacing:.04em;white-space:nowrap}
+.editGridWrap{display:block;width:100%;max-width:100%;overflow-x:auto!important;overflow-y:visible;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;padding-bottom:10px}
+.editGrid.attrGrid.manyAttrs{width:max-content!important;min-width:max-content!important;grid-template-columns:54px minmax(120px,150px) 76px repeat(var(--attr-count),minmax(105px,125px)) 68px!important}
+@media(max-width:700px){.editGrid.attrGrid.manyAttrs{grid-template-columns:48px minmax(115px,135px) 72px repeat(var(--attr-count),minmax(105px,120px)) 64px!important}}
 </style>
 </head>
 <body>
-<header><h1 id="mainTitle">🎲 命運事務局 🎲</h1><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v45</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -911,7 +919,6 @@ header{
     </div>
 
     <div class="field">
-      <label>每組性別下限</label>
       <div class="row">
         <div>
           <label>每組男生下限</label>
@@ -1711,10 +1718,13 @@ $('selectAllGroupPad').onclick=()=>{
   renderGroupSelected();
 };
 $('clearGroupPad').onclick=()=>{groupPadSelected.clear();groupActiveMethod=0;renderGroupPad();renderGroupSelected();$('groupMethod2').classList.remove('activeMethod')};
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+function activateMainTab(tabId,{remember=true}={}){
+  const t=document.querySelector(`.tab[data-tab="${tabId}"]`)||document.querySelector('.tab[data-tab="random"]');
+  if(!t)return;
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   ['random','custom','groups','absence'].forEach(id=>$(id).classList.toggle('hidden',id!==t.dataset.tab));
+  if(remember){try{sessionStorage.setItem('fate_active_tab_v1',t.dataset.tab)}catch(e){}}
   const isAbsence=t.dataset.tab==='absence';
   if(isAbsence){resetAbsenceDraft();renderAbsenceUI()}
   $('resultBox').classList.toggle('hidden',isAbsence);
@@ -1722,7 +1732,8 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   $('balanceRecord').classList.add('hidden');
   $('raffleLeaderboard').classList.add('hidden');
   if(!isAbsence)clearResults();
-});
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>activateMainTab(t.dataset.tab));
 $('pureMode').onclick=()=>setRandomMode('pure');$('balancedMode').onclick=()=>setRandomMode('balanced');
 $('viewBalanceRecord').onclick=()=>{$('balanceRecord').classList.toggle('hidden');if(!$('balanceRecord').classList.contains('hidden'))renderBalanceRecord()};
 $('nextBalanceRound').onclick=requestNextBalanceRound;
@@ -2813,7 +2824,7 @@ function commitRosterImport(conflictChoice='imported'){
   studentAttributes=nextAttrs;if(!saveStudentAttributes())return;
   if(rosterChanged){resetBalanceData(true);resetAllRaffleRecords(true);clearAbsenceForRosterChange()}
   tempStudents=names.map((name,i)=>({name,sex:sexes[i]}));
-  renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();clearResults();
+  renderStudents();refreshLimits();renderAbsenceUI();renderEditGrid();syncStudentAttributesToGrouping();clearResults();
   $('importModal').classList.add('hidden');$('importAttributeModal').classList.add('hidden');$('importConflictModal').classList.add('hidden');$('studentModal').classList.remove('hidden');
   pendingImportPackage=null;pendingImportResolved=null;
   setTimeout(()=>alert(`已匯入並儲存 ${imported.length} 位學生。你仍可在這裡檢查或修改名單與屬性。`),0);
@@ -2844,6 +2855,7 @@ async function applyRosterImport(){
 function normalizeStudentAttributes(raw){if(!Array.isArray(raw))return [];return raw.slice(0,12).map((a,k)=>{if(!a||typeof a!=='object')return null;const name=String(a.name||'').trim().slice(0,20),categories=Array.isArray(a.categories)?[...new Set(a.categories.map(x=>String(x).trim().slice(0,20)).filter(Boolean))].slice(0,8):[];if(!name||categories.length<2)return null;const values={};if(a.values&&typeof a.values==='object')for(let seat=1;seat<=names.length;seat++){const v=String(a.values[seat]||'').trim();if(categories.includes(v))values[seat]=v}return{id:String(a.id||('attr_'+k)).slice(0,60),name,categories,ordered:!!a.ordered,values}}).filter(Boolean)}
 function loadStudentAttributes(){try{studentAttributes=normalizeStudentAttributes(JSON.parse(appStorageGet(STUDENT_ATTR_STORAGE_KEY)||'[]'))}catch(e){studentAttributes=[]}}
 function saveStudentAttributes(){try{appStorageSet(STUDENT_ATTR_STORAGE_KEY,JSON.stringify(studentAttributes));return true}catch(e){alert('學生屬性沒有成功儲存。');return false}}
+function syncStudentAttributesToGrouping(){renderHeterogeneousAttributeOptions()}
 function resetStudentAttributeAssignments(){studentAttributes.forEach(a=>a.values={});saveStudentAttributes()}
 function fillAttributeEditor(a=null){
  editingAttributeId=a?.id||'';
@@ -2857,9 +2869,9 @@ function editAttribute(a){fillAttributeEditor(a);$('attributeCreatorModal').clas
 function moveAttribute(fromId,toId){
  if(!fromId||!toId||fromId===toId)return;
  const from=studentAttributes.findIndex(a=>a.id===fromId),to=studentAttributes.findIndex(a=>a.id===toId);if(from<0||to<0)return;
- const [item]=studentAttributes.splice(from,1);studentAttributes.splice(to,0,item);saveStudentAttributes();renderEditGrid();
+ const [item]=studentAttributes.splice(from,1);studentAttributes.splice(to,0,item);saveStudentAttributes();renderEditGrid();syncStudentAttributesToGrouping();
 }
-function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid()},{title:'確認刪除屬性',confirmText:'刪除'})}
+function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid();syncStudentAttributesToGrouping()},{title:'確認刪除屬性',confirmText:'刪除'})}
 function renderEditGrid(){
  loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs')+(studentAttributes.length>2?' manyAttrs':'');g.style.setProperty('--attr-count',studentAttributes.length);
  g.innerHTML='<div class="hdr">座號</div><div class="hdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr" draggable="true" data-attr-drag="${escapeHtml(a.id)}" title="拖曳可調整屬性左右順序"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
@@ -2927,13 +2939,13 @@ $('confirmCreateAttribute').onclick=()=>{
  const name=$('newAttributeName').value.trim().slice(0,20),categories=[...new Set([...document.querySelectorAll('.newAttributeCategory')].map(x=>x.value.trim().slice(0,20)).filter(Boolean))].slice(0,8),ordered=$('newAttributeOrdered').checked;
  if(!name)return alert('請輸入屬性名稱。');if(categories.length<2)return alert('至少需要填寫 2 個不同分類。');
  if(studentAttributes.some(a=>a.name===name&&a.id!==editingAttributeId))return alert('已有同名屬性。');
- if(!editingAttributeId){studentAttributes.push({id:'attr_'+Date.now(),name,categories,ordered,values:{}});if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');renderEditGrid()}return}
+ if(!editingAttributeId){studentAttributes.push({id:'attr_'+Date.now(),name,categories,ordered,values:{}});if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');renderEditGrid();syncStudentAttributesToGrouping()}return}
  const a=studentAttributes.find(x=>x.id===editingAttributeId);if(!a)return;
  const oldCats=[...a.categories],oldValues={...a.values},changedCats=oldCats.length!==categories.length||oldCats.some((c,i)=>c!==categories[i]);
  const apply=()=>{
    const mapped={};Object.entries(oldValues).forEach(([seat,val])=>{const oldIndex=oldCats.indexOf(val);if(categories.includes(val))mapped[seat]=val;else if(oldIndex>=0&&categories[oldIndex])mapped[seat]=categories[oldIndex]});
    a.name=name;a.categories=categories;a.ordered=ordered;a.values=mapped;
-   if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');editingAttributeId='';renderEditGrid()}
+   if(saveStudentAttributes()){$('attributeCreatorModal').classList.add('hidden');editingAttributeId='';renderEditGrid();syncStudentAttributesToGrouping()}
  };
  if(changedCats){
    const affected=Object.entries(oldValues).filter(([seat,val])=>!categories.includes(val)).map(([seat])=>String(seat).padStart(2,'0'));
@@ -3011,6 +3023,9 @@ try{loadAbsenceData()}catch(e){}
 try{loadStudentAttributes()}catch(e){}
 
 // 先直接從裝置端名單 key 還原並渲染，再初始化其他控制元件。
+
+// v45: reload keeps the current tab for this browser tab only. A newly opened tab starts at random draw.
+setTimeout(()=>{try{const saved=sessionStorage.getItem('fate_active_tab_v1');if(['random','custom','groups','absence'].includes(saved))activateMainTab(saved,{remember:false})}catch(e){}},0);
 restoreRosterFromDevice();
 
 try{refreshLimits()}catch(e){}
