@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v46 測試版 -->
+<!-- 命運事務局 v47 測試版 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -827,7 +827,6 @@ header{
 
 
 /* v45: version badge + student attribute horizontal scroll */
-/* v46: student editor converted to compact click-to-edit table */
 .titleLine{display:flex;align-items:baseline;justify-content:center;gap:8px;min-width:0}
 .titleLine h1{margin:0}
 .versionTag{font-size:12px;font-weight:700;color:#8b8b86;letter-spacing:.04em;white-space:nowrap}
@@ -835,29 +834,42 @@ header{
 .editGrid.attrGrid.manyAttrs{width:max-content!important;min-width:max-content!important;grid-template-columns:54px minmax(120px,150px) 76px repeat(var(--attr-count),minmax(105px,125px)) 68px!important}
 @media(max-width:700px){.editGrid.attrGrid.manyAttrs{grid-template-columns:48px minmax(115px,135px) 72px repeat(var(--attr-count),minmax(105px,120px)) 64px!important}}
 
-/* v46: compact click-to-edit student data table */
-.editTopScroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;height:14px;margin:0 0 4px;scrollbar-gutter:stable}
-.editTopScroll>div{height:1px;width:100%}
-.editGridWrap{width:100%;max-width:100%;overflow:auto!important;max-height:min(58vh,560px);padding-bottom:2px;border:1px solid #d8cfbf;border-radius:10px;background:#fffdf8;scrollbar-gutter:stable both-edges}
-.studentEditTable{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:14px;background:#fffdf8}
-.studentEditTable th,.studentEditTable td{height:38px;padding:4px 7px;border-right:1px solid #e2dacb;border-bottom:1px solid #e2dacb;text-align:center;vertical-align:middle;white-space:nowrap;background:#fffdf8}
-.studentEditTable th{position:sticky;top:0;z-index:6;height:44px;background:#f1eadc;color:#5f574b;font-weight:800;box-shadow:0 1px 0 #cfc3ae}
-.studentEditTable .seatCol{width:52px;min-width:52px;max-width:52px;position:sticky;left:0;z-index:4;background:#f7f1e6;font-variant-numeric:tabular-nums}
-.studentEditTable th.seatCol{z-index:9;background:#e9dfcd}
-.studentEditTable .nameCol{width:96px;min-width:96px;max-width:96px;position:sticky;left:52px;z-index:4;background:#fffaf1;overflow:hidden;text-overflow:ellipsis}
-.studentEditTable th.nameCol{z-index:9;background:#e9dfcd}
-.studentEditTable .sexCol{width:66px;min-width:66px}.studentEditTable .attrCol{width:104px;min-width:104px;max-width:120px}.studentEditTable .actionCol{width:62px;min-width:62px}
-.studentEditTable .cellEdit{cursor:pointer;transition:background .12s ease}.studentEditTable .cellEdit:hover{background:#f3ecdf}.studentEditTable .missingAttr{color:#b42318;font-weight:800}
-.studentEditTable .inlineEditor{width:100%;min-width:0;height:30px;margin:0;padding:3px 5px;text-align:center;font-size:14px;border-radius:6px}
-.studentEditTable .inlineEditor option{text-align:center}.studentEditTable .attrHeadInner{display:flex;align-items:center;justify-content:center;gap:3px}.studentEditTable .attrHeadInner .attrTitle{max-width:70px;overflow:hidden;text-overflow:ellipsis}
-.studentEditTable .attrHeadInner button{padding:2px 4px;font-size:10px;flex:0 0 auto}.studentEditTable .attrHdr{cursor:grab}.studentEditTable .attrHdr.dragging{opacity:.45}.studentEditTable .attrHdr.dragOver{outline:2px dashed #a98a4a;outline-offset:-3px}
-.studentEditTable .removeStudent{padding:6px 7px;font-size:12px}
-@media(max-width:700px){.editGridWrap{max-height:55vh}.studentEditTable{font-size:13px}.studentEditTable th,.studentEditTable td{height:36px;padding:3px 5px}.studentEditTable .seatCol{width:46px;min-width:46px;max-width:46px}.studentEditTable .nameCol{left:46px;width:84px;min-width:84px;max-width:84px}.studentEditTable .attrCol{width:96px;min-width:96px}.studentEditTable .sexCol{width:60px;min-width:60px}}
+/* v47: compact direct-edit student table; one scroll surface, sticky header + seat/name */
+#studentModal .modalBox{width:min(960px,96vw);max-height:90vh;overflow:auto;position:relative}
+#studentModal .editGridWrap{display:block;width:max-content;min-width:100%;max-width:none;overflow:visible!important;padding:0;margin:0;border:1px solid #d9d0bf;border-radius:10px}
+#studentModal .editGrid.attrGrid,
+#studentModal .editGrid.attrGrid.manyAttrs{display:grid;gap:0;align-items:stretch;width:max-content!important;min-width:100%!important;grid-template-columns:58px 112px 74px repeat(var(--attr-count),112px) 64px!important;background:#fffdf8}
+#studentModal .editGrid.attrGrid.noAttrs{grid-template-columns:58px 112px 74px 64px!important}
+#studentModal .editGrid>*{box-sizing:border-box;min-width:0;min-height:44px;border-right:1px solid #e2dacb;border-bottom:1px solid #e2dacb;display:flex;align-items:center;justify-content:center;margin:0;border-radius:0;background:#fffdf8}
+#studentModal .editGrid>.hdr{position:sticky;top:0;z-index:8;min-height:52px;background:#eee6d7;color:#5f584e;font-weight:800;text-align:center;padding:5px 4px}
+#studentModal .editGrid>.seatCell{position:sticky;left:0;z-index:4;background:#faf6ee;text-align:center}
+#studentModal .editGrid>.nameCell{position:sticky;left:58px;z-index:4;background:#fffdf8;padding:0}
+#studentModal .editGrid>.hdr.seatHdr{left:0;z-index:12}
+#studentModal .editGrid>.hdr.nameHdr{left:58px;z-index:12}
+#studentModal .editGrid>.nameCell input{width:100%;height:100%;border:0!important;background:transparent!important;border-radius:0!important;margin:0!important;padding:7px 6px!important;text-align:center;box-shadow:none!important;font:inherit}
+#studentModal .editGrid>.nameCell input:focus{outline:2px solid #a98a4a;outline-offset:-2px;background:#fff!important}
+#studentModal .editGrid select.editSex,
+#studentModal .editGrid select.editAttrValue{width:100%;height:100%;min-height:43px;border:0!important;border-radius:0!important;margin:0!important;padding:6px 22px 6px 5px!important;background-color:transparent!important;box-shadow:none!important;text-align:center;text-align-last:center;cursor:pointer;font:inherit;color:#2d2923}
+#studentModal .editGrid select.editSex:hover,
+#studentModal .editGrid select.editAttrValue:hover{background-color:#f5efe4!important}
+#studentModal .editGrid select.editSex:focus,
+#studentModal .editGrid select.editAttrValue:focus{outline:2px solid #a98a4a;outline-offset:-2px;background-color:#fff!important}
+#studentModal .editGrid .attrHdr{height:auto;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;overflow:hidden}
+#studentModal .editGrid .attrHdr .attrTitle{max-width:58px;overflow:hidden;text-overflow:ellipsis}
+#studentModal .editGrid .attrHdr button{padding:2px 3px;font-size:10px;min-height:24px}
+#studentModal .editGrid .removeStudent{align-self:stretch;width:100%;border:0;border-radius:0;padding:4px;font-size:12px}
+#studentModal .editGrid select.missingAttr{color:#b42318!important;font-weight:800}
+@media(max-width:700px){
+ #studentModal .editGrid.attrGrid,#studentModal .editGrid.attrGrid.manyAttrs{grid-template-columns:50px 96px 68px repeat(var(--attr-count),104px) 58px!important}
+ #studentModal .editGrid.attrGrid.noAttrs{grid-template-columns:50px 96px 68px 58px!important}
+ #studentModal .editGrid>.nameCell{left:50px}
+ #studentModal .editGrid>.hdr.nameHdr{left:50px}
+}
 
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v46</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v47</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1272,8 +1284,7 @@ header{
       <h2 class="modalTitle">新增／修改學生</h2><div class="row" style="gap:8px;flex-wrap:nowrap"><button class="secondary" id="openAttributeCreator" type="button">＋ 屬性</button><button class="secondary" id="closeModal">關閉</button></div>
     </div>
     <div class="help" style="margin:8px 0 14px">學生姓名與性別只儲存在目前瀏覽器，不會寫進公開網頁原始碼。可修改、新增或刪除學生；儲存後座號會依目前名單順序重新編號。</div>
-    <div id="editTopScroll" class="editTopScroll" aria-label="學生資料表左右捲動"><div></div></div>
-    <div class="editGridWrap" id="editGridWrap"><div id="editGrid"></div></div>
+    <div class="editGridWrap"><div id="editGrid" class="editGrid"></div></div>
     <div class="row" style="margin-top:14px"><button class="outline" id="addStudent">＋ 新增學生</button></div>
     <div class="row" style="margin-top:16px"><button class="primary" id="saveStudents">儲存學生資料</button><button class="secondary" id="resetStudents">重設空白名單</button></div>
     <div class="footerNote">學生資料只儲存在此瀏覽器；清除瀏覽器網站資料後，姓名與性別會消失並回到空白座號。</div>
@@ -2895,26 +2906,22 @@ function moveAttribute(fromId,toId){
 }
 function deleteAttribute(a){openSafeConfirm(`刪除「${a.name}」後，這項屬性的學生設定也會一起刪除。`,()=>{studentAttributes=studentAttributes.filter(x=>x.id!==a.id);saveStudentAttributes();renderEditGrid();syncStudentAttributesToGrouping()},{title:'確認刪除屬性',confirmText:'刪除'})}
 function renderEditGrid(){
- loadStudentAttributes();
- const host=$('editGrid');
- const attrHeads=studentAttributes.map(a=>`<th class="attrCol attrHdr" draggable="true" data-attr-drag="${escapeHtml(a.id)}" title="拖曳可調整屬性左右順序"><div class="attrHeadInner"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}" type="button">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}" type="button">×</button></div></th>`).join('');
- const rows=tempStudents.map((s,i)=>{const seat=i+1;const attrs=studentAttributes.map(a=>{const v=a.values[seat]||'';return `<td class="attrCol cellEdit attrValueCell${v?'':' missingAttr'}" data-seat="${seat}" data-attr="${escapeHtml(a.id)}" title="點一下修改">${v?escapeHtml(v):'未設定'}</td>`}).join('');return `<tr><td class="seatCol">${String(seat).padStart(2,'0')}</td><td class="nameCol cellEdit nameCell" data-i="${i}" title="點一下修改">${escapeHtml(s.name)||'—'}</td><td class="sexCol cellEdit sexCell${s.sex?'':' missingAttr'}" data-i="${i}" title="點一下修改">${escapeHtml(s.sex)||'未設定'}</td>${attrs}<td class="actionCol"><button class="danger removeStudent" data-i="${i}" type="button">刪除</button></td></tr>`}).join('');
- host.innerHTML=`<table class="studentEditTable"><thead><tr><th class="seatCol">座號</th><th class="nameCol">姓名</th><th class="sexCol">性別</th>${attrHeads}<th class="actionCol">操作</th></tr></thead><tbody>${rows}</tbody></table>`;
- const wrap=$('editGridWrap'),top=$('editTopScroll'),spacer=top.firstElementChild,table=host.querySelector('.studentEditTable');
- requestAnimationFrame(()=>{spacer.style.width=Math.max(table.scrollWidth,wrap.clientWidth)+'px';top.scrollLeft=wrap.scrollLeft});
- let syncingScroll=false;top.onscroll=()=>{if(syncingScroll)return;syncingScroll=true;wrap.scrollLeft=top.scrollLeft;requestAnimationFrame(()=>syncingScroll=false)};wrap.onscroll=()=>{if(syncingScroll)return;syncingScroll=true;top.scrollLeft=wrap.scrollLeft;requestAnimationFrame(()=>syncingScroll=false)};
- const beginNameEdit=cell=>{if(cell.querySelector('input'))return;const i=Number(cell.dataset.i),old=tempStudents[i]?.name||'';cell.innerHTML=`<input class="inlineEditor" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(old)}">`;const input=cell.firstElementChild;input.focus();input.select();let done=false;const commit=()=>{if(done)return;done=true;tempStudents[i].name=input.value;renderEditGrid()};input.onblur=commit;input.onkeydown=e=>{if(e.key==='Enter')input.blur();if(e.key==='Escape'){done=true;tempStudents[i].name=old;renderEditGrid()}}};
- const beginSexEdit=cell=>{if(cell.querySelector('select'))return;const i=Number(cell.dataset.i),old=tempStudents[i]?.sex||'';cell.innerHTML=`<select class="inlineEditor"><option value="">未設定</option><option value="男"${old==='男'?' selected':''}>男</option><option value="女"${old==='女'?' selected':''}>女</option></select>`;const sel=cell.firstElementChild;sel.focus();let done=false;const commit=()=>{if(done)return;done=true;tempStudents[i].sex=sel.value;renderEditGrid()};sel.onchange=commit;sel.onblur=commit;sel.onkeydown=e=>{if(e.key==='Escape'){done=true;tempStudents[i].sex=old;renderEditGrid()}}};
- const beginAttrEdit=cell=>{if(cell.querySelector('select'))return;const a=studentAttributes.find(x=>x.id===cell.dataset.attr);if(!a)return;const seat=Number(cell.dataset.seat),old=a.values[seat]||'';cell.innerHTML=`<select class="inlineEditor"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${old===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`;const sel=cell.firstElementChild;sel.focus();let done=false;const commit=()=>{if(done)return;done=true;if(sel.value)a.values[seat]=sel.value;else delete a.values[seat];saveStudentAttributes();syncStudentAttributesToGrouping();renderEditGrid()};sel.onchange=commit;sel.onblur=commit;sel.onkeydown=e=>{if(e.key==='Escape'){done=true;renderEditGrid()}}};
- document.querySelectorAll('.nameCell').forEach(c=>c.onclick=()=>beginNameEdit(c));document.querySelectorAll('.sexCell').forEach(c=>c.onclick=()=>beginSexEdit(c));document.querySelectorAll('.attrValueCell').forEach(c=>c.onclick=()=>beginAttrEdit(c));
- document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()});
- document.querySelectorAll('.editAttr').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)editAttribute(a)});
- document.querySelectorAll('.deleteAttr').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)deleteAttribute(a)});
- let draggedAttr='';document.querySelectorAll('.attrHdr[data-attr-drag]').forEach(h=>{h.ondragstart=e=>{if(e.target.closest('button')){e.preventDefault();return}draggedAttr=h.dataset.attrDrag;h.classList.add('dragging');e.dataTransfer.effectAllowed='move'};h.ondragend=()=>{h.classList.remove('dragging');document.querySelectorAll('.attrHdr').forEach(x=>x.classList.remove('dragOver'));draggedAttr=''};h.ondragover=e=>{if(draggedAttr&&draggedAttr!==h.dataset.attrDrag){e.preventDefault();h.classList.add('dragOver')}};h.ondragleave=()=>h.classList.remove('dragOver');h.ondrop=e=>{e.preventDefault();h.classList.remove('dragOver');moveAttribute(draggedAttr,h.dataset.attrDrag)}});
+ loadStudentAttributes();const g=$('editGrid');g.className='editGrid attrGrid'+(studentAttributes.length?'':' noAttrs')+(studentAttributes.length>2?' manyAttrs':'');g.style.setProperty('--attr-count',studentAttributes.length);
+ g.innerHTML='<div class="hdr seatHdr">座號</div><div class="hdr nameHdr">姓名</div><div class="hdr">性別</div>'+studentAttributes.map(a=>`<div class="hdr attrHdr" draggable="true" data-attr-drag="${escapeHtml(a.id)}" title="拖曳可調整屬性左右順序"><span class="attrTitle">${escapeHtml(a.name)}${a.ordered?' ↕':''}</span><button class="secondary editAttr" data-id="${escapeHtml(a.id)}">修改</button><button class="danger deleteAttr" data-id="${escapeHtml(a.id)}">×</button></div>`).join('')+'<div class="hdr">操作</div>';
+ tempStudents.forEach((s,i)=>{const seat=i+1,attrs=studentAttributes.map(a=>`<select class="editAttrValue${a.values[seat]?'':' missingAttr'}" data-seat="${seat}" data-attr="${escapeHtml(a.id)}"><option value="">未設定</option>${a.categories.map(c=>`<option value="${escapeHtml(c)}"${a.values[seat]===c?' selected':''}>${escapeHtml(c)}</option>`).join('')}</select>`).join('');g.insertAdjacentHTML('beforeend',`<div class="seatCell">${String(seat).padStart(2,'0')}</div><div class="nameCell"><input class="editName" data-i="${i}" maxlength="${MAX_NAME_LENGTH}" autocomplete="off" value="${escapeHtml(s.name)}"></div><select class="editSex" data-i="${i}"><option value="" ${!s.sex?'selected':''}>未設定</option><option ${s.sex==='男'?'selected':''}>男</option><option ${s.sex==='女'?'selected':''}>女</option></select>${attrs}<button class="danger removeStudent" data-i="${i}">刪除</button>`)});
+ document.querySelectorAll('.removeStudent').forEach(b=>b.onclick=()=>{syncTemp();tempStudents.splice(Number(b.dataset.i),1);renderEditGrid()});
+ document.querySelectorAll('.editAttrValue').forEach(s=>s.onchange=()=>{const a=studentAttributes.find(x=>x.id===s.dataset.attr);if(!a)return;const seat=Number(s.dataset.seat);s.value?a.values[seat]=s.value:delete a.values[seat];s.classList.toggle('missingAttr',!s.value);saveStudentAttributes()});
+ document.querySelectorAll('.editAttr').forEach(b=>b.onclick=()=>{const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)editAttribute(a)});
+ document.querySelectorAll('.deleteAttr').forEach(b=>b.onclick=()=>{const a=studentAttributes.find(x=>x.id===b.dataset.id);if(a)deleteAttribute(a)});
+ let draggedAttr='';document.querySelectorAll('.attrHdr[data-attr-drag]').forEach(h=>{
+   h.ondragstart=e=>{if(e.target.closest('button')){e.preventDefault();return}draggedAttr=h.dataset.attrDrag;h.classList.add('dragging');e.dataTransfer.effectAllowed='move'};
+   h.ondragend=()=>{h.classList.remove('dragging');document.querySelectorAll('.attrHdr').forEach(x=>x.classList.remove('dragOver'));draggedAttr=''};
+   h.ondragover=e=>{if(draggedAttr&&draggedAttr!==h.dataset.attrDrag){e.preventDefault();h.classList.add('dragOver')}};
+   h.ondragleave=()=>h.classList.remove('dragOver');
+   h.ondrop=e=>{e.preventDefault();h.classList.remove('dragOver');moveAttribute(draggedAttr,h.dataset.attrDrag)};
+ });
 }
-function syncTemp(){
- const active=document.activeElement;if(active?.classList?.contains('inlineEditor'))active.blur();
-}
+function syncTemp(){const ns=[...document.querySelectorAll('.editName')],ss=[...document.querySelectorAll('.editSex')];if(ns.length)tempStudents=ns.map((x,i)=>({name:x.value,sex:ss[i].value}))}
 $('absenceNoneCheck').onchange=e=>{
   absenceDraftNone=e.target.checked;
   if(absenceDraftNone)absenceDraftSeats.clear();
