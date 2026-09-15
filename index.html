@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v47 測試版 -->
+<!-- 命運事務局 v48 測試版 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -866,10 +866,59 @@ header{
  #studentModal .editGrid>.hdr.nameHdr{left:50px}
 }
 
+
+/* v48: student editor is a fixed shell; ONLY the data table scrolls */
+#studentModal{overflow:hidden}
+#studentModal .modalBox{
+  width:min(960px,96vw);
+  height:min(90vh,780px);
+  max-height:90vh;
+  overflow:hidden!important;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+#studentModal .modalBox>.row:first-child,
+#studentModal .modalBox>.help,
+#studentModal .modalBox>.editGridWrap~.row,
+#studentModal .modalBox>.footerNote{flex:0 0 auto}
+#studentModal .editGridWrap{
+  display:block;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:220px;
+  flex:1 1 auto;
+  overflow:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:auto;
+  padding:0!important;
+  margin:0!important;
+  border:1px solid #d9d0bf;
+  border-radius:10px;
+  background:#fffdf8;
+}
+#studentModal .editGrid.attrGrid,
+#studentModal .editGrid.attrGrid.manyAttrs{
+  width:max-content!important;
+  min-width:100%!important;
+}
+#studentModal .editGrid>.hdr{top:0;z-index:20}
+#studentModal .editGrid>.seatCell{left:0;z-index:12}
+#studentModal .editGrid>.nameCell{left:58px;z-index:12}
+#studentModal .editGrid>.hdr.seatHdr{top:0;left:0;z-index:30}
+#studentModal .editGrid>.hdr.nameHdr{top:0;left:58px;z-index:30}
+@media(max-width:700px){
+  #studentModal .modalBox{width:96vw;height:92vh;max-height:92vh;padding:14px}
+  #studentModal .editGrid>.nameCell{left:50px}
+  #studentModal .editGrid>.hdr.nameHdr{left:50px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v47</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v48</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
