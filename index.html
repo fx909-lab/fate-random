@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v49 測試版｜隨機抽籤結果動畫 -->
+<!-- 命運事務局 v50 測試版｜自訂座號抽籤結果動畫 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -917,8 +917,8 @@ header{
 
 
 /* v49: random-draw reveal animation (presentation only; RNG/result logic unchanged) */
-.randomAnimationRow{display:flex;align-items:center;gap:9px;margin:10px 0 2px;font-weight:800;color:#475569;cursor:pointer;width:max-content;max-width:100%}
-.randomAnimationRow input{width:18px;height:18px;accent-color:var(--blue);cursor:pointer}
+.randomAnimationRow{display:flex;align-items:center;gap:8px;font-weight:800;color:inherit;cursor:pointer;margin:10px 0 18px;width:max-content;max-width:100%}
+.randomAnimationRow input{width:auto;height:auto;accent-color:var(--blue);cursor:pointer}
 .randomAnimationRow .animHint{font-size:12px;font-weight:700;color:#7b8798}
 .destinyReveal{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:160px}
 .destinyDeck{position:relative;width:92px;height:112px;perspective:700px}
@@ -934,7 +934,7 @@ header{
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v49</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v50</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -963,7 +963,7 @@ header{
     </div>
     <div class="field"><label>抽取人數</label><input id="randomCount" class="small" type="number" min="1" value="1"></div>
     <label class="absenceToggleRow"><input id="excludeAbsentRandom" type="checkbox" checked> 排除今日請假</label>
-    <label class="randomAnimationRow"><input id="randomAnimation" type="checkbox"> 結果動畫 <span class="animHint">（預設關閉）</span></label>
+    <label class="randomAnimationRow"><input id="randomAnimation" type="checkbox"> 結果動畫</label>
     <div id="absenceNoticeRandom" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
     <div class="row"><button class="primary" id="drawRandom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
   </section>
@@ -1003,6 +1003,7 @@ header{
     </div>
 
     <label class="absenceToggleRow"><input id="excludeAbsentCustom" type="checkbox" checked> 排除今日請假</label>
+    <label class="randomAnimationRow"><input id="customAnimation" type="checkbox"> 結果動畫</label>
     <div id="absenceNoticeCustom" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
     <div class="row"><button class="primary" id="drawCustom">🎲 開始抽籤</button><button class="danger clearBtn">清除結果</button></div>
   </section>
@@ -1379,6 +1380,7 @@ const RAFFLE_STORAGE_KEY='604_custom_raffle_records_v1';
 const ABSENCE_STORAGE_KEY='604_daily_absence_v1';
 const ABSENCE_PREFS_STORAGE_KEY='604_daily_absence_prefs_v1';
 const RANDOM_ANIMATION_STORAGE_KEY='604_random_animation_v1';
+const CUSTOM_ANIMATION_STORAGE_KEY='604_custom_animation_v1';
 const STUDENT_ATTR_STORAGE_KEY='604_student_attributes_v1';
 const GROUP_PRESET_STORAGE_KEY='604_group_presets_v1';
 const MAX_RAFFLE_RECORDS=30;
@@ -1871,7 +1873,35 @@ function showRandomReveal(ids){
 $('randomAnimation')?.addEventListener('change',saveRandomAnimationPref);
 loadRandomAnimationPref();
 $('drawRandom').onclick=()=>{if(randomRevealBusy)return;try{const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');const c=Number($('randomCount').value);if(!eligible.length)throw Error('排除今日請假後，目前沒有可抽的學生');if(!Number.isInteger(c)||c<1||c>eligible.length)throw Error(`抽取人數請設定為 1～${eligible.length}`);const ids=randomMode==='balanced'?drawBalanced(c,eligible):shuffle(eligible).slice(0,c);showRandomReveal(ids)}catch(e){setRandomRevealBusy(false);err(e.message)}};
-$('drawCustom').onclick=()=>{try{const rawPool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!rawPool.length)throw Error('請先選擇座號');const pool=filterAbsent(rawPool,'custom');if(!pool.length)throw Error('排除今日請假後，目前沒有可抽的座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showDraw(ids)}catch(e){err(e.message)}};
+let customRevealBusy=false;
+function loadCustomAnimationPref(){
+  let on=false;
+  try{on=appStorageGet(CUSTOM_ANIMATION_STORAGE_KEY)==='1'}catch(e){}
+  if($('customAnimation'))$('customAnimation').checked=on;
+}
+function saveCustomAnimationPref(){
+  try{appStorageSet(CUSTOM_ANIMATION_STORAGE_KEY,$('customAnimation')?.checked?'1':'0')}catch(e){}
+}
+function setCustomRevealBusy(on){
+  customRevealBusy=!!on;
+  ['drawCustom','selectAllPad','clearPad','keepRaffleRecord','raffleRecordSelect','newRaffleRecord','renameRaffleRecord','resetRaffleRecord','deleteRaffleRecord','viewRaffleLeaderboard'].forEach(id=>{const el=$(id);if(el)el.disabled=!!on});
+  document.querySelectorAll('#custom .clearBtn').forEach(el=>el.disabled=!!on);
+  if($('customAnimation'))$('customAnimation').disabled=!!on;
+}
+function showCustomReveal(ids){
+  if(!$('customAnimation')?.checked||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){showDraw(ids);return}
+  setCustomRevealBusy(true);
+  clearMarks();
+  resultBox.innerHTML='<div class="destinyReveal" aria-live="polite"><div class="destinyDeck" aria-hidden="true"><div class="destinyCard">籤</div><div class="destinyCard">籤</div><div class="destinyCard">籤</div></div><div class="destinyRevealText">命運籤筒抽取中…</div></div>';
+  window.setTimeout(()=>{
+    showDraw(ids);
+    resultBox.firstElementChild?.classList.add('resultRevealIn');
+    setCustomRevealBusy(false);
+  },1250);
+}
+$('customAnimation')?.addEventListener('change',saveCustomAnimationPref);
+loadCustomAnimationPref();
+$('drawCustom').onclick=()=>{if(customRevealBusy)return;try{const rawPool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!rawPool.length)throw Error('請先選擇座號');const pool=filterAbsent(rawPool,'custom');if(!pool.length)throw Error('排除今日請假後，目前沒有可抽的座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showCustomReveal(ids)}catch(e){setCustomRevealBusy(false);err(e.message)}};
 $('selectAllPad').onclick=()=>{
   activeMethod=2;
   setMethod(2);
