@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v50 測試版｜自訂座號抽籤結果動畫 -->
+<!-- 命運事務局 v51 測試版｜自訂座號紙籤抽取動畫 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -930,11 +930,24 @@ header{
 .resultRevealIn .resultBall{animation:resultFlipIn .42s cubic-bezier(.2,.8,.3,1) both}
 .resultRevealIn .resultBall:nth-child(2){animation-delay:.05s}.resultRevealIn .resultBall:nth-child(3){animation-delay:.1s}.resultRevealIn .resultBall:nth-child(4){animation-delay:.15s}.resultRevealIn .resultBall:nth-child(5){animation-delay:.2s}
 @keyframes resultFlipIn{0%{opacity:0;transform:rotateY(82deg) translateY(8px) scale(.88)}100%{opacity:1;transform:rotateY(0) translateY(0) scale(1)}}
-@media(prefers-reduced-motion:reduce){.destinyCard,.destinyRevealText,.resultRevealIn .resultBall{animation:none!important}}
+/* v51: custom raffle uses a distinct paper-slip draw, not the random-card animation */
+.raffleReveal{width:100%;min-height:178px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:hidden}
+.raffleJar{position:relative;width:min(360px,92%);height:126px;display:flex;align-items:flex-end;justify-content:center;gap:5px;padding:0 18px 12px;border-bottom:3px solid #9d8254}
+.raffleJar::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;height:48px;border:2px solid #bca36f;border-top:0;border-radius:0 0 52px 52px;background:linear-gradient(180deg,#efe2c4cc,#d9c294cc);box-shadow:0 8px 16px #0f172a18;z-index:1}
+.raffleBackSlip{position:relative;z-index:2;width:17px;height:72px;border:1px solid #bca36f;border-radius:3px 3px 1px 1px;background:#fff9e9;box-shadow:0 3px 8px #0f172a12;transform-origin:50% 100%;animation:raffleRustle .46s ease-in-out infinite alternate}
+.raffleBackSlip:nth-child(2n){height:82px;animation-delay:.08s;transform:rotate(4deg)}.raffleBackSlip:nth-child(3n){height:66px;animation-delay:.14s;transform:rotate(-5deg)}
+.rafflePicked{position:absolute;z-index:4;left:50%;bottom:18px;width:42px;height:94px;margin-left:-21px;border:1px solid #b69a68;border-radius:4px 4px 2px 2px;background:linear-gradient(180deg,#fffdf4,#f4e7c8);box-shadow:0 9px 20px #0f172a24;display:flex;align-items:center;justify-content:center;color:#5f4d30;font-size:16px;font-weight:900;opacity:0;transform:translate(-50px,72px) rotate(-7deg);animation:rafflePull 1.02s cubic-bezier(.18,.78,.25,1) forwards;animation-delay:var(--delay)}
+.rafflePicked span{opacity:0;animation:raffleNumber .28s ease forwards;animation-delay:calc(var(--delay) + .58s)}
+.rafflePicked:nth-of-type(2n){transform:translate(34px,72px) rotate(7deg)}
+.raffleRevealText{font-weight:900;color:#6d5a38;letter-spacing:.06em}
+@keyframes raffleRustle{from{translate:-2px 0;rotate:-2deg}to{translate:2px -2px;rotate:2deg}}
+@keyframes rafflePull{0%{opacity:0;bottom:12px;transform:translate(-18px,66px) rotate(-6deg) scale(.94)}35%{opacity:1}72%{bottom:42px;transform:translate(10px,-8px) rotate(2deg) scale(1)}100%{opacity:1;bottom:44px;transform:translate(calc((var(--slot) - var(--mid))*48px),-10px) rotate(0) scale(1)}}
+@keyframes raffleNumber{to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.destinyCard,.destinyRevealText,.resultRevealIn .resultBall,.raffleBackSlip,.rafflePicked,.rafflePicked span{animation:none!important}.rafflePicked{opacity:1;position:relative;left:auto;bottom:auto;margin:0;transform:none}.raffleJar{height:auto;flex-wrap:wrap}.rafflePicked span{opacity:1}}
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v50</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v51</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1892,12 +1905,17 @@ function showCustomReveal(ids){
   if(!$('customAnimation')?.checked||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){showDraw(ids);return}
   setCustomRevealBusy(true);
   clearMarks();
-  resultBox.innerHTML='<div class="destinyReveal" aria-live="polite"><div class="destinyDeck" aria-hidden="true"><div class="destinyCard">籤</div><div class="destinyCard">籤</div><div class="destinyCard">籤</div></div><div class="destinyRevealText">命運籤筒抽取中…</div></div>';
+  const visible=ids.slice(0,10);
+  const mid=(visible.length-1)/2;
+  const backSlips=Array.from({length:11},()=>'<i class="raffleBackSlip" aria-hidden="true"></i>').join('');
+  const picked=visible.map((id,i)=>`<div class="rafflePicked" style="--delay:${(i*.16).toFixed(2)}s;--slot:${i};--mid:${mid}"><span>${String(id).padStart(2,'0')}</span></div>`).join('');
+  resultBox.innerHTML=`<div class="raffleReveal" aria-live="polite"><div class="raffleJar" aria-hidden="true">${backSlips}${picked}</div><div class="raffleRevealText">紙籤抽取中…</div></div>`;
+  const duration=Math.min(2400,1250+Math.max(0,visible.length-1)*160);
   window.setTimeout(()=>{
     showDraw(ids);
     resultBox.firstElementChild?.classList.add('resultRevealIn');
     setCustomRevealBusy(false);
-  },1250);
+  },duration);
 }
 $('customAnimation')?.addEventListener('change',saveCustomAnimationPref);
 loadCustomAnimationPref();
