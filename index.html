@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v53 測試版｜籤筒視覺精修＋隨機抽樣檢查 -->
+<!-- 命運事務局 v54 測試版｜長型籤筒＋自然隨機連號抑制 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -941,29 +941,30 @@ header{
 .resultRevealIn .resultBall:nth-child(2){animation-delay:.05s}.resultRevealIn .resultBall:nth-child(3){animation-delay:.1s}.resultRevealIn .resultBall:nth-child(4){animation-delay:.15s}.resultRevealIn .resultBall:nth-child(5){animation-delay:.2s}
 @keyframes resultFlipIn{0%{opacity:0;transform:rotateY(82deg) translateY(8px) scale(.88)}100%{opacity:1;transform:rotateY(0) translateY(0) scale(1)}}
 
-/* v53: deep-navy archive-style raffle tube; full slips remain inside the animation stage */
-.raffleReveal{width:100%;min-height:326px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden}
-.raffleStage{position:relative;width:min(430px,96%);height:276px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}
-.raffleTube{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:174px;height:104px;z-index:3;border:1px solid #9f824c;border-radius:15px 15px 30px 30px;background:linear-gradient(90deg,#10243b 0%,#203a57 17%,#142b45 50%,#29435f 79%,#0d2036 100%);box-shadow:0 14px 25px #0f172a30,inset 0 1px 0 #f1d89a40,inset 0 -16px 24px #07142270}
-.raffleTube::before{content:"";position:absolute;left:-8px;right:-8px;top:-10px;height:20px;border:2px solid #b5975a;border-radius:50%;background:linear-gradient(180deg,#d8bf80 0%,#9d7b40 34%,#243b55 38%,#0d1f33 76%,#071421 100%);box-shadow:inset 0 3px 4px #fff0bd50,0 3px 6px #0f172a38}
-.raffleTube::after{content:"命運籤";position:absolute;left:50%;top:42px;transform:translateX(-50%);padding:5px 13px 4px;border:1px solid #c4a563;border-radius:4px;color:#ead7a6;background:#0c1d31cc;box-shadow:inset 0 0 0 2px #d8bd7a14;font-size:11px;font-weight:900;letter-spacing:.2em;white-space:nowrap}
-.raffleSlipField{position:absolute;left:50%;bottom:100px;width:184px;height:142px;transform:translateX(-50%);z-index:2}
-.raffleBackSlip{position:absolute;left:calc(50% + var(--x));bottom:0;width:15px;height:var(--h);border:1px solid #b99b65;border-radius:4px 4px 1px 1px;background:linear-gradient(90deg,#fffdf6 0%,#f7ebcf 52%,#fffaf0 100%);box-shadow:0 3px 7px #0f172a18,inset 2px 0 0 #ffffff80;transform-origin:50% 100%;transform:translateX(-50%) rotate(var(--r));animation:raffleRustle .42s ease-in-out infinite alternate;animation-delay:var(--d)}
-.raffleBackSlip::before{content:"✦";position:absolute;left:50%;top:8px;transform:translateX(-50%);font-size:5px;color:#aa8950aa}
-.raffleBackSlip::after{content:"";position:absolute;left:4px;right:4px;top:20px;height:1px;background:#b8965c55;box-shadow:0 9px 0 #b8965c32}
-.rafflePicked{position:absolute;z-index:5;left:50%;bottom:94px;width:38px;height:128px;margin-left:-19px;border:1px solid #a9874d;border-radius:5px 5px 2px 2px;background:linear-gradient(90deg,#fffdf7 0%,#f4e4c1 48%,#fff9eb 100%);box-shadow:0 13px 24px #0f172a30,inset 2px 0 0 #fff;display:flex;align-items:flex-start;justify-content:center;padding-top:31px;color:#4d402c;font-size:18px;font-weight:900;opacity:0;transform-origin:50% 100%;animation:rafflePullFromTube .98s cubic-bezier(.16,.76,.2,1) forwards;animation-delay:var(--delay)}
-.rafflePicked::before{content:"✦";position:absolute;left:50%;top:10px;transform:translateX(-50%);font-size:8px;color:#a9864c;box-shadow:none}
-.rafflePicked::after{content:"";position:absolute;left:8px;right:8px;top:24px;height:1px;background:#b28d5065;box-shadow:0 87px 0 #b28d5040}
-.rafflePicked span{opacity:0;transform:translateY(5px);animation:raffleNumber .24s ease forwards;animation-delay:calc(var(--delay) + .58s)}
+/* v54: tall formal raffle cylinder; slips sit deep inside and one is visibly pulled upward */
+.raffleReveal{width:100%;min-height:410px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden}
+.raffleStage{position:relative;width:min(430px,96%);height:352px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}
+.raffleTube{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:112px;height:214px;z-index:3;border:1px solid #9f824c;border-radius:9px 9px 19px 19px;background:linear-gradient(90deg,#0b1c30 0%,#1c3653 18%,#102944 48%,#203d5b 78%,#09192b 100%);box-shadow:0 15px 26px #0f172a38,inset 0 1px 0 #f1d89a42,inset 0 -20px 28px #06111f72}
+.raffleTube::before{content:"";position:absolute;left:-7px;right:-7px;top:-8px;height:16px;border:2px solid #b99a59;border-radius:50%;background:linear-gradient(180deg,#d9c083 0%,#a17d3f 32%,#1b334d 38%,#0b1d31 78%,#071421 100%);box-shadow:inset 0 2px 3px #fff0bd55,0 3px 6px #0f172a38}
+.raffleTube::after{content:"命運籤";position:absolute;left:50%;top:88px;transform:translateX(-50%);padding:7px 8px 6px;border:1px solid #c4a563;border-radius:3px;color:#ead7a6;background:#0a1a2dcc;box-shadow:inset 0 0 0 2px #d8bd7a12;font-size:10px;font-weight:900;letter-spacing:.18em;writing-mode:vertical-rl;white-space:nowrap}
+.raffleSlipField{position:absolute;left:50%;bottom:196px;width:142px;height:116px;transform:translateX(-50%);z-index:2}
+.raffleBackSlip{position:absolute;left:calc(50% + var(--x));bottom:0;width:11px;height:var(--h);border:1px solid #b99b65;border-radius:3px 3px 1px 1px;background:linear-gradient(90deg,#fffdf6 0%,#f4e6c8 52%,#fffaf0 100%);box-shadow:0 3px 6px #0f172a18,inset 2px 0 0 #ffffff80;transform-origin:50% 100%;transform:translateX(-50%) rotate(var(--r));animation:raffleRustle .42s ease-in-out infinite alternate;animation-delay:var(--d)}
+.raffleBackSlip::before{content:"✦";position:absolute;left:50%;top:7px;transform:translateX(-50%);font-size:4px;color:#aa8950aa}
+.raffleBackSlip::after{content:"";position:absolute;left:3px;right:3px;top:17px;height:1px;background:#b8965c55;box-shadow:0 8px 0 #b8965c32}
+.rafflePicked{position:absolute;z-index:5;left:50%;bottom:191px;width:31px;height:142px;margin-left:-16px;border:1px solid #a9874d;border-radius:4px 4px 2px 2px;background:linear-gradient(90deg,#fffdf7 0%,#f4e4c1 48%,#fff9eb 100%);box-shadow:0 13px 24px #0f172a30,inset 2px 0 0 #fff;display:flex;align-items:flex-start;justify-content:center;padding-top:31px;color:#4d402c;font-size:17px;font-weight:900;opacity:0;transform-origin:50% 100%;animation:rafflePullFromTube 1.05s cubic-bezier(.16,.76,.2,1) forwards;animation-delay:var(--delay)}
+.rafflePicked::before{content:"✦";position:absolute;left:50%;top:10px;transform:translateX(-50%);font-size:7px;color:#a9864c}
+.rafflePicked::after{content:"";position:absolute;left:7px;right:7px;top:24px;height:1px;background:#b28d5065;box-shadow:0 101px 0 #b28d5040}
+.rafflePicked span{opacity:0;transform:translateY(5px);animation:raffleNumber .24s ease forwards;animation-delay:calc(var(--delay) + .62s)}
 .raffleRevealText{font-weight:900;color:#6d5a38;letter-spacing:.06em;margin-top:-2px}
 @keyframes raffleRustle{from{translate:-1px 0;rotate:-1deg}to{translate:1px -3px;rotate:1.4deg}}
-@keyframes rafflePullFromTube{0%{opacity:0;transform:translate(calc((var(--slot) - var(--mid))*2px),62px) rotate(-3deg) scale(.9)}18%{opacity:1}55%{transform:translate(calc((var(--slot) - var(--mid))*5px),-10px) rotate(2deg) scale(.98)}78%{transform:translate(calc((var(--slot) - var(--mid))*20px),-31px) rotate(-1deg) scale(1)}100%{opacity:1;transform:translate(calc((var(--slot) - var(--mid))*35px),-36px) rotate(0) scale(1)}}
+@keyframes rafflePullFromTube{0%{opacity:0;transform:translate(calc((var(--slot) - var(--mid))*1px),106px) rotate(-2deg) scale(.9)}16%{opacity:1}52%{transform:translate(calc((var(--slot) - var(--mid))*3px),25px) rotate(2deg) scale(.97)}78%{transform:translate(calc((var(--slot) - var(--mid))*13px),-5px) rotate(-1deg) scale(1)}100%{opacity:1;transform:translate(calc((var(--slot) - var(--mid))*29px),-18px) rotate(0) scale(1)}}
 @keyframes raffleNumber{to{opacity:1;transform:translateY(0)}}
+@media(max-width:520px){.raffleReveal{min-height:390px}.raffleStage{height:334px}.raffleTube{height:202px;width:106px}.raffleSlipField{bottom:186px}.rafflePicked{bottom:181px}}
 @media(prefers-reduced-motion:reduce){.destinyCard,.destinyRevealText,.resultRevealIn .resultBall,.raffleBackSlip,.rafflePicked,.rafflePicked span{animation:none!important}.rafflePicked{opacity:1;position:relative;left:auto;bottom:auto;margin:0;transform:none}.rafflePicked span{opacity:1}.raffleStage{height:auto;min-height:120px}.raffleTube,.raffleSlipField{display:none}}
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v53</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v54</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1800,6 +1801,40 @@ function clearResults(){
 }
 function secureRandomInt(max){if(window.crypto&&crypto.getRandomValues){const a=new Uint32Array(1),limit=Math.floor(0x100000000/max)*max;do{crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%max}return Math.floor(Math.random()*max)}
 function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=secureRandomInt(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+// v54 自然隨機：保留不可預測抽樣，但降低大量二連號與長連號的出現頻率。
+// 以班級座號環狀計分，避免 1 號與末號因位於邊界而長期取得不同入選機會。
+function naturalRunScore(ids,totalSeats=names.length){
+  if(ids.length<2||totalSeats<3)return 0;
+  const picked=new Set(ids),runs=[];
+  if(picked.size>=totalSeats)return 0;
+  for(const id of picked){
+    const prev=id===1?totalSeats:id-1;
+    if(picked.has(prev))continue;
+    let len=1,next=id===totalSeats?1:id+1;
+    while(picked.has(next)&&next!==id){len++;next=next===totalSeats?1:next+1}
+    if(len>=2)runs.push(len);
+  }
+  const pairGroups=runs.filter(n=>n===2).length;
+  let score=Math.max(0,pairGroups-2)*1.7;
+  for(const len of runs){
+    if(len===3)score+=0.8;
+    else if(len===4)score+=2.2;
+    else if(len>=5)score+=3.8+(len-5)*1.3;
+  }
+  return score;
+}
+function naturalRandomSample(pool,count){
+  if(count<=1||pool.length<=3||count>=pool.length)return shuffle(pool).slice(0,count);
+  const trials=Math.min(12,Math.max(8,Math.ceil(count*1.2))),candidates=[];
+  let totalWeight=0;
+  for(let i=0;i<trials;i++){
+    const ids=shuffle(pool).slice(0,count),score=naturalRunScore(ids,names.length),weight=Math.exp(-score);
+    candidates.push({ids,weight});totalWeight+=weight;
+  }
+  let pick=(secureRandomInt(1000000)/1000000)*totalWeight;
+  for(const item of candidates){pick-=item.weight;if(pick<=0)return item.ids}
+  return candidates[candidates.length-1].ids;
+}
 function err(msg){resultBox.innerHTML=`<div class="empty errorMessage"><span class="errorIcon">⚠️</span><span class="errorText">${escapeHtml(msg)}</span></div>`}
 function showDraw(ids){clearMarks();ids.forEach(id=>$('s'+id)?.classList.add('hit'));resultBox.innerHTML=`<div style="width:100%"><div style="font-size:22px;font-weight:900;margin-bottom:12px">🎯 抽籤結果</div><div style="display:flex;justify-content:center;flex-wrap:wrap;gap:12px">${ids.map(id=>`<div class="resultBall">${String(id).padStart(2,'0')}<div class="nm">${escapeHtml(names[id-1])}</div></div>`).join('')}</div></div>`}
 function parseCustom(txt){
@@ -1901,7 +1936,7 @@ function showRandomReveal(ids){
 }
 $('randomAnimation')?.addEventListener('change',saveRandomAnimationPref);
 loadRandomAnimationPref();
-$('drawRandom').onclick=()=>{if(randomRevealBusy)return;try{const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');const c=Number($('randomCount').value);if(!eligible.length)throw Error('排除今日請假後，目前沒有可抽的學生');if(!Number.isInteger(c)||c<1||c>eligible.length)throw Error(`抽取人數請設定為 1～${eligible.length}`);const ids=randomMode==='balanced'?drawBalanced(c,eligible):shuffle(eligible).slice(0,c);showRandomReveal(ids)}catch(e){setRandomRevealBusy(false);err(e.message)}};
+$('drawRandom').onclick=()=>{if(randomRevealBusy)return;try{const all=names.map((_,i)=>i+1),eligible=filterAbsent(all,'random');const c=Number($('randomCount').value);if(!eligible.length)throw Error('排除今日請假後，目前沒有可抽的學生');if(!Number.isInteger(c)||c<1||c>eligible.length)throw Error(`抽取人數請設定為 1～${eligible.length}`);const ids=randomMode==='balanced'?drawBalanced(c,eligible):naturalRandomSample(eligible,c);showRandomReveal(ids)}catch(e){setRandomRevealBusy(false);err(e.message)}};
 let customRevealBusy=false;
 function loadCustomAnimationPref(){
   let on=false;
@@ -1923,7 +1958,7 @@ function showCustomReveal(ids){
   clearMarks();
   const visible=ids.slice(0,10);
   const mid=(visible.length-1)/2;
-  const slipLayout=[[-78,104,-7,.02],[-66,126,5,.11],[-53,112,-3,.18],[-40,136,7,.05],[-27,118,-5,.14],[-13,140,2,.2],[1,122,-2,.08],[15,134,6,.16],[29,110,-6,.03],[43,138,4,.12],[57,120,-3,.19],[71,130,6,.07],[-60,98,2,.23],[-33,108,4,.09],[-5,114,-4,.17],[23,102,3,.01],[52,106,-2,.15]];
+  const slipLayout=[[-54,82,-7,.02],[-46,104,5,.11],[-38,91,-3,.18],[-30,112,7,.05],[-22,96,-5,.14],[-14,116,2,.2],[-6,101,-2,.08],[2,113,6,.16],[10,88,-6,.03],[18,115,4,.12],[26,98,-3,.19],[34,108,6,.07],[42,84,2,.23],[50,94,4,.09],[-34,86,-4,.17],[-10,90,3,.01],[30,87,-2,.15]];
   const backSlips=slipLayout.map(([x,h,r,d])=>`<i class="raffleBackSlip" aria-hidden="true" style="--x:${x}px;--h:${h}px;--r:${r}deg;--d:${d}s"></i>`).join('');
   const picked=visible.map((id,i)=>`<div class="rafflePicked" style="--delay:${(i*.16).toFixed(2)}s;--slot:${i};--mid:${mid}"><span>${String(id).padStart(2,'0')}</span></div>`).join('');
   resultBox.innerHTML=`<div class="raffleReveal" aria-live="polite"><div class="raffleStage" aria-hidden="true"><div class="raffleSlipField">${backSlips}</div><div class="raffleTube"></div>${picked}</div><div class="raffleRevealText">籤筒抽取中…</div></div>`;
@@ -1936,7 +1971,7 @@ function showCustomReveal(ids){
 }
 $('customAnimation')?.addEventListener('change',saveCustomAnimationPref);
 loadCustomAnimationPref();
-$('drawCustom').onclick=()=>{if(customRevealBusy)return;try{const rawPool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!rawPool.length)throw Error('請先選擇座號');const pool=filterAbsent(rawPool,'custom');if(!pool.length)throw Error('排除今日請假後，目前沒有可抽的座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):shuffle(pool).slice(0,c);showCustomReveal(ids)}catch(e){setCustomRevealBusy(false);err(e.message)}};
+$('drawCustom').onclick=()=>{if(customRevealBusy)return;try{const rawPool=activeMethod===1?parseCustom($('customInput').value):[...padSelected];if(!rawPool.length)throw Error('請先選擇座號');const pool=filterAbsent(rawPool,'custom');if(!pool.length)throw Error('排除今日請假後，目前沒有可抽的座號');const c=Number($('customCount').value);if(!Number.isInteger(c)||c<1||c>pool.length)throw Error(`抽取人數請設定為 1～${pool.length}`);const ids=$('keepRaffleRecord').checked?drawCustomWithRecord(pool,c):naturalRandomSample(pool,c);showCustomReveal(ids)}catch(e){setCustomRevealBusy(false);err(e.message)}};
 $('selectAllPad').onclick=()=>{
   activeMethod=2;
   setMethod(2);
