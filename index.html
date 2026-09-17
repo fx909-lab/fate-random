@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v57 測試版｜籤筒真實前後壁結構 -->
+<!-- 命運事務局 v58 測試版｜滿筒散籤＋原位抽出 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -991,10 +991,35 @@ header{
   .rafflePicked{bottom:140px}
 }
 
+
+/* v58: the tube contains a dense scattered bundle. One of those same thin slips rises from its original slot. */
+.raffleTubeWell{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:92px;height:300px;z-index:3;overflow:visible;pointer-events:none}
+.raffleTubeWell .raffleSlipField{position:absolute;left:50%;bottom:138px;width:88px;height:190px;transform:translateX(-50%);z-index:1;overflow:visible}
+.raffleTubeWell .raffleBackSlip{left:calc(50% + var(--x));bottom:0;width:7px;height:var(--h);border-radius:2px 2px 1px 1px;transform-origin:50% 100%;transform:translateX(-50%) rotate(var(--r));box-shadow:0 2px 4px #0f172a12,inset 1px 0 0 #ffffffa8}
+.raffleTubeMouthFront{bottom:224px;z-index:6}
+/* Selected slips are the same narrow paper slips as the bundle, starting at a real bundle position behind the front wall. */
+.rafflePicked{z-index:3;left:50%;bottom:146px;width:8px;height:var(--ph,158px);margin-left:-4px;padding:0;border:1px solid #b99b65;border-radius:2px 2px 1px 1px;background:linear-gradient(90deg,#fffdf7 0%,#f1dfb9 50%,#fffaf0 100%);box-shadow:0 3px 7px #0f172a20,inset 1px 0 0 #ffffffa0;display:block;color:#4d402c;font-size:11px;font-weight:900;transform-origin:50% 100%;opacity:0;animation:rafflePullFromBundle 1.18s cubic-bezier(.16,.76,.2,1) forwards;animation-delay:var(--delay)}
+.rafflePicked::before{content:"✦";position:absolute;left:50%;top:7px;transform:translateX(-50%);font-size:4px;color:#aa8950aa}
+.rafflePicked::after{content:"";position:absolute;left:2px;right:2px;top:16px;height:1px;background:#b8965c55;box-shadow:0 8px 0 #b8965c2b}
+.rafflePicked span{position:absolute;left:50%;top:25px;transform:translate(-50%,4px);opacity:0;font-size:10px;letter-spacing:-.03em;animation:raffleThinNumber .22s ease forwards;animation-delay:calc(var(--delay) + .58s)}
+@keyframes rafflePullFromBundle{
+  0%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(0)}
+  16%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(-7px)}
+  62%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(calc(var(--sr) * .35)) translateY(-92px)}
+  84%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-126px)}
+  100%{opacity:0;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-154px)}
+}
+@keyframes raffleThinNumber{to{opacity:1;transform:translate(-50%,0)}}
+@media(max-width:520px){
+ .raffleTubeWell{width:86px;height:286px}
+ .raffleTubeWell .raffleSlipField{width:82px;bottom:130px}
+ .rafflePicked{bottom:138px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v57</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v58</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1988,9 +2013,10 @@ function showCustomReveal(ids){
   clearMarks();
   const visible=ids.slice(0,10);
   const mid=(visible.length-1)/2;
-  const slipLayout=[[-28,146,-3,.02],[-24,164,3,.11],[-20,151,-2,.18],[-16,172,3,.05],[-12,156,-3,.14],[-8,176,2,.2],[-4,161,-2,.08],[0,173,2,.16],[4,148,-2,.03],[8,175,2,.12],[12,158,-2,.19],[16,168,3,.07],[20,145,2,.23],[24,154,2,.09],[-22,150,-2,.17],[-6,153,2,.01],[22,149,-2,.15]];
+  const slipLayout=[[-38,126,-7,.02],[-34,151,-5,.11],[-30,137,-4,.18],[-26,164,-3,.05],[-22,143,-6,.14],[-18,174,-2,.20],[-14,132,-4,.08],[-10,158,-2,.16],[-6,146,-1,.03],[-2,170,-1,.12],[2,139,1,.19],[6,162,1,.07],[10,149,2,.23],[14,176,2,.09],[18,135,4,.17],[22,157,3,.01],[26,145,5,.15],[30,166,4,.06],[34,130,6,.21],[38,153,7,.10],[-25,134,-2,.24],[-12,168,-1,.13],[0,152,0,.04],[12,141,2,.22],[25,160,3,.09]];
   const backSlips=slipLayout.map(([x,h,r,d])=>`<i class="raffleBackSlip" aria-hidden="true" style="--x:${x}px;--h:${h}px;--r:${r}deg;--d:${d}s"></i>`).join('');
-  const picked=visible.map((id,i)=>`<div class="rafflePicked" style="--delay:${(i*.16).toFixed(2)}s;--slot:${i};--mid:${mid}"><span>${String(id).padStart(2,'0')}</span></div>`).join('');
+  const pickSlots=[[-18,174,-2], [10,149,2], [-30,137,-4], [22,157,3], [-6,146,-1], [34,130,6], [-22,143,-6], [14,176,2], [0,152,0], [26,145,5]];
+  const picked=visible.map((id,i)=>{const [sx,ph,sr]=pickSlots[i%pickSlots.length];return `<div class="rafflePicked" style="--delay:${(i*.16).toFixed(2)}s;--sx:${sx}px;--ph:${ph}px;--sr:${sr}deg"><span>${String(id).padStart(2,'0')}</span></div>`}).join('');
   resultBox.innerHTML=`<div class="raffleReveal" aria-live="polite"><div class="raffleStage" aria-hidden="true"><div class="raffleTubeWell"><div class="raffleSlipField">${backSlips}</div></div><div class="raffleTube"></div>${picked}<div class="raffleTubeMouthFront"></div></div><div class="raffleRevealText">籤筒抽取中…</div></div>`;
   const duration=Math.min(2400,1280+Math.max(0,visible.length-1)*160);
   window.setTimeout(()=>{
