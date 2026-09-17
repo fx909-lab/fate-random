@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v58 測試版｜滿筒散籤＋原位抽出 -->
+<!-- 命運事務局 v59 測試版｜籤身加粗＋數字收整＋抽出上緣修正 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1016,10 +1016,26 @@ header{
  .rafflePicked{bottom:138px}
 }
 
+/* v59: selected slips are slightly wider and the Arabic number stays neatly inside the paper.
+   The final lift is lowered a little so the tallest slip never touches the animation frame. */
+.rafflePicked{width:9.5px;margin-left:-4.75px;overflow:hidden}
+.rafflePicked::after{left:2.25px;right:2.25px}
+.rafflePicked span{top:25px;width:100%;font-size:8.5px;line-height:1;letter-spacing:-.08em;white-space:nowrap;text-align:center;overflow:hidden}
+@keyframes rafflePullFromBundle{
+  0%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(0)}
+  16%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(-7px)}
+  62%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(calc(var(--sr) * .35)) translateY(-84px)}
+  84%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-112px)}
+  100%{opacity:0;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-136px)}
+}
+@media(max-width:520px){
+ .rafflePicked{width:9.5px;margin-left:-4.75px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v58</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v59</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
