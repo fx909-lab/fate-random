@@ -1551,10 +1551,22 @@ header{
   }
   .groupStation::before{left:7px!important;right:7px!important;height:19px!important}
 }
+
+/* v74: size the stage from the busiest side, then place folders from their real dimensions. */
+.groupRevealStage{
+  height:calc(100px + var(--sideCount,1) * 105px)!important;
+  min-height:calc(100px + var(--sideCount,1) * 105px)!important;
+}
+@media(max-width:700px){
+  .groupRevealStage{height:calc(92px + var(--sideCount,1) * 92px)!important;min-height:calc(92px + var(--sideCount,1) * 92px)!important}
+}
+@media(max-width:480px){
+  .groupRevealStage{height:calc(88px + var(--sideCount,1) * 84px)!important;min-height:calc(88px + var(--sideCount,1) * 84px)!important}
+}
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v73</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v74</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2712,20 +2724,41 @@ function showGroupReveal(gs){
     if(gi<leftCount){sideName[gi]='left';sideIndex[gi]=li++}
     else{sideName[gi]='right';sideIndex[gi]=ri++}
   }
-  const slotFor=(gi)=>{
-    const side=sideName[gi], n=side==='left'?leftCount:rightCount, idx=sideIndex[gi];
-    // Keep generous top/bottom safety while centering each side independently.
-    if(n<=1)return .5;
-    const top=.10,bottom=.90;
-    return top+(bottom-top)*(idx/(n-1));
-  };
   const maxSideCount=Math.max(leftCount,rightCount);
-  const stations=gs.map((ids,i)=>`<div class="groupStation ${sideName[i]==='left'?'sideLeft':'sideRight'}" data-gi="${i}" data-group-label="GROUP ${String(i+1).padStart(2,'0')}" style="--slot:${slotFor(i).toFixed(4)};--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`).join('');
+  const stations=gs.map((ids,i)=>`<div class="groupStation ${sideName[i]==='left'?'sideLeft':'sideRight'}" data-gi="${i}" data-side="${sideName[i]}" data-side-index="${sideIndex[i]}" data-group-label="GROUP ${String(i+1).padStart(2,'0')}" style="--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`).join('');
   resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true" style="--sideCount:${maxSideCount}"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div></div><div class="groupRevealText">命運分派中......</div></div>`;
 
   const stage=resultBox.querySelector('.groupRevealStage');
   const deck=resultBox.querySelector('.groupDispatchDeck');
   const stationEls=[...resultBox.querySelectorAll('.groupStation')];
+
+  // Position each side from actual stage/folder dimensions.  This keeps every folder fully inside
+  // the stage and centers 2/3/5-group compositions instead of stretching them to old 10-group slots.
+  const placeStations=()=>{
+    const stageH=stage.clientHeight;
+    const sample=stationEls[0];
+    if(!sample)return;
+    const stationH=sample.getBoundingClientRect().height;
+    const edge=Math.max(12,Math.min(28,stageH*.055));
+    const placeSide=(side,n)=>{
+      const els=stationEls.filter(el=>el.dataset.side===side);
+      if(!els.length)return;
+      if(n===1){els[0].style.top=(stageH/2)+'px';return;}
+      const minCenter=edge+stationH/2;
+      const maxCenter=stageH-edge-stationH/2;
+      const naturalGap=stationH+(window.innerWidth<=480?12:(window.innerWidth<=700?18:26));
+      const wantedSpan=naturalGap*(n-1);
+      const usableSpan=Math.max(0,maxCenter-minCenter);
+      const span=Math.min(wantedSpan,usableSpan);
+      const start=stageH/2-span/2;
+      const gap=span/(n-1);
+      els.forEach((el,idx)=>{el.style.top=(start+gap*idx)+'px';});
+    };
+    placeSide('left',leftCount);
+    placeSide('right',rightCount);
+  };
+  placeStations();
+
   const stageRect=stage.getBoundingClientRect();
   const deckRect=deck.getBoundingClientRect();
   const cardW=window.innerWidth<=480?38:(window.innerWidth<=700?42:52);
