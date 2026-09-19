@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v60 測試版｜籤片再加粗＋自然散籤＋FATE橫牌 -->
+<!-- 命運事務局 v61 測試版｜籤號字型精修＋FATE銘牌字型＋抽出安全高度 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1042,10 +1042,46 @@ header{
  .rafflePicked{width:11px;margin-left:-5.5px}
 }
 
+/* v61: refine the printed-number proportion, give the FATE plaque a more archival face,
+   and keep the selected slip fully inside the reveal frame at its highest point. */
+.raffleTube::after{
+  font-family:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  font-size:8.5px;
+  font-weight:600;
+  letter-spacing:.16em;
+  font-variant:small-caps;
+  text-shadow:0 1px 0 #06111f,0 0 5px #d8bd7350;
+}
+.rafflePicked{width:12.25px;margin-left:-6.125px}
+.rafflePicked::after{left:3px;right:3px}
+.rafflePicked span{
+  top:27px;
+  width:100%;
+  font-family:"Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  font-size:9.25px;
+  font-weight:700;
+  font-stretch:condensed;
+  letter-spacing:-.055em;
+  font-variant-numeric:tabular-nums lining-nums;
+  white-space:nowrap;
+  text-align:center;
+  overflow:hidden;
+}
+@keyframes rafflePullFromBundle{
+  0%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(0)}
+  16%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(var(--sr)) translateY(-7px)}
+  62%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(calc(var(--sr) * .35)) translateY(-78px)}
+  84%{opacity:1;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-102px)}
+  100%{opacity:0;transform:translateX(calc(-50% + var(--sx))) rotate(0deg) translateY(-118px)}
+}
+@media(max-width:520px){
+ .rafflePicked{width:12.25px;margin-left:-6.125px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v60</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v61</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
