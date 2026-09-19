@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v71 測試版｜分組檔案夾間距與 GROUP 標頭精修 -->
+<!-- 命運事務局 v72 測試版｜GROUP 標頭裁切修正與十組間距精修 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1480,10 +1480,52 @@ header{
   .groupStation .receivedStack{top:24px}
 }
 
+
+/* v72: keep v70/v71 responsive geometry; fix GROUP label clipping and give dense layouts more breathing room. */
+.groupRevealStage{
+  height:max(440px,calc(var(--sideCount,3) * 108px + 44px));
+  min-height:max(440px,calc(var(--sideCount,3) * 108px + 44px));
+}
+.groupStation{
+  height:92px;
+  padding:40px 9px 9px;
+}
+.groupStation::before{
+  left:11px;
+  right:auto;
+  top:6px;
+  transform:none;
+  max-width:calc(100% - 22px);
+  white-space:nowrap;
+  overflow:visible;
+  font-size:9px;
+  line-height:1;
+  letter-spacing:.14em;
+}
+.groupStation .receivedStack{top:32px}
+@media(max-width:700px){
+  .groupRevealStage{
+    height:max(420px,calc(var(--sideCount,3) * 92px + 40px));
+    min-height:max(420px,calc(var(--sideCount,3) * 92px + 40px));
+  }
+  .groupStation{height:80px;padding:36px 6px 8px}
+  .groupStation::before{left:8px;top:6px;transform:none;font-size:8px;letter-spacing:.12em;max-width:calc(100% - 16px)}
+  .groupStation .receivedStack{top:29px}
+}
+@media(max-width:480px){
+  .groupRevealStage{
+    height:max(400px,calc(var(--sideCount,3) * 82px + 38px));
+    min-height:max(400px,calc(var(--sideCount,3) * 82px + 38px));
+  }
+  .groupStation{height:70px;padding:32px 4px 7px}
+  .groupStation::before{left:7px;top:5px;transform:none;font-size:7px;letter-spacing:.10em;max-width:calc(100% - 14px)}
+  .groupStation .receivedStack{top:26px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v71</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v72</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2645,7 +2687,7 @@ function showGroupReveal(gs){
     const side=sideName[gi], n=side==='left'?leftCount:rightCount, idx=sideIndex[gi];
     // Keep generous top/bottom safety while centering each side independently.
     if(n<=1)return .5;
-    const top=.18,bottom=.82;
+    const top=.10,bottom=.90;
     return top+(bottom-top)*(idx/(n-1));
   };
   const maxSideCount=Math.max(leftCount,rightCount);
