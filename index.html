@@ -1522,10 +1522,39 @@ header{
   .groupStation .receivedStack{top:26px}
 }
 
+
+
+/* v73: stage height is derived from the ACTUAL groups on each side; GROUP labels are vertically centered. */
+.groupReveal{min-height:0!important;gap:10px}
+.groupRevealStage{
+  height:calc(170px + var(--sideCount,1) * 88px)!important;
+  min-height:calc(170px + var(--sideCount,1) * 88px)!important;
+}
+.groupStation::before{
+  left:10px!important;right:10px!important;top:0!important;
+  width:auto!important;max-width:none!important;height:23px!important;
+  padding:0!important;margin:0!important;transform:none!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  line-height:1!important;box-sizing:border-box!important;
+}
+@media(max-width:700px){
+  .groupRevealStage{
+    height:calc(150px + var(--sideCount,1) * 80px)!important;
+    min-height:calc(150px + var(--sideCount,1) * 80px)!important;
+  }
+  .groupStation::before{left:8px!important;right:8px!important;height:21px!important}
+}
+@media(max-width:480px){
+  .groupRevealStage{
+    height:calc(150px + var(--sideCount,1) * 78px)!important;
+    min-height:calc(150px + var(--sideCount,1) * 78px)!important;
+  }
+  .groupStation::before{left:7px!important;right:7px!important;height:19px!important}
+}
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v72</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v73</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
