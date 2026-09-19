@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v63 測試版｜籤筒動畫整組下移＋六點提示 -->
+<!-- 命運事務局 v64 測試版｜分組結果動畫 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1090,10 +1090,27 @@ header{
    the empty headroom already available inside that frame without losing its top edge. */
 .raffleReveal{overflow:visible}
 
+
+/* v64: grouping result animation — cards travel into group files, then the final groups reveal together. */
+.groupAnimationRow{display:flex;align-items:center;gap:8px;font-weight:800;color:inherit;cursor:pointer;margin:10px 0 18px;width:max-content;max-width:100%}
+.groupAnimationRow input{width:auto;height:auto;accent-color:var(--blue);cursor:pointer}
+.groupReveal{width:100%;min-height:310px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:visible}
+.groupRevealStage{position:relative;width:min(680px,100%);height:250px;overflow:visible}
+.groupRevealFolders{position:absolute;left:4%;right:4%;bottom:8px;display:grid;grid-template-columns:repeat(var(--gc),minmax(0,1fr));gap:7px;align-items:end}
+.groupRevealFolder{position:relative;height:82px;border:1px solid #c5aa72;border-radius:7px 7px 10px 10px;background:linear-gradient(180deg,#f8eed8,#ead9b6);box-shadow:0 7px 15px #0f172a12,inset 0 1px #fff9;display:flex;align-items:flex-end;justify-content:center;padding:0 3px 9px;color:#6b5632;font-size:11px;font-weight:900;letter-spacing:.04em}
+.groupRevealFolder::before{content:"";position:absolute;left:7px;top:-9px;width:42%;height:10px;border:1px solid #c5aa72;border-bottom:0;border-radius:6px 6px 0 0;background:#f4e6c9}
+.groupFlyCard{position:absolute;left:50%;top:12px;width:30px;height:42px;margin-left:-15px;border:1px solid #b99b65;border-radius:4px;background:linear-gradient(135deg,#fffdf7,#f0dfbd);box-shadow:0 5px 10px #0f172a20;color:#5c4a2f;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;opacity:0;transform:translate(-50%,0) rotate(var(--r));animation:groupCardFly .82s cubic-bezier(.18,.72,.24,1) forwards;animation-delay:var(--d);z-index:3}
+.groupFlyCard::before{content:"";position:absolute;left:5px;right:5px;top:8px;height:1px;background:#b99b6544;box-shadow:0 5px 0 #b99b652d}
+.groupFlyCard span{position:relative;top:7px}
+.groupRevealText{font-weight:900;color:#6d5a38;letter-spacing:.08em;animation:destinyPulse .72s ease-in-out infinite alternate}
+@keyframes groupCardFly{0%{opacity:0;transform:translate(-50%,-10px) rotate(var(--r)) scale(.88)}15%{opacity:1}55%{opacity:1;transform:translate(calc(-50% + var(--mx)),72px) rotate(calc(var(--r) * -.35)) scale(.96)}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),178px) rotate(0deg) scale(.82)}}
+@media(max-width:560px){.groupRevealStage{height:230px}.groupRevealFolders{left:1%;right:1%;gap:3px}.groupRevealFolder{height:70px;font-size:9px;padding-bottom:7px}.groupFlyCard{width:26px;height:38px;margin-left:-13px}@keyframes groupCardFly{0%{opacity:0;transform:translate(-50%,-8px) rotate(var(--r)) scale(.88)}15%{opacity:1}55%{opacity:1;transform:translate(calc(-50% + var(--mx)),66px) rotate(calc(var(--r) * -.35)) scale(.96)}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),160px) rotate(0deg) scale(.78)}}}
+@media(prefers-reduced-motion:reduce){.groupFlyCard,.groupRevealText{animation:none!important}}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v63</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v64</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1194,6 +1211,7 @@ header{
     <div class="field">
       <label class="absenceToggleRow groupOptionRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
       <div id="absenceNoticeGroups" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
+      <label class="groupAnimationRow"><input id="groupAnimation" type="checkbox"> 結果動畫</label>
       <label class="groupOptionRow"><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組名單</label>
       <div id="rangeBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
@@ -1540,6 +1558,7 @@ const ABSENCE_STORAGE_KEY='604_daily_absence_v1';
 const ABSENCE_PREFS_STORAGE_KEY='604_daily_absence_prefs_v1';
 const RANDOM_ANIMATION_STORAGE_KEY='604_random_animation_v1';
 const CUSTOM_ANIMATION_STORAGE_KEY='604_custom_animation_v1';
+const GROUP_ANIMATION_STORAGE_KEY='604_group_animation_v1';
 const STUDENT_ATTR_STORAGE_KEY='604_student_attributes_v1';
 const GROUP_PRESET_STORAGE_KEY='604_group_presets_v1';
 const MAX_RAFFLE_RECORDS=30;
@@ -2205,15 +2224,59 @@ $('confirmRaffleAction').onclick=()=>{
 
 document.querySelectorAll('.clearBtn').forEach(b=>b.onclick=clearResults);
 
+function normalizeGroups(gs){
+  return gs.map((ids,i)=>({ids:[...ids].sort((a,b)=>a-b),order:i}))
+           .sort((a,b)=>b.ids.length-a.ids.length || a.order-b.order)
+           .map(x=>x.ids);
+}
 function renderGroups(gs){
-  gs=gs.map((ids,i)=>({ids:[...ids].sort((a,b)=>a-b),order:i}))
-       .sort((a,b)=>b.ids.length-a.ids.length || a.order-b.order)
-       .map(x=>x.ids);
+  gs=normalizeGroups(gs);
   clearMarks();gs.forEach((ids,i)=>ids.forEach(id=>$('s'+id)?.classList.add('group'+(i+1))));
   lastGroups=gs.map(ids=>[...ids]);
   if($('exportGroups'))$('exportGroups').disabled=false;
   resultBox.innerHTML=`<div style="width:100%"><div style="font-size:22px;font-weight:900;margin-bottom:12px">👥 分組結果</div><div class="groupGrid">${gs.map((ids,i)=>`<div class="group g${i+1}"><h3>第 ${i+1} 組｜${ids.length} 人</h3>${ids.map(id=>`<span class="tag">${String(id).padStart(2,'0')} ${escapeHtml(names[id-1])}</span>`).join('')}</div>`).join('')}</div></div>`
 }
+let groupRevealBusy=false;
+function loadGroupAnimationPref(){
+  let on=false;
+  try{on=appStorageGet(GROUP_ANIMATION_STORAGE_KEY)==='1'}catch(e){}
+  if($('groupAnimation'))$('groupAnimation').checked=on;
+}
+function saveGroupAnimationPref(){
+  try{appStorageSet(GROUP_ANIMATION_STORAGE_KEY,$('groupAnimation')?.checked?'1':'0')}catch(e){}
+}
+function setGroupRevealBusy(on){
+  groupRevealBusy=!!on;
+  document.querySelectorAll('#groups button,#groups input,#groups select,#groups textarea').forEach(el=>el.disabled=!!on);
+}
+function showGroupReveal(gs){
+  gs=normalizeGroups(gs);
+  if(!$('groupAnimation')?.checked||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){renderGroups(gs);return}
+  setGroupRevealBusy(true);
+  clearMarks();
+  if($('exportGroups'))$('exportGroups').disabled=true;
+  const g=gs.length,flat=[];
+  gs.forEach((ids,gi)=>ids.forEach((id,mi)=>flat.push({id,gi,mi})));
+  const maxCards=Math.min(flat.length,30);
+  const cards=flat.slice(0,maxCards).map((x,i)=>{
+    const center=((x.gi+.5)/g-.5)*92;
+    const jitter=((i%5)-2)*4;
+    const mid=((i%7)-3)*13;
+    const rot=((i%5)-2)*3;
+    const delay=(i*.035).toFixed(3);
+    return `<div class="groupFlyCard" style="--tx:${center+jitter}%;--mx:${mid}px;--r:${rot}deg;--d:${delay}s"><span>${String(x.id).padStart(2,'0')}</span></div>`;
+  }).join('');
+  const folders=gs.map((ids,i)=>`<div class="groupRevealFolder">第 ${i+1} 組</div>`).join('');
+  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true" style="--gc:${g}"><div class="groupRevealFolders">${folders}</div>${cards}</div><div class="groupRevealText">命運檔案分派中......</div></div>`;
+  const duration=Math.min(2200,1120+Math.max(0,maxCards-1)*35);
+  window.setTimeout(()=>{
+    renderGroups(gs);
+    resultBox.firstElementChild?.classList.add('resultRevealIn');
+    setGroupRevealBusy(false);
+  },duration);
+}
+$('groupAnimation')?.addEventListener('change',saveGroupAnimationPref);
+loadGroupAnimationPref();
 function updateGenderHint(){
   const g=Number($('groupCount').value);
   const pool=getGroupPool(false) || names.map((_,i)=>i+1);
@@ -2767,6 +2830,7 @@ function applyGroupPreset(id){
 }
 
 $('makeGroups').onclick=()=>{
+  if(groupRevealBusy)return;
   const g=Number($('groupCount').value);
   if(!Number.isInteger(g)||g<2)return err('請先選擇組數');
   const all=getGroupPool(true);
@@ -2803,7 +2867,7 @@ $('makeGroups').onclick=()=>{
       const gs=attr
         ?buildHeterogeneousGroups(all,g,bMin,fMin,bindRows,excludeRows,attr,attrMins)
         :buildConstrainedGroups(all,g,bMin,fMin,bindRows,excludeRows);
-      return renderGroups(gs);
+      return showGroupReveal(gs);
     }catch(e){
       return err(e.message);
     }
@@ -2815,7 +2879,7 @@ $('makeGroups').onclick=()=>{
       const size=base+(i<extra?1:0);
       gs.push(a.slice(p,p+size));p+=size;
     }
-    return renderGroups(gs);
+    return showGroupReveal(gs);
   }
 
 
@@ -2837,7 +2901,7 @@ $('makeGroups').onclick=()=>{
   }
 
   gs.forEach(group=>group.splice(0,group.length,...shuffle(group)));
-  renderGroups(gs);
+  showGroupReveal(gs);
 };
 
 
