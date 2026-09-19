@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v64 測試版｜分組結果動畫 -->
+<!-- 命運事務局 v65 測試版｜分組動畫視覺重製＋選項對齊 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1107,10 +1107,53 @@ header{
 @media(max-width:560px){.groupRevealStage{height:230px}.groupRevealFolders{left:1%;right:1%;gap:3px}.groupRevealFolder{height:70px;font-size:9px;padding-bottom:7px}.groupFlyCard{width:26px;height:38px;margin-left:-13px}@keyframes groupCardFly{0%{opacity:0;transform:translate(-50%,-8px) rotate(var(--r)) scale(.88)}15%{opacity:1}55%{opacity:1;transform:translate(calc(-50% + var(--mx)),66px) rotate(calc(var(--r) * -.35)) scale(.96)}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),160px) rotate(0deg) scale(.78)}}}
 @media(prefers-reduced-motion:reduce){.groupFlyCard,.groupRevealText{animation:none!important}}
 
+
+/* v65: one rhythm for all four grouping option rows. */
+#groups .groupOptionRow{
+  display:flex;align-items:center;gap:9px;width:max-content;max-width:100%;
+  min-height:30px;margin:10px 0 0;line-height:1.35;font-weight:800;color:inherit;cursor:pointer;
+}
+#groups .groupOptionRow input[type="checkbox"]{
+  width:16px;height:16px;margin:0;flex:0 0 16px;accent-color:var(--blue);cursor:pointer;
+}
+#groups .absenceNotice + .groupOptionRow{margin-top:10px}
+
+/* v65: grouping animation — central dispatch deck, cards visibly travel to compact group stations. */
+.groupReveal{width:100%;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;overflow:visible}
+.groupRevealStage{position:relative;width:min(700px,100%);height:258px;overflow:visible}
+.groupDispatchDeck{position:absolute;left:50%;top:22px;width:48px;height:58px;transform:translateX(-50%);z-index:2}
+.groupDispatchDeck::before,.groupDispatchDeck::after{content:"";position:absolute;inset:0;border:1px solid #b99b65;border-radius:5px;background:linear-gradient(145deg,#fffdf7,#f0dfbd);box-shadow:0 5px 12px #0f172a18}
+.groupDispatchDeck::before{transform:translate(-6px,4px) rotate(-5deg);opacity:.72}
+.groupDispatchDeck::after{transform:translate(6px,3px) rotate(5deg);opacity:.86}
+.groupDispatchSeal{position:absolute;inset:0;display:grid;place-items:center;border:1px solid #b99b65;border-radius:5px;background:linear-gradient(145deg,#fffdf7,#f0dfbd);box-shadow:0 6px 14px #0f172a20;color:#7a623a;font-family:Georgia,'Times New Roman',serif;font-size:9px;font-weight:700;letter-spacing:.11em;z-index:3}
+.groupStations{position:absolute;left:2%;right:2%;bottom:8px;display:grid;grid-template-columns:repeat(var(--gc),minmax(0,1fr));gap:8px;align-items:end;z-index:1}
+.groupStation{position:relative;height:58px;border:1px solid #c7af7b;border-radius:10px;background:linear-gradient(180deg,#fffaf0,#f2e6cf);box-shadow:0 5px 12px #0f172a0d,inset 0 1px #fff;color:#6b5632;display:flex;align-items:center;justify-content:center;padding:18px 4px 5px;font-size:10px;font-weight:900;letter-spacing:.04em;overflow:hidden}
+.groupStation::before{content:"DESTINY";position:absolute;top:6px;left:50%;transform:translateX(-50%);font-family:Georgia,'Times New Roman',serif;font-size:6px;letter-spacing:.14em;color:#b3945d}
+.groupStation::after{content:"";position:absolute;left:16%;right:16%;bottom:7px;height:1px;background:#c8af7a55}
+.groupStationPulse{animation:groupStationReceive .28s ease both;animation-delay:var(--pd)}
+@keyframes groupStationReceive{0%,100%{transform:translateY(0);box-shadow:0 5px 12px #0f172a0d,inset 0 1px #fff}50%{transform:translateY(-3px);box-shadow:0 8px 16px #0f172a18,0 0 0 2px #c5a45b33,inset 0 1px #fff}}
+.groupFlyCard{position:absolute;left:50%;top:29px;width:34px;height:45px;margin-left:-17px;border:1px solid #b99b65;border-radius:4px;background:linear-gradient(145deg,#fffdf7,#f0dfbd);box-shadow:0 6px 13px #0f172a20;color:#5c4a2f;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;opacity:0;transform-origin:center;animation:groupCardDispatch .72s cubic-bezier(.2,.7,.22,1) forwards;animation-delay:var(--d);z-index:5}
+.groupFlyCard::before{content:"";position:absolute;left:6px;right:6px;top:8px;height:1px;background:#b99b6544;box-shadow:0 5px 0 #b99b652d}
+.groupFlyCard span{position:relative;top:7px;font-family:Georgia,'Times New Roman',serif;letter-spacing:.02em}
+@keyframes groupCardDispatch{
+  0%{opacity:0;transform:translate(0,0) rotate(var(--r)) scale(.88)}
+  12%{opacity:1;transform:translate(0,2px) rotate(var(--r)) scale(1)}
+  42%{opacity:1;transform:translate(calc(var(--tx) * .42),64px) rotate(calc(var(--r) * -.35)) scale(.98)}
+  82%{opacity:1;transform:translate(var(--tx),var(--ty)) rotate(var(--er)) scale(.84)}
+  100%{opacity:0;transform:translate(var(--tx),calc(var(--ty) + 5px)) rotate(var(--er)) scale(.68)}
+}
+.groupRevealText{font-weight:900;color:#6d5a38;letter-spacing:.08em;animation:destinyPulse .72s ease-in-out infinite alternate}
+@media(max-width:560px){
+ .groupReveal{min-height:300px}.groupRevealStage{height:236px}.groupDispatchDeck{top:18px;transform:translateX(-50%) scale(.9)}
+ .groupStations{left:0;right:0;gap:3px}.groupStation{height:54px;padding:17px 2px 5px;font-size:8px}.groupStation::before{font-size:5px}
+ .groupFlyCard{width:30px;height:41px;margin-left:-15px;top:27px}
+}
+@media(prefers-reduced-motion:reduce){.groupFlyCard,.groupRevealText,.groupStationPulse{animation:none!important}}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v64</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v65</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -1211,8 +1254,8 @@ header{
     <div class="field">
       <label class="absenceToggleRow groupOptionRow"><input id="excludeAbsentGroups" type="checkbox" checked> 排除今日請假</label>
       <div id="absenceNoticeGroups" class="absenceNotice hidden">今日請假尚未設定；目前不排除任何學生。</div>
-      <label class="groupAnimationRow"><input id="groupAnimation" type="checkbox"> 結果動畫</label>
-      <label class="groupOptionRow"><input id="rangeLimit" type="checkbox" style="width:auto;margin-right:8px">調整參與分組名單</label>
+      <label class="groupOptionRow"><input id="groupAnimation" type="checkbox">結果動畫</label>
+      <label class="groupOptionRow"><input id="rangeLimit" type="checkbox">調整參與分組名單</label>
       <div id="rangeBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
           <div class="help">可使用「輸入座號」或「號碼盤點選」其中一種；未設定時仍視為全班參與。</div>
@@ -1239,7 +1282,7 @@ header{
         </div>
       </div>
 
-      <label class="groupOptionRow"><input id="advancedGroupToggle" type="checkbox" style="width:auto;margin-right:8px">進階分組條件</label>
+      <label class="groupOptionRow"><input id="advancedGroupToggle" type="checkbox">進階分組條件</label>
       <div id="advancedGroupBox" class="hidden">
         <div class="subcard" style="margin-top:10px">
           <div class="help">按「＋」新增一組條件，再選擇「綁定」或「互斥」並輸入座號。座號可用空格、「、」「.」「，」「,」「+」分隔；這裡不使用「-」。</div>
@@ -2256,19 +2299,23 @@ function showGroupReveal(gs){
   clearMarks();
   if($('exportGroups'))$('exportGroups').disabled=true;
   const g=gs.length,flat=[];
-  gs.forEach((ids,gi)=>ids.forEach((id,mi)=>flat.push({id,gi,mi})));
+  // Interleave groups so the motion visibly fans left/right instead of sending one whole group at a time.
+  const maxLen=Math.max(0,...gs.map(ids=>ids.length));
+  for(let mi=0;mi<maxLen;mi++)for(let gi=0;gi<g;gi++)if(gs[gi][mi]!=null)flat.push({id:gs[gi][mi],gi,mi});
   const maxCards=Math.min(flat.length,30);
+  const stageWidth=700,usable=.92*stageWidth;
   const cards=flat.slice(0,maxCards).map((x,i)=>{
-    const center=((x.gi+.5)/g-.5)*92;
-    const jitter=((i%5)-2)*4;
-    const mid=((i%7)-3)*13;
-    const rot=((i%5)-2)*3;
-    const delay=(i*.035).toFixed(3);
-    return `<div class="groupFlyCard" style="--tx:${center+jitter}%;--mx:${mid}px;--r:${rot}deg;--d:${delay}s"><span>${String(x.id).padStart(2,'0')}</span></div>`;
+    const slot=((x.gi+.5)/g-.5)*usable;
+    const jitter=((i%3)-1)*5;
+    const rot=((i%5)-2)*2.4;
+    const endRot=((i%3)-1)*1.5;
+    const delay=(i*.045).toFixed(3);
+    const ty=142+((i%2)*4);
+    return `<div class="groupFlyCard" style="--tx:${(slot+jitter).toFixed(1)}px;--ty:${ty}px;--r:${rot}deg;--er:${endRot}deg;--d:${delay}s"><span>${String(x.id).padStart(2,'0')}</span></div>`;
   }).join('');
-  const folders=gs.map((ids,i)=>`<div class="groupRevealFolder">第 ${i+1} 組</div>`).join('');
-  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true" style="--gc:${g}"><div class="groupRevealFolders">${folders}</div>${cards}</div><div class="groupRevealText">命運檔案分派中......</div></div>`;
-  const duration=Math.min(2200,1120+Math.max(0,maxCards-1)*35);
+  const stations=gs.map((ids,i)=>`<div class="groupStation" style="--pd:${(.18+i*.08).toFixed(2)}s">第 ${i+1} 組</div>`).join('');
+  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true" style="--gc:${g}"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div>${cards}</div><div class="groupRevealText">命運分派中......</div></div>`;
+  const duration=Math.min(2350,1080+Math.max(0,maxCards-1)*45);
   window.setTimeout(()=>{
     renderGroups(gs);
     resultBox.firstElementChild?.classList.add('resultRevealIn');
