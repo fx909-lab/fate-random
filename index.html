@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v59 測試版｜籤身加粗＋數字收整＋抽出上緣修正 -->
+<!-- 命運事務局 v60 測試版｜籤片再加粗＋自然散籤＋FATE橫牌 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1032,10 +1032,20 @@ header{
  .rafflePicked{width:9.5px;margin-left:-4.75px}
 }
 
+/* v60: slightly broader paper slips, a looser hand-filled bundle, and a compact horizontal FATE plaque. */
+.raffleTube::after{content:"FATE";top:101px;padding:5px 9px 4px;min-width:42px;box-sizing:border-box;font-size:8px;font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:.20em;writing-mode:horizontal-tb;text-align:center}
+.raffleTubeWell .raffleBackSlip{width:9px}
+.rafflePicked{width:11px;margin-left:-5.5px}
+.rafflePicked::after{left:2.5px;right:2.5px}
+.rafflePicked span{top:25px;width:100%;font-size:9px;line-height:1;letter-spacing:-.07em;white-space:nowrap;text-align:center;overflow:hidden}
+@media(max-width:520px){
+ .rafflePicked{width:11px;margin-left:-5.5px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v59</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v60</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2029,9 +2039,9 @@ function showCustomReveal(ids){
   clearMarks();
   const visible=ids.slice(0,10);
   const mid=(visible.length-1)/2;
-  const slipLayout=[[-38,126,-7,.02],[-34,151,-5,.11],[-30,137,-4,.18],[-26,164,-3,.05],[-22,143,-6,.14],[-18,174,-2,.20],[-14,132,-4,.08],[-10,158,-2,.16],[-6,146,-1,.03],[-2,170,-1,.12],[2,139,1,.19],[6,162,1,.07],[10,149,2,.23],[14,176,2,.09],[18,135,4,.17],[22,157,3,.01],[26,145,5,.15],[30,166,4,.06],[34,130,6,.21],[38,153,7,.10],[-25,134,-2,.24],[-12,168,-1,.13],[0,152,0,.04],[12,141,2,.22],[25,160,3,.09]];
+  const slipLayout=[[-38,124,-8,.02],[-34,146,-4,.11],[-31,133,-6,.18],[-27,158,-2,.05],[-23,139,-7,.14],[-19,166,-1,.20],[-15,128,-5,.08],[-11,151,2,.16],[-7,141,-2,.03],[-3,162,1,.12],[1,135,-1,.19],[5,154,3,.07],[9,144,-2,.23],[13,168,2,.09],[17,131,5,.17],[21,150,-1,.01],[25,140,6,.15],[29,159,3,.06],[33,127,7,.21],[37,147,8,.10],[-29,137,1,.24],[-17,157,-3,.13],[-5,148,3,.04],[7,132,-4,.22],[19,155,4,.09],[31,136,-2,.17]];
   const backSlips=slipLayout.map(([x,h,r,d])=>`<i class="raffleBackSlip" aria-hidden="true" style="--x:${x}px;--h:${h}px;--r:${r}deg;--d:${d}s"></i>`).join('');
-  const pickSlots=[[-18,174,-2], [10,149,2], [-30,137,-4], [22,157,3], [-6,146,-1], [34,130,6], [-22,143,-6], [14,176,2], [0,152,0], [26,145,5]];
+  const pickSlots=[[-19,166,-1], [9,144,-2], [-31,133,-6], [21,150,-1], [-7,141,-2], [33,127,7], [-23,139,-7], [13,168,2], [1,135,-1], [25,140,6]];
   const picked=visible.map((id,i)=>{const [sx,ph,sr]=pickSlots[i%pickSlots.length];return `<div class="rafflePicked" style="--delay:${(i*.16).toFixed(2)}s;--sx:${sx}px;--ph:${ph}px;--sr:${sr}deg"><span>${String(id).padStart(2,'0')}</span></div>`}).join('');
   resultBox.innerHTML=`<div class="raffleReveal" aria-live="polite"><div class="raffleStage" aria-hidden="true"><div class="raffleTubeWell"><div class="raffleSlipField">${backSlips}</div></div><div class="raffleTube"></div>${picked}<div class="raffleTubeMouthFront"></div></div><div class="raffleRevealText">籤筒抽取中…</div></div>`;
   const duration=Math.min(2400,1280+Math.max(0,visible.length-1)*160);
