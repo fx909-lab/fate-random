@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v66 測試版｜命運卡視覺統整＋分組懸念＋手機號碼盤縮小 -->
+<!-- 命運事務局 v67 測試版｜分組動畫暖紙舞台＋命運卡與檔案袋精修 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1223,6 +1223,80 @@ header{
 .groupFlyCard span{top:-2px;font-size:10px;color:#e5c87e;font-family:Georgia,"Times New Roman",serif}
 .groupRevealText{color:#6d5a38}
 
+
+
+/* v67: warm-paper dispatch stage; larger refined cards and archive envelopes, while concealed dispatch remains unchanged. */
+.groupReveal{gap:13px}
+.groupRevealStage{
+  min-height:350px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 28%,#ffffffb8 0 12%,transparent 34%),
+    linear-gradient(180deg,#fffdf8 0%,#fbf5e9 100%);
+  border:1px solid #c8aa704d;
+  box-shadow:inset 0 0 0 1px #fff,0 10px 24px #6d583014;
+  overflow:hidden;
+}
+.groupRevealStage::before{
+  content:"DESTINY OFFICE · DISPATCH";left:20px;top:15px;
+  color:#8c724b78;font:700 7px/1 Georgia,"Times New Roman",serif;letter-spacing:.18em;
+}
+.groupRevealStage::after{inset:11px;border:1px solid #b9955730;border-radius:13px}
+.groupDispatchDeck{top:30px;width:68px;height:86px}
+.groupDispatchDeck::before,.groupDispatchDeck::after{
+  border-color:#b99552;border-radius:10px;
+  background:linear-gradient(150deg,#294561 0%,#142f4b 57%,#0a2036 100%);
+  box-shadow:0 9px 20px #1723332b,inset 0 0 0 2px #ead18e16;
+}
+.groupDispatchDeck::before{transform:translate(-8px,7px) rotate(-4deg)}
+.groupDispatchDeck::after{transform:translate(8px,4px) rotate(4deg)}
+.groupDispatchSeal{
+  border-color:#c4a45e;border-radius:9px;color:#f1d99c;
+  background:
+    linear-gradient(90deg,transparent 0 10%,#d2b56b13 10% 11%,transparent 11% 89%,#d2b56b13 89% 90%,transparent 90%),
+    linear-gradient(150deg,#25425f,#102b47 66%,#081d33);
+  box-shadow:0 10px 22px #17233330,inset 0 0 0 3px #e1c57b10;
+  font-size:10px;letter-spacing:.2em;
+}
+.groupDispatchSeal::before{inset:8px;border-color:#d6b86d80;border-radius:5px}
+.groupDispatchSeal::after{content:"✦";position:absolute;left:50%;top:13px;transform:translateX(-50%);font-size:6px;color:#e0c47d8c}
+.groupStations{left:2.2%;right:2.2%;bottom:16px;gap:10px}
+.groupStation{
+  height:82px;border:1px solid #a9864e;border-radius:9px 9px 13px 13px;
+  background:
+    linear-gradient(180deg,#6c7b86 0 13px,#d9cbb0 13px 15px,#a79579 15px 100%);
+  color:#26384a;box-shadow:0 8px 16px #59492d1f,inset 0 1px #fff9,inset 0 0 0 1px #fff3;
+  padding:30px 5px 7px;text-shadow:none;font-weight:900;
+}
+.groupStation::before{
+  content:"ARCHIVE";left:9px;right:auto;top:6px;padding:3px 7px 2px;
+  border:1px solid #c8a86180;border-radius:3px;background:#17324d;color:#ead39a;
+  font-size:5px;letter-spacing:.17em;
+}
+.groupStation::after{left:13%;right:13%;bottom:12px;height:1px;background:#745d3c35}
+@keyframes groupStationReceive67{0%,100%{transform:translateY(0);filter:brightness(1)}50%{transform:translateY(-3px);filter:brightness(1.06);box-shadow:0 11px 20px #59492d28,0 0 0 2px #b8945424}}
+.groupStationPulse{animation:groupStationReceive67 .28s ease both;animation-delay:var(--pd)}
+.groupFlyCard{
+  top:43px;width:46px;height:62px;margin-left:-23px;
+  border:1px solid #b79550;border-radius:8px;
+  background:
+    linear-gradient(90deg,transparent 0 8px,#d7bb6d12 8px 9px,transparent 9px calc(100% - 9px),#d7bb6d12 calc(100% - 9px) calc(100% - 8px),transparent calc(100% - 8px)),
+    linear-gradient(150deg,#294561 0%,#142f4b 58%,#0a2036 100%);
+  box-shadow:0 9px 18px #26313d2c,inset 0 0 0 2px #efd89412;
+  color:#e9ce89;
+}
+.groupFlyCard::before{left:7px;right:7px;top:7px;bottom:7px;border:1px solid #d4b66c78;border-radius:5px}
+.groupFlyCard::after{content:"FATE";bottom:9px;font-size:5px;letter-spacing:.18em;color:#e4c77d99}
+.groupFlyCard span{top:8px;font-size:8px;color:#e7ca82;font-family:Georgia,"Times New Roman",serif}
+.groupRevealText{color:#6d5a38}
+@media(max-width:700px){
+  .groupRevealStage{min-height:315px}
+  .groupDispatchDeck{width:58px;height:74px}
+  .groupFlyCard{width:40px;height:55px;margin-left:-20px}
+  .groupStations{gap:5px;left:1.5%;right:1.5%}
+  .groupStation{height:70px;padding-top:27px;font-size:12px}
+}
+
 /* v66 mobile: compact number pads only for custom-seat selection and grouping participant selection. */
 @media(max-width:700px){
   #custom #numPad,#groups #groupNumPad{grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;margin-top:8px}
@@ -1242,7 +1316,7 @@ header{
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v66</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v67</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2399,7 +2473,7 @@ function showGroupReveal(gs){
     const rot=((i%5)-2)*2.4;
     const endRot=((i%3)-1)*1.5;
     const delay=(i*.045).toFixed(3);
-    const ty=142+((i%2)*4);
+    const ty=188+((i%2)*5);
     return `<div class="groupFlyCard" style="--tx:${(slot+jitter).toFixed(1)}px;--ty:${ty}px;--r:${rot}deg;--er:${endRot}deg;--d:${delay}s"><span aria-hidden="true">✦</span></div>`;
   }).join('');
   const stations=gs.map((ids,i)=>`<div class="groupStation" style="--pd:${(.18+i*.08).toFixed(2)}s">第 ${i+1} 組</div>`).join('');
