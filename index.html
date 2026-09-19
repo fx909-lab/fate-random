@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v69 測試版｜中央命運分派台＋左右置中檔案袋 -->
+<!-- 命運事務局 v70 測試版｜分組動畫響應式定位修正版 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1398,10 +1398,53 @@ header{
   .groupFlyCard{top:139px;width:36px;height:50px;margin-left:-18px}
 }
 
+
+/* v70: responsive dispatch geometry. Stations and flight targets are bound to the live stage, never fixed design pixels. */
+.groupReveal{min-height:450px;gap:8px}
+.groupRevealStage{position:relative;width:100%;max-width:none;height:420px;min-height:420px;overflow:hidden}
+.groupStations{position:absolute;inset:0;display:block;z-index:2;pointer-events:none}
+.groupStation{
+  --slot:.5;
+  top:calc(var(--slot) * 100%);transform:translateY(-50%);
+  width:clamp(138px,20%,190px);height:88px;
+}
+.groupStation.sideLeft{left:clamp(10px,3%,34px);right:auto}
+.groupStation.sideRight{right:clamp(10px,3%,34px);left:auto}
+.groupStation .receivedStack{left:50%;transform:translateX(-50%)}
+.groupDispatchDeck{left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--deckScale,1));width:76px;height:96px}
+.groupDispatchDeck.deckGone{transform:translate(-50%,-50%) scale(.82)}
+.groupFlyCard{left:0;top:0;margin:0;width:52px;height:70px;transform-origin:center}
+@keyframes groupCardDispatch{
+  0%{opacity:0;transform:translate(0,0) rotate(var(--r)) scale(.9)}
+  12%{opacity:1;transform:translate(0,0) rotate(var(--r)) scale(1)}
+  46%{opacity:1;transform:translate(calc(var(--tx) * .48),calc(var(--ty) * .48)) rotate(calc(var(--r) * -.35)) scale(.98)}
+  84%{opacity:1;transform:translate(var(--tx),var(--ty)) rotate(var(--er)) scale(.88)}
+  100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--er)) scale(.72)}
+}
+@media(max-width:700px){
+  .groupReveal{min-height:430px}
+  .groupRevealStage{height:400px;min-height:400px}
+  .groupStation{width:clamp(112px,28%,150px);height:76px;padding:30px 5px 7px;font-size:11px}
+  .groupStation.sideLeft{left:8px}.groupStation.sideRight{right:8px}
+  .groupStation .receivedStack{top:23px;width:31px;height:41px}
+  .groupDispatchDeck{top:50%;width:62px;height:80px}
+  .groupFlyCard{width:42px;height:58px}
+}
+@media(max-width:480px){
+  .groupReveal{min-height:410px}
+  .groupRevealStage{height:380px;min-height:380px}
+  .groupStation{width:clamp(94px,29%,122px);height:66px;padding:26px 4px 6px;font-size:10px;border-radius:8px 8px 11px 11px}
+  .groupStation.sideLeft{left:5px}.groupStation.sideRight{right:5px}
+  .groupStation::before{left:5px;top:4px;font-size:4px;padding:2px 4px}
+  .groupStation .receivedStack{top:20px;width:27px;height:35px}
+  .groupDispatchDeck{width:56px;height:72px}
+  .groupFlyCard{width:38px;height:52px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v69</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v70</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2551,7 +2594,7 @@ function showGroupReveal(gs){
   for(let mi=0;mi<maxLen;mi++)for(let gi=0;gi<g;gi++)if(gs[gi][mi]!=null)flat.push({id:gs[gi][mi],gi,mi});
   const maxCards=Math.min(flat.length,30);
 
-  // Split actual groups evenly around a central FATE deck. Each side is vertically centered independently.
+  // Split groups around the center. Each side gets its own evenly spaced, vertically centered slots.
   const leftCount=Math.ceil(g/2), rightCount=g-leftCount;
   const sideIndex=Array(g).fill(0), sideName=Array(g).fill('left');
   let li=0,ri=0;
@@ -2559,28 +2602,39 @@ function showGroupReveal(gs){
     if(gi<leftCount){sideName[gi]='left';sideIndex[gi]=li++}
     else{sideName[gi]='right';sideIndex[gi]=ri++}
   }
-  const stationPos=(gi)=>{
+  const slotFor=(gi)=>{
     const side=sideName[gi], n=side==='left'?leftCount:rightCount, idx=sideIndex[gi];
-    const yCenter=205, spread=n<=1?0:Math.min(285,(n-1)*78);
-    const y=n<=1?yCenter-41:(yCenter-spread/2)+(spread*idx/(n-1))-41;
-    const x=side==='left'?28:714;
-    return {x,y};
+    // Keep generous top/bottom safety while centering each side independently.
+    if(n<=1)return .5;
+    const top=.18,bottom=.82;
+    return top+(bottom-top)*(idx/(n-1));
   };
-  const stations=gs.map((ids,i)=>{
-    const p=stationPos(i);
-    return `<div class="groupStation" data-gi="${i}" style="--sx:${p.x}px;--sy:${p.y.toFixed(1)}px;--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`;
-  }).join('');
-  const cards=flat.slice(0,maxCards).map((x,i)=>{
-    const p=stationPos(x.gi);
-    // 900px design stage: deck center x=450, card top=177. Aim near each folder's card stack.
-    const targetX=p.x+79, targetY=p.y+38;
-    const tx=targetX-450+((i%3)-1)*4;
-    const ty=targetY-177+((i%2)*3);
-    const rot=((i%5)-2)*2.2, endRot=((i%3)-1)*1.3, delay=(i*.05).toFixed(3);
-    return `<div class="groupFlyCard" style="--tx:${tx.toFixed(1)}px;--ty:${ty.toFixed(1)}px;--r:${rot}deg;--er:${endRot}deg;--d:${delay}s"><span aria-hidden="true">✦</span></div>`;
-  }).join('');
-  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div>${cards}</div><div class="groupRevealText">命運分派中......</div></div>`;
+  const stations=gs.map((ids,i)=>`<div class="groupStation ${sideName[i]==='left'?'sideLeft':'sideRight'}" data-gi="${i}" style="--slot:${slotFor(i).toFixed(4)};--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`).join('');
+  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div></div><div class="groupRevealText">命運分派中......</div></div>`;
+
+  const stage=resultBox.querySelector('.groupRevealStage');
   const deck=resultBox.querySelector('.groupDispatchDeck');
+  const stationEls=[...resultBox.querySelectorAll('.groupStation')];
+  const stageRect=stage.getBoundingClientRect();
+  const deckRect=deck.getBoundingClientRect();
+  const cardW=window.innerWidth<=480?38:(window.innerWidth<=700?42:52);
+  const cardH=window.innerWidth<=480?52:(window.innerWidth<=700?58:70);
+  const originX=(deckRect.left-stageRect.left)+(deckRect.width-cardW)/2;
+  const originY=(deckRect.top-stageRect.top)+(deckRect.height-cardH)/2;
+
+  flat.slice(0,maxCards).forEach((x,i)=>{
+    const st=stationEls[x.gi], r=st.getBoundingClientRect();
+    const targetX=(r.left-stageRect.left)+r.width/2-cardW/2+((i%3)-1)*3;
+    const targetY=(r.top-stageRect.top)+Math.min(r.height*.48,38)-cardH/2+((i%2)*2);
+    const tx=targetX-originX, ty=targetY-originY;
+    const rot=((i%5)-2)*2.2, endRot=((i%3)-1)*1.3, delay=(i*.05).toFixed(3);
+    const card=document.createElement('div');
+    card.className='groupFlyCard';
+    card.style.cssText=`left:${originX.toFixed(1)}px;top:${originY.toFixed(1)}px;--tx:${tx.toFixed(1)}px;--ty:${ty.toFixed(1)}px;--r:${rot}deg;--er:${endRot}deg;--d:${delay}s`;
+    card.innerHTML='<span aria-hidden="true">✦</span>';
+    stage.appendChild(card);
+  });
+
   const received=Array.from({length:g},()=>0);
   flat.slice(0,maxCards).forEach((x,i)=>{
     window.setTimeout(()=>{
