@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v62 測試版｜籤筒動畫整組下移＋六點提示 -->
+<!-- 命運事務局 v63 測試版｜籤筒動畫整組下移＋六點提示 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1085,10 +1085,15 @@ header{
  .raffleReveal{transform:translateY(10px)}
 }
 
+/* v63: remove the raffle reveal's internal clipping boundary.
+   The outer result frame still controls the final visible area, but the lifted slip can now use
+   the empty headroom already available inside that frame without losing its top edge. */
+.raffleReveal{overflow:visible}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v62</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v63</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
