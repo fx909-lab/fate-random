@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v70 測試版｜分組動畫響應式定位修正版 -->
+<!-- 命運事務局 v71 測試版｜分組檔案夾間距與 GROUP 標頭精修 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1441,10 +1441,49 @@ header{
   .groupFlyCard{width:38px;height:52px}
 }
 
+
+/* v71: preserve v70 responsive geometry; add breathing room and functional GROUP labels. */
+.groupRevealStage{
+  height:max(420px,calc(var(--sideCount,3) * 100px + 40px));
+  min-height:max(420px,calc(var(--sideCount,3) * 100px + 40px));
+}
+.groupStation{
+  height:88px;
+  padding:38px 8px 8px;
+  background:linear-gradient(180deg,#183651 0 23px,#d7b96d 23px 25px,#f2e5c8 25px 100%);
+}
+.groupStation::before{
+  content:attr(data-group-label);
+  left:10px;right:auto;top:6px;
+  padding:0;
+  color:#f1d99d;
+  font:700 8px/1.1 Georgia,"Times New Roman",serif;
+  letter-spacing:.16em;
+}
+.groupStation .receivedStack{top:30px}
+@media(max-width:700px){
+  .groupRevealStage{
+    height:max(400px,calc(var(--sideCount,3) * 86px + 36px));
+    min-height:max(400px,calc(var(--sideCount,3) * 86px + 36px));
+  }
+  .groupStation{height:76px;padding:34px 5px 7px;background:linear-gradient(180deg,#183651 0 21px,#d7b96d 21px 23px,#f2e5c8 23px 100%)}
+  .groupStation::before{left:7px;top:6px;font-size:7px;letter-spacing:.13em}
+  .groupStation .receivedStack{top:27px}
+}
+@media(max-width:480px){
+  .groupRevealStage{
+    height:max(380px,calc(var(--sideCount,3) * 76px + 34px));
+    min-height:max(380px,calc(var(--sideCount,3) * 76px + 34px));
+  }
+  .groupStation{height:66px;padding:30px 4px 6px;background:linear-gradient(180deg,#183651 0 19px,#d7b96d 19px 21px,#f2e5c8 21px 100%)}
+  .groupStation::before{left:6px;top:5px;font-size:6px;letter-spacing:.11em}
+  .groupStation .receivedStack{top:24px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v70</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v71</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2609,8 +2648,9 @@ function showGroupReveal(gs){
     const top=.18,bottom=.82;
     return top+(bottom-top)*(idx/(n-1));
   };
-  const stations=gs.map((ids,i)=>`<div class="groupStation ${sideName[i]==='left'?'sideLeft':'sideRight'}" data-gi="${i}" style="--slot:${slotFor(i).toFixed(4)};--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`).join('');
-  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div></div><div class="groupRevealText">命運分派中......</div></div>`;
+  const maxSideCount=Math.max(leftCount,rightCount);
+  const stations=gs.map((ids,i)=>`<div class="groupStation ${sideName[i]==='left'?'sideLeft':'sideRight'}" data-gi="${i}" data-group-label="GROUP ${String(i+1).padStart(2,'0')}" style="--slot:${slotFor(i).toFixed(4)};--pd:${(.18+i*.08).toFixed(2)}s"><span class="receivedStack" aria-hidden="true"><i></i><i></i><i></i></span>第 ${i+1} 組</div>`).join('');
+  resultBox.innerHTML=`<div class="groupReveal" aria-live="polite"><div class="groupRevealStage" aria-hidden="true" style="--sideCount:${maxSideCount}"><div class="groupDispatchDeck"><div class="groupDispatchSeal">FATE</div></div><div class="groupStations">${stations}</div></div><div class="groupRevealText">命運分派中......</div></div>`;
 
   const stage=resultBox.querySelector('.groupRevealStage');
   const deck=resultBox.querySelector('.groupDispatchDeck');
