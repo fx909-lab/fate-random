@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v76 測試版｜自訂座號目前使用方式提示 -->
+<!-- 命運事務局 v77 資安強化測試版｜Excel 解壓縮輸出上限防護 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1572,7 +1572,7 @@ header{
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v76</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v77</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -3653,8 +3653,16 @@ async function unzipNeededEntries(buffer){
     if(e.method===0)return compressed;
     if(e.method!==8)throw Error('Excel 使用了目前不支援的壓縮方式');
     if(typeof DecompressionStream==='undefined')throw Error('目前瀏覽器無法直接讀取 .xlsx，請改用 CSV 或直接貼上');
-    try{return new Uint8Array(await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}
-    catch(_){throw Error('Excel 解壓縮失敗，請確認檔案沒有損壞')}
+    try{
+      const inflated=new Uint8Array(await new Response(new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+      if(inflated.byteLength>10*1024*1024)throw Error('Excel 解壓縮後內容過大');
+      if(e.rawSize&&inflated.byteLength!==e.rawSize)throw Error('Excel ZIP 解壓縮大小與檔案目錄不一致');
+      return inflated;
+    }
+    catch(err){
+      if(err?.message==='Excel 解壓縮後內容過大'||err?.message==='Excel ZIP 解壓縮大小與檔案目錄不一致')throw err;
+      throw Error('Excel 解壓縮失敗，請確認檔案沒有損壞');
+    }
   };
   const result={};for(const [name,e] of entries)result[name]=decoder.decode(await extract(e));return result;
 }
