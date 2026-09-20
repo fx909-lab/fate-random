@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
-<!-- 命運事務局 v75 測試版｜自訂座號目前使用方式提示 -->
+<!-- 命運事務局 v76 測試版｜自訂座號目前使用方式提示 -->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1572,7 +1572,7 @@ header{
 </style>
 </head>
 <body>
-<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v75</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
+<header><div class="titleLine"><h1 id="mainTitle">🎲 命運事務局 🎲</h1><span class="versionTag">v76</span></div><div class="sub">抽籤 × 分組｜今天，一切交給命運</div><button class="headerSettings" id="appSettings" aria-label="開啟設定">⚙️ <span>設定</span></button></header>
 <div id="storageWarning" class="storageWarning">
 ⚠ 此網站目前無法保存裝置資料。請先不要匯入正式名單或建立紀錄。
 </div>
@@ -2822,7 +2822,7 @@ function updateGenderHint(){
   }
   const maxBoy=Math.floor(boys/g),maxGirl=Math.floor(girls/g);
   $('boysPerGroup').max=maxBoy;$('girlsPerGroup').max=maxGirl;
-  $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。男生下限最多 ${maxBoy}、女生下限最多 ${maxGirl}；任一欄留白即代表該性別不限。`;
+  $('genderHint').textContent=`目前參與分組：男生 ${boys} 人、女生 ${girls} 人${unset?`、未設定 ${unset} 人`:''}。男生下限 ${maxBoy}、女生下限 ${maxGirl}；任一欄留白即代表該性別不限。`;
 }
 function getGroupPool(showError=true){
   let pool;
